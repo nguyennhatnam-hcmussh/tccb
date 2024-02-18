@@ -1,0 +1,114 @@
+<div id="form" 
+hx-trigger="modify from:body"
+hx-get="/template/nhansu/form/upload"
+hx-ext="alpine-morph"
+hx-swap="multi:#form:morph"
+class="w-full h-full flex flex-col justify-center items-center">
+
+    <form id="upload-form"
+    x-data="{ 
+        files: {length: 0},
+        drag: false,
+        checkfiletype(target) {
+            type = target[0].name.split('.').pop();
+            if (type !== 'xlsx') {
+                this.files = {length: 0}
+            } else {
+                this.files = target; 
+            }
+        },
+        removeallfile() {
+            this.files = {length: 0}
+        }
+    }" 
+    @closepopup.window="removeallfile()"
+    hx-encoding='multipart/form-data'
+    hx-trigger="startupload from:body"
+    hx-post='/api/nhansu/upload'
+    hx-ext="alpine-morph"
+    hx-swap="multi:#form:morph"
+    class="w-full h-[400px] shadow-md flex flex-col justify-end items-center">
+
+        <a id="download" 
+        href="/api/nhansu/download"
+        x-data="{ animate: false }"
+        @mouseenter="animate = true"
+        @mouseleave="animate = false"
+        class="cursor-pointer bg-blue text-white text-[30px] gap-4 w-full h-[150px] flex flex-col justify-center items-center">
+            <div class="flex flex-row justify-center items-center gap-4">
+                <i :class="animate ? 'animate-bounce' : ''"
+                class="fa-regular fa-circle-down"></i>
+                <div>Download</div>
+            </div>
+            <div :class="animate ? 'underline' : ''"
+            class="text-[13px]">nhansu.xlsx</div>
+        </a>
+
+        <input type="file" name="file" accept=".xlsx"
+        x-on:change="checkfiletype($event.target.files);"
+        x-on:dragover="$el.classList.add('active'); drag = true;" 
+        x-on:dragleave="$el.classList.remove('active'); drag = false;" 
+        x-on:drop="$el.classList.remove('active'); drag = false;"
+        class="absolute bottom-0 w-full h-[250px] outline-none opacity-0 cursor-pointer"/>
+
+        <template x-if="files.length != 0">
+            <div x-data="{ loading: false }" class="z-[100] w-full h-[250px] flex flex-col justify-center items-center gap-8">
+                <template x-for="(_,index) in Array.from({ length: files.length })">
+                    <div class="flex flex-row items-center space-x-2">
+                        <template x-if="files[index].type.includes('audio/')"><i class="far fa-file-audio fa-fw"></i></template>
+                        <template x-if="files[index].type.includes('application/')"><i class="far fa-file-alt fa-fw"></i></template>
+                        <template x-if="files[index].type.includes('image/')"><i class="far fa-file-image fa-fw"></i></template>
+                        <template x-if="files[index].type.includes('video/')"><i class="far fa-file-video fa-fw"></i></template>
+                        <span class="font-medium text-gray-900 text-left" x-text="files[index].name">Uploading</span>
+                        <span class="text-xs text-gray-500" x-text="files[index].size / 1000">...</span>
+                        <span class="text-xs text-gray-500">KB</span>
+                        <i @click="removeallfile();htmx.trigger('#upload-form', 'htmx:abort')" class="fa-regular fa-trash-can text-red-500 pl-[15px] cursor-pointer pr-[10px]"></i>
+                    </div>
+                </template>
+
+                <template x-if="loading == false">
+                    <button @click="loading = true; $dispatch('startupload')" class="w-[50px] h-[50px] flex justify-center items-center border-2 rounded-full border-green cursor-pointer">
+                        <i class="cursor-pointer fa-solid fa-arrow-up-from-bracket text-green text-[30px]"></i>
+                    </button>
+                </template>
+
+                <template x-if="loading == true">
+                <div class="w-[50px] h-[50px] flex justify-center items-center cursor-default">
+                    <i class="cursor-pointer fa-solid fa-spinner text-black text-[30px] animate-spin"></i>
+                </div>
+                </template>
+
+
+                <progress class="absolute w-full h-[5px] bottom-0" id='progress' value='0' max='100'></progress>
+            </div>
+        </template>
+
+        <template x-if="files.length == 0">
+        <div id="upload" 
+        class="gap-4 text-[30px] w-full h-[250px] flex flex-col justify-center items-center">
+            <i :class="drag ? 'fa-bounce' : ''"
+            class="text-green fa-solid fa-cloud-arrow-up text-[40px]"></i>
+            <div>Kéo và thả file excel vào đây</div>
+            <div class="text-[15px]">Hoặc</div>
+            <a href="javascript:void(0)" class="text-[15px] font-[500] px-[20px] py-[10px] text-white bg-green">Chọn file</a>
+        </div>
+        </template>
+    </form>
+
+    <script>
+        htmx.on('#upload-form', 'htmx:xhr:progress', function(evt) {
+          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+        });
+    </script>
+
+
+    <div class="htmx-indicator absolute bg-white opacity-100 h-full w-full flex justify-center items-center">
+        <div class="w-[400px] left-0 top-0 flex flex-col gap-6">
+            <div class="skeleton h-32 w-full"></div>
+            <div class="skeleton h-4 w-28"></div>
+            <div class="skeleton h-4 w-full"></div>
+            <div class="skeleton h-4 w-full"></div>
+        </div> 
+    </div>
+
+</div>

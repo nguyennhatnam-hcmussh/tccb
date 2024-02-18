@@ -1,0 +1,62 @@
+
+<nav id="nav" 
+class="w-[220px] h-screen bg-blue flex flex-col justify-start items-center z-[1000] fixed left-0 top-0">
+    <div id="logo" 
+    class="w-full h-[100px] flex flex-row justify-center items-center mb-[10px]">
+        <img class="h-[45px]" 
+        src="static/images/logo.png" 
+        height="45" 
+        alt="logo">
+    </div>
+    <div id="menu" 
+    x-data 
+    class="w-full h-auto flex flex-col justify-start items-center">
+        <a id="trangchu"
+        @click="$store.tab.activeTab = 0"
+        :class="$store.tab.getActiveStatus(0) ? 'bg-darkblue text-green pointer-events-none' : 'text-white hover:text-green cursor-pointer'"
+        hx-get="/template/trangchu" 
+        hx-trigger="click" 
+        hx-ext="alpine-morph" 
+        hx-swap="multi:#boder:morph" 
+        class="w-full h-[60px] p-[20px] flex flex-row justify-start items-center text-[14px]">
+            <i class="fa-solid fa-house mr-[20px] ml-[10px]"></i>
+            <p>Trang chủ</p>
+        </a>
+
+        <a id="hoso"
+        @click="$store.tab.activeTab = 1"
+        :class="$store.tab.getActiveStatus(1) ? 'bg-darkblue text-green pointer-events-none' : 'text-white hover:text-green cursor-pointer'"
+        hx-get="/template/hoso" 
+        hx-trigger="click" 
+        hx-ext="alpine-morph" 
+        hx-swap="multi:#boder:morph" 
+        class="w-full h-[60px] p-[20px] flex flex-row justify-start items-center text-[14px]">
+            <i class="fa-solid fa-user mr-[20px] ml-[10px]"></i>
+            <p>Hồ sơ</p>
+        </a>
+
+        <a id="nhansu" 
+        @click="$store.tab.activeTab = 2"
+        :class="$store.tab.getActiveStatus(2) ? 'bg-darkblue text-green pointer-events-none' : 'text-white hover:text-green cursor-pointer'"
+        hx-get="/template/nhansu" 
+        hx-trigger="click" 
+        hx-ext="alpine-morph"
+        hx-swap="multi:#boder:morph" 
+        class="w-full h-[60px] p-[20px] flex flex-row justify-start items-center text-[14px]">
+            <i class="fa-solid fa-users mr-[20px] ml-[10px]"></i>
+            <p>Nhân sự</p>
+        </a>
+
+        <a id="donvi"
+        @click="$store.tab.activeTab = 3"
+        :class="$store.tab.getActiveStatus(3) ? 'bg-darkblue text-green pointer-events-none' : 'text-white hover:text-green cursor-pointer'"
+        hx-get="/template/donvi" 
+        hx-trigger="click" 
+        hx-ext="alpine-morph" 
+        hx-swap="multi:#boder:morph" 
+        class="w-full h-[60px] p-[20px] flex flex-row justify-start items-center text-[14px]">
+            <i class="fa-solid fa-school-flag mr-[20px] ml-[10px]"></i>
+            <p>Đơn vị</p>
+        </a>
+    </div>
+</nav>

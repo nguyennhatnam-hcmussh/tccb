@@ -1,0 +1,64 @@
+<title id="title">Đăng nhập | TCCB - USSH</title>
+
+<div id="boder">
+    <div x-data="{
+        focusinput: false,
+        items: ['banana','mango','apple','orange','chili','lemon'],
+        results: [],
+        search: '',
+        get filteredItems() {
+            return this.items.filter(
+                i => i.startsWith(this.search)
+            )
+        },
+        addItem(value) {
+            console.log(value);
+            this.items = this.items.filter(i => i !== value);
+            this.results.push(value); 
+            this.search = '';
+        },
+        checkItem() {
+            if (this.filteredItems.length == 0) {
+                this.search = ''
+            }     
+        },
+        enterEvent() {
+            console.log(typeof this.filteredItems[0])
+            if (typeof this.filteredItems[0] !== 'undefined') {
+                this.addItem(this.filteredItems[0])
+            } else {
+                this.search = ''
+            }
+        }
+    }"
+    class="w-[600px]">
+        <div x-ref="divinput"
+        @click="$refs.input.focus()"
+        class="w-full flex flex-row justify-start items-center flex-wrap bg-white py-[5px] px-[15px]">
+            <div class="flex flex-row justify-center items-center gap-2">
+                <template x-for="result in results" :key="result">
+                    <div x-text="result" class="bg-[#ff4b4b] rounded-md text-white px-[10px] py-[2px]"></div>
+                </template>
+                <div class="relative min-w-[10px] w-auto max-w-[100%] h-[40px] flex flex-row justify-start overflow-hidden">
+                    <span x-text="search" x-ref="span" class="invisible text-[16px] p-0"></span>
+                    <input type="text" 
+                    @click.outside="checkItem()"
+                    @keyup.enter="enterEvent()"
+                    class="absolute w-full left-0 text-[16px] p-0 border-transparent focus:border-transparent focus:ring-0 top-[50%] translate-y-[-50%]"
+                    x-ref="input"
+                    x-model="search"
+                    @focus="focusinput = true"/>
+                </div>
+            </div>
+        </div>
+        <template x-if="focusinput">
+            <ul>
+                <template x-for="item in filteredItems" :key="item">
+                    <li x-text="item"
+                    @click="addItem(item)"
+                    class="cursor-pointer"></li>
+                </template>
+            </ul>
+        </template>
+    </div>
+</div>

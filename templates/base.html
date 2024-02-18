@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx-config" content='{"globalViewTransitions":"true"}'>
+    <title id="title">TCCB - USSH</title>
+    <link href="{{ url_for('static', path='/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/styles/scroll.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="{{ url_for('static', path='/scripts/htmx.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/scripts/json-enc.js') }}"></script>
+    <script src="{{ url_for('static', path='/scripts/multi-swap.js') }}"></script>
+    <script src="{{ url_for('static', path='/scripts/preload.js') }}"></script>
+    <script src="{{ url_for('static', path='/scripts/alpine-morph.js') }}"></script>
+    <script defer src="{{ url_for('static', path='/scripts/morph.min.js') }}"></script>
+    <script defer src="{{ url_for('static', path='/scripts/alpinejs_collapse.min.js') }}"></script>
+    <script defer src="{{ url_for('static', path='/scripts/anchor.min.js') }}"></script>
+    <script defer src="{{ url_for('static', path='/scripts/alpine.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/scripts/minisearch.min.js') }}"></script>
+    
+</head>
+<body hx-ext="multi-swap,preload">
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('tab', {
+            activeTab: 2,
+
+            getActiveStatus(id) {
+                return id === this.activeTab
+            }
+        })
+    })
+</script>
+    <main class="w-full h-auto font-sans font-[400] text-slate-700 flex flex-col justify-center items-center relative text-center text-sm">
+        <!-- anything -->
+        {% if template == 'show' %}
+        <header id="header" hx-get="/template/header" hx-trigger="load delay:1ms" hx-ext="alpine-morph" hx-swap="multi:#header:morph"></header>
+        <nav id="nav" hx-get="/template/nav/{{ tab }}" hx-trigger="load delay:2ms" hx-ext="alpine-morph" hx-swap="multi:#nav:morph"></nav>
+        {# <footer id='footer' hx-get="/template/footer" hx-trigger="load delay:3ms" hx-ext="alpine-morph" hx-swap="multi:#footer:morph"></footer> #}
+        <main id='screen' hx-get="/template/screen/{{ tab }}" hx-trigger="load delay:4ms" hx-ext="alpine-morph" hx-swap="multi:#screen:morph"></main>
+        
+        {% else %}
+        <div id="boder" hx-get="{{ url }}" hx-trigger="load delay:3ms" hx-ext="alpine-morph" hx-swap="multi:#boder:morph" class="relative w-full h-screen flex flex-col justify-center items-center">
+            <div class="htmx-indicator relative w-[400px] h-[450px] flex flex-col gap-10">
+                <div class="skeleton h-32 w-full"></div>
+                <div class="skeleton h-4 w-28"></div>
+                <div class="skeleton h-4 w-full"></div>
+                <div class="skeleton h-4 w-full"></div>
+            </div>
+        </div>
+        <footer id='footer' hx-get="/template/footer" hx-trigger="load delay:4ms" hx-ext="alpine-morph" hx-swap="multi:#footer:morph"></footer>
+        {% endif %}
+    </main>
+
+    
+    <!-- <script src="https://cdn.jsdelivr.net/npm/minisearch@6.3.0/dist/umd/index.min.js"></script> -->
+</body>
+</html>

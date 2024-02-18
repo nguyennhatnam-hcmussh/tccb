@@ -1,0 +1,9 @@
+<main id="screen" class="w-screen h-screen flex flex-col overflow-hidden">
+    <div id="header-ao" class="w-full basis-[60px] shrink-0"></div>
+    <div class="w-full basis-full shrink flex flex-row overflow-hidden">
+        <div id="nav-ao" x-data="{ show: true }" @shownavbar.window="show = $event.detail.state"
+        :class="show ? 'basis-[220px]' : 'basis-[50px]'"
+        class="shrink-0"></div>
+        <div id="boder" hx-get="{{ url }}" hx-trigger="load delay:3ms" hx-ext="alpine-morph" hx-swap="multi:#boder:morph"></div>
+    </div>
+</main>

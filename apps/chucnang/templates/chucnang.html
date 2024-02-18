@@ -1,0 +1,150 @@
+<title id="title">Nhân sự | TCCB - USSH</title>
+
+<div id="boder" class="basis-full shrink overflow-y-hidden overflow-x-hidden flex flex-col justify-start items-center">
+    <div id="container" 
+    class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px]">
+
+        <div id="form" x-data="{ 
+            search: '',
+            selected: '',
+            dataframe: [],
+            output: [],
+            miniSearch: '',
+            isLoading: false,
+            showoptions: false,
+            choose: 0,
+            get checkinput() {
+                return this.search !== ''
+            },
+            async getData() {
+                this.miniSearch = new MiniSearch({
+                    fields: ['loai'],
+                    searchOptions: {
+                        prefix: true,
+                        combineWith: 'AND',
+                    },
+                })
+                this.isLoading = true;
+                fetch('/api/chucnang/loai')            
+                    .then((response) => response.json())
+                    .then((result) => {
+                        this.dataframe = result.reduce((byId, song) => {
+                            byId[song.id] = song;
+                            return byId;
+                        }, {});
+                        this.output = Object.values(this.dataframe);
+                        console.log(this.output)
+                        this.miniSearch.addAll(result);
+                        this.isLoading = false;
+                    });
+            },
+            getSearchResults() {
+                console.log(this.search)
+                if (this.search === '') {
+                    this.output = Object.values(this.dataframe);
+                } else {
+                    this.output = this.miniSearch.search(this.search).map(({ id }) => this.dataframe[id])
+                    console.log(this.output)
+                }
+                if (! this.showoptions) {
+                    this.showoptions = true
+                }
+            },
+            checkchoose(index) {
+                return index === this.choose
+            },
+            addItem(value) {
+                this.search = value.loai;
+                this.selected = value
+                this.showoptions = false;
+            },
+            selectoption(type) {
+                if (type === 'up' && this.choose > 0) {
+                    this.choose = this.choose - 1
+                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                    this.choose = this.choose + 1
+                }
+            },
+            enterEvent() {
+                if (this.output.length > 0) {
+                    this.search = this.output[this.choose].loai
+                    this.selected = this.output[this.choose]
+                    this.showoptions = false
+                } else {
+                    this.search = ''
+                }
+            },
+        }"
+        x-init="getData()"
+        hx-post="/template/chucnang/loai" 
+        hx-trigger="submited from:body"
+        hx-vals='js:{"chucnang": event.detail.id}'
+        hx-ext="alpine-morph,json-enc" 
+        hx-swap="multi:#form:morph"
+        class="transition-none w-[700px] flex flex-col justify-start items-center mx-[16px] mt-[80px] mb-[160px]">
+            {# tieu de #}
+            <div class="w-full flex flex-row gap-4 justify-start items-end mb-[40px]">
+                <div class="shrink-0">
+                    <img class="h-[50px]"
+                    src="/static/images/streamlit.png" 
+                    height="45" 
+                    alt="logo">
+                </div>
+                <div class="w-full text-[35px] font-[600] leading-tight">
+                    <div class="w-full text-left">
+                        Quản lý hợp đồng thỉnh giảng
+                    </div>
+                </div>
+            </div>
+            {# end tieu de #}
+
+            {# input search #}
+            <div class="z-[2] w-full flex flex-col justify-start items-start gap-2 mb-[40px]">
+                <div>Lựa chọn chức năng tương ứng</div>
+                <input x-ref="search"
+                x-model="search"
+                type="search"
+                placeholder="Nhấn vào đây"
+                @input="getSearchResults()"
+                @click="getSearchResults()"
+                @focus="getSearchResults()"
+                @click.outside="showoptions = false"
+                @keyup.enter.prevent="enterEvent()"
+                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                @keyup.up.prevent
+                @keyup.down.prevent
+                class="w-full h-[50px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+            </div>
+            {# end input search #}
+
+            {# show option #}
+            <div x-show="showoptions" x-anchor.bottom="$refs.search" class="transition-none z-[3] w-full mt-[3px]">
+                <ul class="transition-none shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)] bg-white rounded-lg w-full h-auto flex flex-col overflow-hidden">
+                    <template x-if="output.length === 0">
+                        <li  class="transition-none w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                    </template>
+                    <template x-for="(item, index) in output" :key="item.id">
+                        <li x-text="item.loai"
+                        @click="addItem(item)"
+                        @mouseover="choose = index"
+                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                        class="text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                    </template>
+                </ul>
+            </div>
+            {# end show option #}
+
+
+            {# button submit #}
+            <input type="submit"
+            value="SUBMIT"
+            @click="$dispatch('submited', {id: selected.id})"
+            :class="checkinput ? 'bg-orange text-white cursor-pointer' : 'text-gray-400 border border-gray-400 cursor-not-allowed'"
+            class="z-[1] text-[16px] font-[300] px-[20px] py-[8px] rounded-lg leading-normal">
+            {# end button submit #}
+
+        </div>
+
+    </div>  
+</div>

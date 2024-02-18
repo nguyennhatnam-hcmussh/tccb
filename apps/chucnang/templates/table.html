@@ -1,0 +1,51 @@
+<div id="table" class="w-full max-w-[1000px] flex flex-col justify-start items-cen text-left overflow-auto">
+    <!-- head of table -->
+    <div id="thead" class="w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg">
+        <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
+            <div class="p-[15px]">#</div>
+        </div>
+        <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+            <div class="py-[15px]">MSCB</div>
+        </div>
+        <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
+            <div class="py-[15px]">Họ và tên</div>
+        </div>
+        <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center">
+            <div class="py-[15px]">Ngày sinh</div>
+        </div>
+        <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center">
+            <div class="py-[15px]">Đơn vị</div>
+        </div>
+        <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
+            <div class="py-[15px]">@</div>
+        </div>
+    </div>
+    <!-- end head of table -->
+
+    <!-- body of table -->
+    <div id="tbody" class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-full justify-start items-start">
+        {% for nhansu in data %}
+        <div id="trow" class="rounded-b-lg w-full min-w-[750px] flex flex-row bg-white font-[500]">
+            <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
+                <div class="py-[10px] px-[15px]">1</div>
+            </div>
+            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+                <div class="py-[10px]">{{ nhansu.maso }}</div>
+            </div>
+            <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
+                <div class="py-[10px]">{{ nhansu.hovaten }}</div>
+            </div>
+            <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
+                <div class="py-[10px]">20/8/1997</div>
+            </div>
+            <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
+                <div class="py-[10px]">Khoa Ngữ văn Tây Ban Nha - Italia</div>
+            </div>
+            <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
+                <div class="hover:bg-green rounded-2xl border-2 border-green px-[10px] py-[2px] font-[500] cursor-pointer">Hồ sơ</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- end body of table -->
+</div>

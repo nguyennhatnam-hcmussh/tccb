@@ -1,0 +1,52 @@
+
+<nav id="nav" 
+x-data="{
+    show: true
+}"
+:class="show ? 'w-[220px]' : 'w-[50px]'"
+class="transition-all overflow-hidden h-screen bg-blue flex flex-col justify-start items-center z-[1000] fixed left-0 top-0">
+    
+    {# button click show hide #}
+    <div @click="show = ! show; $dispatch('shownavbar', {state: show})"
+    class="absolute top-[5px] right-[10px] z-[1011] ">
+        <i :class="show ? 'fa-xmark' : 'fa-chevron-right'"
+        class="fa-solid py-[3px] px-[5px] rounded-md text-white text-[14px] hover:border hover:border-white cursor-pointer"></i>
+    </div>
+    {# end button click show hid #}
+
+    <div id="logo" 
+    class="w-full h-[130px] flex flex-row justify-center items-center mb-[10px]">
+        <img class="h-[45px]"
+        x-show="show"
+        src="static/images/logo.png" 
+        height="45" 
+        alt="logo">
+    </div>
+    <div id="menu" 
+    x-data 
+    x-init="$store.tab.activeTab = {{ current_tab }}"
+    class="w-full h-auto flex flex-col justify-start items-center">
+
+    {% for key, value in tabs.items() %}
+    
+    
+        <a id="{{ key }}"
+        @click="$store.tab.activeTab = {{ loop.index}}"
+        :class="$store.tab.getActiveStatus({{ loop.index}}) ? 'bg-darkblue text-green pointer-events-none' : 'text-white hover:text-green cursor-pointer'"
+        hx-get="/template/{{ key }}" 
+        hx-trigger="click" 
+        hx-ext="alpine-morph" 
+        hx-swap="multi:#boder:morph" 
+        class="w-full h-[60px] text-[14px]">
+        {% for name, icon in value.items() %}
+            <div :class="show ? 'justify-start px-[20px]' : 'justify-center'"
+            class="w-full flex flex-row items-center py-[20px] h-[50px]">
+                <i class="fa-solid {{ icon }} mr-[20px] ml-[10px]"></i>
+                <p x-show="show" x-transition>{{ name }}</p>
+            </div>
+        {% endfor %} 
+        </a>
+
+    {% endfor %}
+    </div>
+</nav>
