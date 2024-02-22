@@ -12,7 +12,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from main.config import get_settings
 from main.db_setup import get_session
 from main.shortcuts import file, redirect, render
-from main.functions import Requests, GSheet
+from main.functions import Requests
 from main.models import User
 from main.middlewares.process_time import CustomHeaderMiddleware
 from main.middlewares.auth import AuthMiddleware
@@ -22,6 +22,7 @@ from main.apps import (
     nhansu,
     error,
     chucnang,
+    donvi,
 )
 
 
@@ -32,7 +33,6 @@ db_dependency = Annotated[Session, Depends(get_session)]
 
 async def on_start_up() -> None:
     Requests.get_aiohttp_client()
-    GSheet.get_gspread_client()
 
 async def on_shutdown() -> None:
     await Requests.close_aiohttp_client()
@@ -65,6 +65,7 @@ app.include_router(auth.router)
 app.include_router(nhansu.router)
 app.include_router(error.router)
 app.include_router(chucnang.router)
+app.include_router(donvi.router)
 
 
 @app.get('/favicon.ico', include_in_schema=False)
@@ -109,10 +110,3 @@ async def http_exception_handler(request, exc):
         'url': '/template/404'
     }
     return await render(request, "error", "404.html", context)
-
-
-@app.get('/main/test')
-@requires('guest')
-async def main_test(request: Request):
-    data = await GSheet.get_all_row()
-    return data

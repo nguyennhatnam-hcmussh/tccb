@@ -10,7 +10,6 @@ from main.schemas import (
     AuthBase, 
     ProfileBase,
     ThinhgiangBase,
-    HopdongBase,
 )
 
 settings = get_settings()
@@ -72,8 +71,3 @@ class Thinhgiang(ThinhgiangBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
     donvi: List["Donvi"] = Relationship(back_populates="thinhgiang", link_model=ThinhgiangOfDonvi)
-
-
-################# HOP DONG THỈNH GIẢNG ##################
-class Hopdong(HopdongBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)

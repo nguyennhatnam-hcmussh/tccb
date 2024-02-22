@@ -8,13 +8,12 @@ from sqlmodel import Session, select
 import pandas as pd
 import datetime
 
-from main.functions import Requests, GSheet
+from main.functions import Requests
 from main.db_setup import get_session, engine
 from main import config
-from main.schemas.hopdong import ListHopdongRead
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
-from main.models import User, Auth, Thinhgiang, Hopdong
+from main.models import User, Auth, Thinhgiang
 from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch, ChucnangRead
 
 settings = config.get_settings()

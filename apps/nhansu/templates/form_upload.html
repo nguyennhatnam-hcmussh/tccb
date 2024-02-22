@@ -49,10 +49,10 @@ class="w-full h-full flex flex-col justify-center items-center">
         x-on:dragover="$el.classList.add('active'); drag = true;" 
         x-on:dragleave="$el.classList.remove('active'); drag = false;" 
         x-on:drop="$el.classList.remove('active'); drag = false;"
-        class="absolute bottom-0 w-full h-[250px] outline-none opacity-0 cursor-pointer"/>
+        class="absolute bottom-0 w-full h-[250px] outline-none opacity-0 cursor-pointer z-[2]"/>
 
         <template x-if="files.length != 0">
-            <div x-data="{ loading: false }" class="z-[100] w-full h-[250px] flex flex-col justify-center items-center gap-8">
+            <div x-data="{ loading: false }" class="w-full h-[250px] flex flex-col justify-center items-center gap-8 z-[3]">
                 <template x-for="(_,index) in Array.from({ length: files.length })">
                     <div class="flex flex-row items-center space-x-2">
                         <template x-if="files[index].type.includes('audio/')"><i class="far fa-file-audio fa-fw"></i></template>
@@ -85,7 +85,7 @@ class="w-full h-full flex flex-col justify-center items-center">
 
         <template x-if="files.length == 0">
         <div id="upload" 
-        class="gap-4 text-[30px] w-full h-[250px] flex flex-col justify-center items-center">
+        class="gap-4 text-[30px] w-full h-[250px] flex flex-col justify-center items-center z-[1]">
             <i :class="drag ? 'fa-bounce' : ''"
             class="text-green fa-solid fa-cloud-arrow-up text-[40px]"></i>
             <div>Kéo và thả file excel vào đây</div>
@@ -102,7 +102,7 @@ class="w-full h-full flex flex-col justify-center items-center">
     </script>
 
 
-    <div class="htmx-indicator absolute bg-white opacity-100 h-full w-full flex justify-center items-center">
+    <div class="htmx-indicator absolute bg-white opacity-100 h-full w-full flex justify-center items-center z-[4]">
         <div class="w-[400px] left-0 top-0 flex flex-col gap-6">
             <div class="skeleton h-32 w-full"></div>
             <div class="skeleton h-4 w-28"></div>

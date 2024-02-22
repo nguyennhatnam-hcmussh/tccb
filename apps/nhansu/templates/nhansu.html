@@ -2,6 +2,7 @@
 
 <div id="boder" class="basis-full shrink overflow-y-hidden overflow-x-hidden flex flex-col justify-start items-center">
     <div id="container" 
+    x-ref="container"
     x-data="{
         search: '',
         dataframe: {},
@@ -47,68 +48,31 @@
         }
     }"
     x-init="getData()"
-    class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px]">
-        <div class="w-full flex flex-row justify-between items-end shrink-0">
+    class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
+        <div class="w-full flex flex-row justify-center items-center shrink-0">
 
-            {# Trang chủ/nhân sự #}
+            <!-- {# Trang chủ/nhân sự #}
             <div class="w-[150px] flex flex-col justify-start items-start">
             </div>
-            {# End Trang chủ/nhân sự #}
+            {# End Trang chủ/nhân sự #} -->
 
 
             {# Search #}
-            <div class="shadow w-[500px] h-[50px] rounded-3xl bg-gray-100 flex flex-row justify-start items-center">
+            <div class="w-[500px] h-[50px] rounded-3xl bg-gray-100 flex flex-row justify-start items-center mb-[20px]">
                 <div class="basis-[50px] shrink-0 rounded-full">
                     <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-400"></i>
                 </div>
                 <input x-model="search"
                 @input="getSearchResults()"
-                class="bg-gray-100 p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
+                class="transition-none bg-gray-100 p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
                 type="search">
             </div>
             {# End search #}
 
-
-            {# Điều chỉnh #}
-            <div class="w-[150px] flex flex-row justify-end items-center">
-                <div x-data 
-                @click="$dispatch('modify')"
-                class="bg-orange text-white text-[12px] font-[500] px-[15px] py-[8px] rounded-3xl flex justify-center items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-gear"></i>
-                    <div>Điều chỉnh</div>
-                </div>
-            </div>
-            {# End Điều chỉnh #}
-            
-
-            {# download/upload #}
-            <div x-data="{open: false}" @modify.window="open = ! open" class="fixed left-0 top-0 z-[2000]">
-                <div x-show="open" 
-                @click="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
-                @keyup.escape.window="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
-                class="w-screen h-screen bg-black opacity-85"></div>
-                <div x-show="open" class="rounded-xl overflow-hidden fixed top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] w-[500px] h-[400px] bg-white opacity-100">
-                    <div id="form" 
-                    hx-trigger="modify from:body"
-                    hx-get="/template/nhansu/form/upload"
-                    hx-ext="alpine-morph"
-                    hx-swap="multi:#form:morph"
-                    class="w-full h-full flex justify-center items-center">
-                        <div class="htmx-indicator flex flex-col gap-6 w-[400px]">
-                            <div class="skeleton h-32 w-full"></div>
-                            <div class="skeleton h-4 w-28"></div>
-                            <div class="skeleton h-4 w-full"></div>
-                            <div class="skeleton h-4 w-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {# End download/upload #}
-
         </div>
 
 
-        {# Hashtags #}
+        <!-- {# Hashtags #}
         <div id="hashtags" class="z-[2] w-full h-auto mb-[15px] flex flex-row justify-center items-start">
             <div x-data="{
                 focusinput: false,
@@ -253,93 +217,314 @@
                 </div>
             </div>
         </div>
-        {# End Hashtags #}
+        {# End Hashtags #} -->
 
-
-        {# Table #}
-        <div id="table" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start items-cen text-left">
-            <!-- head of table -->
-            <div id="thead" 
-            class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg">
-                <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
-                    <div class="p-[15px]">#</div>
-                </div>
-                <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
-                    <div class="py-[15px]">MSCB</div>
-                </div>
-                <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
-                    <div class="py-[15px]">Họ và tên</div>
-                </div>
-                <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center">
-                    <div class="py-[15px]">Ngày sinh</div>
-                </div>
-                <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center">
-                    <div class="py-[15px]">Đơn vị</div>
-                </div>
-                <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
-                    <div class="py-[15px]">@</div>
-                </div>
-            </div>
-            <!-- end head of table -->            
-        
-            <!-- body of table -->
-            <div id="tbody" 
-            x-show="! isLoading"
-            class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start">
-                <template x-for="(item, index) in output" :key="index">
-                    <div id="trow" class="hover:bg-gray-100 cursor-default rounded-b-lg w-full min-w-[750px] flex flex-row bg-white font-[500]">
-                        {# index #}
-                        <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
-                            <div x-text="index + 1" class="py-[10px] px-[15px]"></div>
-                        </div>
-                        {# end index #}
-
-                        {# maso #}
-                        <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
-                            <div x-text="item.maso" class="py-[10px]"></div>
-                        </div>
-                        {# end maso #}
-
-                        {# hovaten #}
-                        <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
-                            <div x-text="item.hovaten" class="py-[10px]"></div>
-                        </div>
-                        {# end hovaten #}
-
-                        {# ngaysinh #}
-                        <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
-                            <div x-text="item.ngaysinh" class="py-[10px]"></div>
-                        </div>
-                        {# end ngaysinh #}
-
-                        {# donvi #}
-                        <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
-                            <div class="py-[10px]">Khoa Ngữ văn Tây Ban Nha - Italia</div>
-                        </div>
-                        {# end donvi #}
-
-                        {# button hoso #}
-                        <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
-                            <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[2px] font-[500] cursor-pointer">Hồ sơ</div>
-                        </div>
-                        {# end button hoso #}
-                    </div>
-                </template>
-            </div>
-            <!-- end body of table -->
-
-            {# skeleton #}
-            <div x-show="isLoading"
-            class="mt-[20px] relative w-full flex flex-col gap-8">
-                <div class="skeleton h-32 w-full"></div>
-                <div class="skeleton h-4 w-28"></div>
-                <div class="skeleton h-4 w-full"></div>
-                <div class="skeleton h-4 w-full"></div>
-            </div>
-            {# end skeleton #}
-
+        <!-- tabs row-->
+        <div id="tabs" 
+        x-data="{tab1Active: true, tab2Active: false}"
+        class="z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
+            <div id="tab" 
+            :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+            @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
+            class="p-[10px] cursor-pointer">Nhân sự trong Trường</div>
+            <div id="tab2"
+            :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+            @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
+            class="p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
         </div>
-        {# End Table #}
+        <!-- end tabs row -->
+
+        <!-- tab 1 -->
+        <div x-data="{show:true}"
+        @tab2.window="show = false"
+        @tab1.window="show = true"
+        x-show="show"
+        class="w-full max-w-[1000px]">
+        TAB NHANSU IN TRUONG - COMMING SOON...
+        </div>
+
+        <!-- tab 2 -->
+        <div x-data="{show:false}"
+        @tab2.window="show = true"
+        @tab1.window="show = false"
+        x-show="show"
+        class="w-full max-w-[1000px]">
+            {# Table #}
+            <div id="table" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
+                <!-- head of table -->
+                <div id="thead" 
+                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg">
+                    <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
+                        <div class="p-[15px]">#</div>
+                    </div>
+                    <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">MSCB</div>
+                    </div>
+                    <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Họ và tên</div>
+                    </div>
+                    <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Ngày sinh</div>
+                    </div>
+                    <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Đơn vị</div>
+                    </div>
+                    <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
+                        <div class="py-[15px]">@</div>
+                    </div>
+                </div>
+                <!-- end head of table -->            
+            
+                <!-- body of table -->
+                <div id="tbody" 
+                x-show="! isLoading"
+                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start">
+                    <template x-for="(item, index) in output" :key="index">
+                        <div id="trow" class="hover:bg-gray-100 cursor-default rounded-b-lg w-full min-w-[750px] flex flex-row bg-white font-[500]">
+                            {# index #}
+                            <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
+                                <div x-text="index + 1" class="py-[10px] px-[15px]"></div>
+                            </div>
+                            {# end index #}
+
+                            {# maso #}
+                            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+                                <div x-text="item.maso" class="py-[10px]"></div>
+                            </div>
+                            {# end maso #}
+
+                            {# hovaten #}
+                            <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
+                                <div x-text="item.hovaten" class="py-[10px]"></div>
+                            </div>
+                            {# end hovaten #}
+
+                            {# ngaysinh #}
+                            <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
+                                <div x-text="item.ngaysinh" class="py-[10px]"></div>
+                            </div>
+                            {# end ngaysinh #}
+
+                            {# donvi #}
+                            <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
+                                <div class="py-[10px]">Khoa Ngữ văn Tây Ban Nha - Italia</div>
+                            </div>
+                            {# end donvi #}
+
+                            {# button hoso #}
+                            <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
+                                <div @click="$dispatch('portfolio', {target: item.maso})"
+                                class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
+                                >Chọn</div>
+                            </div>
+                            {# end button hoso #}
+                        </div>
+                    </template>
+                </div>
+                <!-- end body of table -->
+
+                {# skeleton #}
+                <div x-show="isLoading"
+                class="mt-[20px] relative w-full flex flex-col gap-8">
+                    <div class="skeleton h-32 w-full"></div>
+                    <div class="skeleton h-4 w-28"></div>
+                    <div class="skeleton h-4 w-full"></div>
+                    <div class="skeleton h-4 w-full"></div>
+                </div>
+                {# end skeleton #}
+
+            </div>
+            {# End Table #}
+        </div>
+        <!-- end tab 2 -->
+        
+        <!-- hoso -->
+        <div x-data="{open: false, target: ''}" x-show="open" @portfolio.window="target = $event.detail.target; open = true" 
+        class="flex justify-center items-center fixed left-0 top-0 h-screen w-screen z-[3001]">
+            <div x-show="open" 
+            @click="open = false; $dispatch('closepopup');" 
+            @keyup.escape.window="open = false; $dispatch('closepopup');" 
+            class="fixed left-0 top-0 w-screen h-screen bg-black opacity-70">
+            </div>
+            <div class="z-[1] gap-4 px-[16px] py-[32px] rounded-xl overflow-hidden w-[800px] h-[95%] bg-white opacity-100 overflow-x-hidden overflow-y-auto">
+                <!-- tieu de -->
+                <div class="w-full flex flex-col justify-center items-start">
+                    <div class="w-full text-[27px] font-[600] leading-tight mb-[20px]">
+                        Hồ sơ [QSX9710428]
+                    </div>
+                    <div class="w-full border my-[15px]"></div>
+                </div>
+                <!-- end tieu de -->
+                <div class="w-full flex flex-col justify-start items-start gap-6">
+                    <div class="text-[16px] text-black font-[500]">
+                        Thông tin cá nhân
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Họ và tên <span class="text-red-600"> *</span>
+                            </div>
+                            <input type="text" 
+                            value="Nguyễn Nhật Nam"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Ngày sinh <span class="text-red-600"> *</span>
+                            </div>
+                            <input type="text" 
+                            value="20/08/1997"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Giới tính <span class="text-red-600"> *</span>
+                            </div>
+                            <input type="text" 
+                            value="Nam"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Quốc tịch <span class="text-red-600"> *</span>
+                            </div>
+                            <input type="text" 
+                            value="Việt Nam"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Nơi sinh
+                            </div>
+                            <input type="text" 
+                            value="Bình Thuận"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Nguyên quán
+                            </div>
+                            <input type="text" 
+                            value="Quảng Nam"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Số CCCD
+                            </div>
+                            <input type="text" 
+                            value="060097007040"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Ngày cấp CCCD
+                            </div>
+                            <input type="text" 
+                            value="10/12/2020"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="w-full shrink flex flex-col justify-start items-start gap-2">
+                        <div>
+                            Nơi cấp CCCD
+                        </div>
+                        <input type="text" 
+                        value="Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội"
+                        class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Email
+                            </div>
+                            <input type="text" 
+                            value="nguyennhatnam@hcmussh.edu.vn"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Số điện thoại
+                            </div>
+                            <input type="text" 
+                            value="0353469292"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="text-[16px] text-black font-[500]">
+                        Thông tin nghề nghiệp
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Chức danh nghề nghiệp
+                            </div>
+                            <input type="text" 
+                            value="Chuyên viên"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Đơn vị công tác
+                            </div>
+                            <input type="text" 
+                            value="Trường Đại học Khoa học Xã hội và Nhân văn"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end hoso -->
+
+
+
+        {# Điều chỉnh #}
+        <div class="fixed bottom-[10px] right-[10px] w-[150px] flex flex-row justify-end items-center z-[1]">
+            <div x-data 
+            @click="$dispatch('modify')"
+            class="bg-orange text-white text-[20px] font-[500] px-[15px] py-[15px] rounded-3xl flex justify-center items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+        </div>
+        {# End Điều chỉnh #}
+
+
+        {# download/upload #}
+        <div x-data="{open: false}" @modify.window="open = ! open" class="fixed left-0 top-0 z-[2000]">
+            <div x-show="open" 
+            @click="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
+            @keyup.escape.window="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
+            class="w-screen h-screen bg-black opacity-70"></div>
+            <div x-show="open" class="rounded-xl overflow-hidden fixed top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] w-[500px] h-[400px] bg-white opacity-100">
+                <div id="form" 
+                hx-trigger="modify from:body"
+                hx-get="/template/nhansu/form/upload"
+                hx-ext="alpine-morph"
+                hx-swap="multi:#form:morph"
+                class="w-full h-full flex justify-center items-center">
+                    <div class="htmx-indicator flex flex-col gap-6 w-[400px]">
+                        <div class="skeleton h-32 w-full"></div>
+                        <div class="skeleton h-4 w-28"></div>
+                        <div class="skeleton h-4 w-full"></div>
+                        <div class="skeleton h-4 w-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {# End download/upload #}
 
     </div>  
 </div>

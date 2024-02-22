@@ -20,6 +20,7 @@ class Settings(BaseSettings):
         "nhansu": MAIN_DIR / "apps" / "nhansu" / "templates",
         "error": MAIN_DIR / "apps" / "error" / "templates",
         "chucnang": MAIN_DIR / "apps" / "chucnang" / "templates",
+        "donvi": MAIN_DIR / "apps" / "donvi" / "templates",
     })
     STATIC_MAIN_DIR: Path = MAIN_DIR / "static"
     # GOOGLE OAUTH2
@@ -30,13 +31,6 @@ class Settings(BaseSettings):
     GOOGLE_SCOPE_URL: List[str] = Field(['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'])
     GOOGLE_REDIRECT_URI: str = Field('http://localhost:8000/api/auth/google')
     GOOGLE_USERINFO_URL: str = Field('https://www.googleapis.com/oauth2/v3/userinfo')
-
-    # GOOGLE SHEET
-    GSHEET_TOKEN_URI: str = Field("https://oauth2.googleapis.com/token")
-    GSHEET_CLIENT_EMAIL: str = Field(..., env='GSHEET_CLIENT_EMAIL')
-    GSHEET_PRIVATE_KEY: str = Field(..., env='GSHEET_PRIVATE_KEY')
-    GSHEET_HEADER: Dict[str,str] = Field(..., env='GSHEET_HEADER')
-    GSHEET_SCOPE: Dict[str,str] = Field(..., env='GSHEET_SCOPE')
 
     class Config:
         env_file = '.env'

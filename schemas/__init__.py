@@ -6,4 +6,3 @@ from .auth import AuthBase, AuthRead
 from .profile import ProfileBase, ProfileRead, ProfileCreate
 from .thinhgiang import ThinhgiangBase, ThinhgiangCreate, ThinhgiangRead, ThinhgiangSearch, ListThinhgiangSearch
 from .chucnang import ChucnangBase, ChucnangRead
-from .hopdong import HopdongBase, HopdongCreate, HopdongRead, ListHopdongRead
