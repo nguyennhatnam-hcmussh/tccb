@@ -253,7 +253,7 @@
             <div id="table" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
                 <!-- head of table -->
                 <div id="thead" 
-                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg">
+                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
                     <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
                         <div class="p-[15px]">#</div>
                     </div>
@@ -278,9 +278,9 @@
                 <!-- body of table -->
                 <div id="tbody" 
                 x-show="! isLoading"
-                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start">
+                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
                     <template x-for="(item, index) in output" :key="index">
-                        <div id="trow" class="hover:bg-gray-100 cursor-default rounded-b-lg w-full min-w-[750px] flex flex-row bg-white font-[500]">
+                        <div id="trow" class="hover:bg-gray-100 cursor-default w-full min-w-[750px] flex flex-row bg-white font-[500]">
                             {# index #}
                             <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
                                 <div x-text="index + 1" class="py-[10px] px-[15px]"></div>
@@ -294,8 +294,9 @@
                             {# end maso #}
 
                             {# hovaten #}
-                            <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
-                                <div x-text="item.hovaten" class="py-[10px]"></div>
+                            <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center text-blue">
+                                <div @click="$dispatch('portfolio', {target: item.maso})"
+                                x-text="item.hovaten" class="py-[10px] hover:underline cursor-pointer"></div>
                             </div>
                             {# end hovaten #}
 
@@ -313,8 +314,7 @@
 
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
-                                <div @click="$dispatch('portfolio', {target: item.maso})"
-                                class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
+                                <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
                                 >Chọn</div>
                             </div>
                             {# end button hoso #}
@@ -340,13 +340,13 @@
         
         <!-- hoso -->
         <div x-data="{open: false, target: ''}" x-show="open" @portfolio.window="target = $event.detail.target; open = true" 
-        class="flex justify-center items-center fixed left-0 top-0 h-screen w-screen z-[3001]">
+        class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px]">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
             @keyup.escape.window="open = false; $dispatch('closepopup');" 
             class="fixed left-0 top-0 w-screen h-screen bg-black opacity-70">
             </div>
-            <div class="z-[1] gap-4 px-[16px] py-[32px] rounded-xl overflow-hidden w-[800px] h-[95%] bg-white opacity-100 overflow-x-hidden overflow-y-auto">
+            <div class="z-[1] gap-4 px-[16px] py-[32px] rounded-xl overflow-hidden w-[800px] h-auto max-h-full bg-white opacity-100 overflow-x-hidden overflow-y-auto">
                 <!-- tieu de -->
                 <div class="w-full flex flex-col justify-center items-start">
                     <div class="w-full text-[27px] font-[600] leading-tight mb-[20px]">

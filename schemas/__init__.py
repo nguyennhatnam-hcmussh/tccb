@@ -1,5 +1,5 @@
 from .base import Base
-from .donvi import DonviBase, DonviCreate, DonviRead, DonviList
+from .donvi import DonviBase, DonviCreate, DonviRead, DonviList, DonviUpdate
 from .user import UserBase, UserCreate, UserRead, UserList, UserProfile
 from .minhchung import MinhchungBase
 from .auth import AuthBase, AuthRead

@@ -85,7 +85,10 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
     nhansu = pd.read_excel(settings.STATIC_MAIN_DIR / 'files' / 'nhansu_up.xlsx', 'nhansu', index_col='id', na_filter = False)
     
     for i in nhansu.index:
+        print('nampro')
+        print(i)
         person = session.get(Thinhgiang, i)
+        print(person)
         create = ThinhgiangCreate(
             maso = nhansu.loc[i].maso if nhansu.loc[i].maso else None,
             email = nhansu.loc[i].email if nhansu.loc[i].email else None,
@@ -111,11 +114,13 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
             co_nvsp = nhansu.loc[i].co_nvsp if isinstance(nhansu.loc[i].co_nvsp,bool) else False,
         )
         if person: # da ton tai tren he thong => update
+            print('rồi rồi rồi')
             person_data = create.model_dump(exclude_unset=True)
             for key, value in person_data.items():
                 setattr(person, key, value)
                 session.add(person)
         else: # chua ton tai tren he thong => add new
+            print('chưa chưa chưa')
             person = Thinhgiang.model_validate(create)
             session.add(person)
     

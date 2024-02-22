@@ -232,10 +232,10 @@
         x-show="show"
         class="w-full max-w-[1000px]">
             {# Table #}
-            <div id="table" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
+            <div id="table-donvi" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
                 <!-- head of table -->
-                <div id="thead" 
-                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg">
+                <div id="thead-donvi" 
+                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
                     <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
                         <div class="p-[15px]">#</div>
                     </div>
@@ -258,11 +258,11 @@
                 <!-- end head of table -->            
             
                 <!-- body of table -->
-                <div id="tbody" 
+                <div id="tbody-donvi" 
                 x-show="! isLoading"
-                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start">
+                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
                     <template x-for="(item, index) in output" :key="index">
-                        <div id="trow" class="hover:bg-gray-100 cursor-default rounded-b-lg w-full min-w-[750px] flex flex-row bg-white font-[500]">
+                        <div id="trow-donvi" class="hover:bg-gray-100 cursor-default w-full min-w-[750px] flex flex-row bg-white font-[500]">
                             {# index #}
                             <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
                                 <div x-text="index + 1" class="py-[10px] px-[15px]"></div>
@@ -330,150 +330,95 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: ''}" x-show="open" @portfolio.window="target = $event.detail.target; open = true" 
-        class="flex justify-center items-center fixed left-0 top-0 h-screen w-screen z-[3001]">
+        <div x-data="{open: false, target: '', donvi: {}, donvii: {}}" x-show="open" 
+        @portfolio.window="target = $event.detail.target; 
+        open = true;
+        fetch(`/api/donvi/read/${target}`)            
+        .then((response) => response.json())
+        .then((result) => {
+            donvi = result;
+        });"
+        class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px]">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
             @keyup.escape.window="open = false; $dispatch('closepopup');" 
             class="fixed left-0 top-0 w-screen h-screen bg-black opacity-70">
             </div>
-            <div class="z-[1] gap-4 px-[16px] py-[32px] rounded-xl overflow-hidden w-[800px] h-[95%] bg-white opacity-100 overflow-x-hidden overflow-y-auto">
+            <div class="relative z-[1] gap-4 px-[16px] py-[32px] rounded-xl overflow-hidden w-[800px] h-auto max-h-full bg-white opacity-100 overflow-x-hidden overflow-y-auto">
+                <div class="text-[25px] absolute top-[15px] right-[20px] cursor-pointer">
+                    <i class="fa-solid fa-xmark hover:text-orange transition-none"
+                    @click="open = false"></i>
+                </div>
                 <!-- tieu de -->
                 <div class="w-full flex flex-col justify-center items-start">
                     <div class="w-full text-[27px] font-[600] leading-tight mb-[20px]">
-                        Hồ sơ [QSX9710428]
+                        Hồ sơ đơn vị
                     </div>
                     <div class="w-full border my-[15px]"></div>
                 </div>
                 <!-- end tieu de -->
                 <div class="w-full flex flex-col justify-start items-start gap-6">
                     <div class="text-[16px] text-black font-[500]">
-                        Thông tin cá nhân
+                        Thông tin chi tiết
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Họ và tên <span class="text-red-600"> *</span>
+                                Loại đơn vị <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="Nguyễn Nhật Nam"
+                            x-model="donvi.loai"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Ngày sinh <span class="text-red-600"> *</span>
+                                Cấp đơn vị <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="20/08/1997"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Giới tính <span class="text-red-600"> *</span>
-                            </div>
-                            <input type="text" 
-                            value="Nam"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Quốc tịch <span class="text-red-600"> *</span>
-                            </div>
-                            <input type="text" 
-                            value="Việt Nam"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Nơi sinh
-                            </div>
-                            <input type="text" 
-                            value="Bình Thuận"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Nguyên quán
-                            </div>
-                            <input type="text" 
-                            value="Quảng Nam"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Số CCCD
-                            </div>
-                            <input type="text" 
-                            value="060097007040"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Ngày cấp CCCD
-                            </div>
-                            <input type="text" 
-                            value="10/12/2020"
+                            x-model="donvi.cap"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
                     <div class="w-full shrink flex flex-col justify-start items-start gap-2">
                         <div>
-                            Nơi cấp CCCD
+                            Tên đơn vị <span class="text-red-600"> *</span>
                         </div>
                         <input type="text" 
-                        value="Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội"
+                        x-model="donvi.ten"
                         class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Email
+                                Đơn vị có pháp nhân <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="nguyennhatnam@hcmussh.edu.vn"
+                            x-model="donvi.is_phapnhan"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Số điện thoại
+                                Là Đơn vị nghiên cứu <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="0353469292"
+                            x-model="donvi.is_nghiencuu"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
-                    <div class="text-[16px] text-black font-[500]">
-                        Thông tin nghề nghiệp
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Chức danh nghề nghiệp
-                            </div>
-                            <input type="text" 
-                            value="Chuyên viên"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Đơn vị công tác
-                            </div>
-                            <input type="text" 
-                            value="Trường Đại học Khoa học Xã hội và Nhân văn"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
+                    <div class="w-full shrink flex flex-row justify-center items-start gap-2 text-[16px]">
+                        <input type="button" 
+                        value="Cập nhật"
+                        @click="{id, ...donvii} = donvi; 
+                        fetch(`/api/donvi/update?donvi_id=${donvi.id}`,
+                        {method:'POST',
+                        headers:{'Content-Type': 'application/json',},
+                        body: JSON.stringify({...donvii})})
+                        .then((response) => {
+                            console.log(response)
+                        });"
+                        class="bg-orange text-white py-[10px] px-[15px] rounded-md cursor-pointer font-[500]">
                     </div>
                 </div>
             </div>
@@ -500,11 +445,11 @@
             @keyup.escape.window="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
             class="w-screen h-screen bg-black opacity-70"></div>
             <div x-show="open" class="rounded-xl overflow-hidden fixed top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] w-[500px] h-[400px] bg-white opacity-100">
-                <div id="form" 
+                <div id="form-donvi" 
                 hx-trigger="modify from:body"
                 hx-get="/template/donvi/form/upload"
                 hx-ext="alpine-morph"
-                hx-swap="multi:#form:morph"
+                hx-swap="multi:#form-donvi:morph"
                 class="w-full h-full flex justify-center items-center">
                     <div class="htmx-indicator flex flex-col gap-6 w-[400px]">
                         <div class="skeleton h-32 w-full"></div>

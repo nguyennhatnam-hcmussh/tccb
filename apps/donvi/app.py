@@ -14,7 +14,7 @@ from main import config
 from main.shortcuts import redirect, render, file
 from main.services import AuthGoogle, encode
 from main.models import User, Auth, Donvi
-from main.schemas import UserList, DonviCreate, DonviRead
+from main.schemas import UserList, DonviCreate, DonviRead, DonviUpdate
 
 settings = config.get_settings()
 
@@ -80,8 +80,6 @@ async def api_donvi_upload(*, request: Request, session: db_dependency, file: Up
     
     for i in donvi.index:
         item = session.get(Donvi, i)
-        # print(donvi.loc[i].is_phapnhan)
-        print(isinstance(donvi.loc[i].is_phapnhan,bool))
         create = DonviCreate(
             ten = donvi.loc[i].ten,
             loai = donvi.loc[i].loai,
@@ -103,6 +101,27 @@ async def api_donvi_upload(*, request: Request, session: db_dependency, file: Up
     context = {}
     return await render(request, "donvi", "form_upload_success.html", context)
 
+
+@router.get("/api/donvi/read/{donvi_id}", response_model=DonviRead)
+@requires('auth', redirect='login')
+async def api_donvi_read(*, request: Request, session: db_dependency, donvi_id: int):
+    donvi = session.get(Donvi, donvi_id)
+    if not donvi:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    return donvi
+
+@router.post("/api/donvi/update")
+@requires('auth', redirect='login')
+async def api_donvi_update(*, request: Request, session: db_dependency, donvi_id: int, donvi: DonviUpdate):
+    db_donvi = session.get(Donvi, donvi_id)
+    if not db_donvi:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    donvi_data = donvi.model_dump(exclude_unset=True)
+    for key, value in donvi_data.items():
+        setattr(db_donvi, key, value)
+        session.add(db_donvi)
+    session.commit()
+    return 'success'
 
 @router.get("/api/donvi/search", response_model=List[DonviRead])
 @requires('auth', redirect='login')

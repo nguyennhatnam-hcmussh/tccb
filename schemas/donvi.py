@@ -34,3 +34,10 @@ class DonviRead(DonviBase):
 
 class DonviList(Base):
     data: List[DonviRead]
+    
+class DonviUpdate(DonviBase):
+    ten: str  | None = Field(default=None)
+    loai: str  | None = Field(default=None)
+    cap: str  | None = Field(default=None)
+    is_phapnhan: bool | None = Field(default=None)
+    is_nghiencuu: bool | None = Field(default=None)
