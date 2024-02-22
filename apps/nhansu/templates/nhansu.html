@@ -339,7 +339,14 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: ''}" x-show="open" @portfolio.window="target = $event.detail.target; open = true" 
+        <div x-data="{open: false, target: '', thinhgiang: {}}" x-show="open" 
+        @portfolio.window="target = $event.detail.target; 
+        open = true
+        fetch(`/api/nhansu/thinhgiang/read/${target}`)
+        .then((response) => response.json())
+        .then((result) => {
+            thinhgiang = result;
+        });"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px]">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
@@ -350,13 +357,13 @@
                 <!-- tieu de -->
                 <div class="w-full flex flex-col justify-center items-start">
                     <div class="w-full text-[27px] font-[600] leading-tight mb-[20px]">
-                        Hồ sơ [QSX9710428]
+                        Hồ sơ [<span x-text="target"></span>]
                     </div>
                     <div class="w-full border my-[15px]"></div>
                 </div>
                 <!-- end tieu de -->
                 <div class="w-full flex flex-col justify-start items-start gap-6">
-                    <div class="text-[16px] text-black font-[500]">
+                    <div class="text-[16px] text-black font-[500] mt-[10px]">
                         Thông tin cá nhân
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
@@ -365,54 +372,54 @@
                                 Họ và tên <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="Nguyễn Nhật Nam"
+                            x-model="thinhgiang.hovaten"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                MSCB <span class="text-red-600"> *</span>
+                            </div>
+                            <input type="text" 
+                            x-model="thinhgiang.maso"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Ngày sinh <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="20/08/1997"
+                            x-model="thinhgiang.ngaysinh"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
+
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Giới tính <span class="text-red-600"> *</span>
                             </div>
                             <input type="text" 
-                            value="Nam"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Quốc tịch <span class="text-red-600"> *</span>
-                            </div>
-                            <input type="text" 
-                            value="Việt Nam"
+                            x-model="thinhgiang.gioitinh"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Nơi sinh
+                                Quốc tịch
                             </div>
                             <input type="text" 
-                            value="Bình Thuận"
+                            x-model="thinhgiang.quoctich"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Nguyên quán
+                                Nơi sinh
                             </div>
                             <input type="text" 
-                            value="Quảng Nam"
+                            x-model="thinhgiang.noisinh"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
@@ -422,7 +429,7 @@
                                 Số CCCD
                             </div>
                             <input type="text" 
-                            value="060097007040"
+                            x-model="thinhgiang.CCCD_so"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
@@ -431,7 +438,7 @@
                                 Ngày cấp CCCD
                             </div>
                             <input type="text" 
-                            value="10/12/2020"
+                            x-model="thinhgiang.CCCD_ngay"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
@@ -440,7 +447,7 @@
                             Nơi cấp CCCD
                         </div>
                         <input type="text" 
-                        value="Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội"
+                        x-model="thinhgiang.CCCD_noi"
                         class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
@@ -449,7 +456,7 @@
                                 Email
                             </div>
                             <input type="text" 
-                            value="nguyennhatnam@hcmussh.edu.vn"
+                            x-model="thinhgiang.email"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
@@ -458,11 +465,61 @@
                                 Số điện thoại
                             </div>
                             <input type="text" 
-                            value="0353469292"
+                            x-model="0123456789"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
-                    <div class="text-[16px] text-black font-[500]">
+                    <div class="text-[16px] text-black font-[500] mt-[10px]">
+                        Trình độ học vấn
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[25%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Học vị
+                            </div>
+                            <input type="text" 
+                            x-model="thinhgiang.chucdanh"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Chuyên ngành
+                            </div>
+                            <input type="text" 
+                            x-model="thinhgiang.donvicongtac"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[25%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Học hàm
+                            </div>
+                            <input type="text" 
+                            x-model="thinhgiang.chucdanh"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Chuyên ngành
+                            </div>
+                            <input type="text" 
+                            x-model="thinhgiang.donvicongtac"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[25%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Năm đạt
+                            </div>
+                            <input type="text" 
+                            x-model="thinhgiang.donvicongtac"
+                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <div class="text-[16px] text-black font-[500] mt-[10px]">
                         Thông tin nghề nghiệp
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
@@ -471,7 +528,7 @@
                                 Chức danh nghề nghiệp
                             </div>
                             <input type="text" 
-                            value="Chuyên viên"
+                            x-model="thinhgiang.chucdanh"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
@@ -480,7 +537,7 @@
                                 Đơn vị công tác
                             </div>
                             <input type="text" 
-                            value="Trường Đại học Khoa học Xã hội và Nhân văn"
+                            x-model="thinhgiang.donvicongtac"
                             class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>

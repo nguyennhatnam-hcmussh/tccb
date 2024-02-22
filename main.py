@@ -40,9 +40,7 @@ async def on_shutdown() -> None:
 app = FastAPI(on_startup=[on_start_up], on_shutdown=[on_shutdown])
 
 
-origins = [
-    "https://tccb-ussh.blogspot.com"
-]
+origins = []
 
 app.add_middleware(
     CORSMiddleware,
@@ -100,7 +98,7 @@ async def active_root(*, request: Request, session: db_dependency, key_secret:st
 @requires('guest')
 async def homepage(request: Request):
     context = {}
-    return await redirect(request, "/chucnang")
+    return await redirect(request, "/nhansu")
 
 
 @app.exception_handler(StarletteHTTPException)

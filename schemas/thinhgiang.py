@@ -9,15 +9,13 @@ from .base import Base
 
 class ThinhgiangBase(Base):
     id: int | None = Field(default=None)
-    maso: str | None = Field(default=None, index=True, unique=True)
-    email: str | None = Field(default=None)
+    maso: str | None = Field(default=None, index=True)
+    email: str | None = Field(default=None, index=True)
     hovaten: str | None = Field(index=True)
     gioitinh: str | None = Field(default=None)
     ngaysinh: str | None = Field(default=None, index=True)
     quoctich: str | None = Field(default="Việt Nam")
     noisinh: str | None = Field(default=None)
-    dantoc: str | None = Field(default=None)
-    tongiao: str | None = Field(default=None)
     hocvi: str | None = Field(default=None)
     hocvi_nganh: str | None = Field(default=None)
     hocham: str | None = Field(default=None)

@@ -14,7 +14,7 @@ from main import config
 from main.shortcuts import redirect, render, file
 from main.services import AuthGoogle, encode
 from main.models import User, Auth, Thinhgiang
-from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch
+from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch, ThinhgiangRead
 
 settings = config.get_settings()
 
@@ -128,6 +128,15 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
 
     context = {}
     return await render(request, "nhansu", "form_upload_success.html", context)
+
+
+@router.get("/api/nhansu/thinhgiang/read/{thinhgiang_maso}", response_model=ThinhgiangRead)
+@requires('auth', redirect='login')
+async def api_donvi_read(*, request: Request, session: db_dependency, thinhgiang_maso: str):
+    thinhgiang = session.exec(select(Thinhgiang).where(thinhgiang_maso == Thinhgiang.maso)).first()
+    if not thinhgiang:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    return thinhgiang
 
 
 @router.get("/api/nhansu/search", response_model=List[ThinhgiangSearch])
