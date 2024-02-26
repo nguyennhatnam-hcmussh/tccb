@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.0 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -2186,6 +2186,10 @@ input.tab:checked + .tab-content,
   margin-right: 20px;
 }
 
+.mt-\[10px\] {
+  margin-top: 10px;
+}
+
 .mt-\[20px\] {
   margin-top: 20px;
 }
@@ -2200,10 +2204,6 @@ input.tab:checked + .tab-content,
 
 .mt-\[80px\] {
   margin-top: 80px;
-}
-
-.mt-\[10px\] {
-  margin-top: 10px;
 }
 
 .flex {
@@ -2292,10 +2292,6 @@ input.tab:checked + .tab-content,
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[70px\] {
-  height: 70px;
 }
 
 .max-h-full {
@@ -2462,6 +2458,18 @@ input.tab:checked + .tab-content,
   flex-basis: 220px;
 }
 
+.basis-\[23\%\] {
+  flex-basis: 23%;
+}
+
+.basis-\[24\%\] {
+  flex-basis: 24%;
+}
+
+.basis-\[25\%\] {
+  flex-basis: 25%;
+}
+
 .basis-\[50\%\] {
   flex-basis: 50%;
 }
@@ -2474,6 +2482,10 @@ input.tab:checked + .tab-content,
   flex-basis: 60px;
 }
 
+.basis-\[75\%\] {
+  flex-basis: 75%;
+}
+
 .basis-\[87\%\] {
   flex-basis: 87%;
 }
@@ -2484,30 +2496,6 @@ input.tab:checked + .tab-content,
 
 .basis-full {
   flex-basis: 100%;
-}
-
-.basis-\[33\%\] {
-  flex-basis: 33%;
-}
-
-.basis-\[30\%\] {
-  flex-basis: 30%;
-}
-
-.basis-\[70\%\] {
-  flex-basis: 70%;
-}
-
-.basis-\[67\%\] {
-  flex-basis: 67%;
-}
-
-.basis-\[25\%\] {
-  flex-basis: 25%;
-}
-
-.basis-\[75\%\] {
-  flex-basis: 75%;
 }
 
 .translate-x-\[-50\%\] {
@@ -2638,10 +2626,6 @@ input.tab:checked + .tab-content,
 
 .gap-8 {
   gap: 2rem;
-}
-
-.gap-1 {
-  gap: 0.25rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
