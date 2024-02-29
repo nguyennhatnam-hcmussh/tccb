@@ -735,11 +735,14 @@
                                 focusinput: false,
                                 showoptions: false,
                                 items: ['Khoa Việt Nam học','Khoa Nhân học','Khoa Ngữ văn Tây Ban Nha - Italia','Khoa Triết học','Khoa Quan hệ quốc tế','Khoa Ngữ văn Anh','Khoa Lưu trữ - Quản trị văn phòng','Khoa Thư viện - Thông tin học','Khoa Ngữ văn Trung Quốc'],
+                                dataframe: [],
+                                output: [],
                                 results: [],
                                 search: '',
                                 research: '',
                                 backspace: true,
                                 choose: 0,
+                                miniSearch,
                                 get filteredItems() {
                                     if (this.search !== '') {
                                         return this.items.filter(
@@ -766,9 +769,7 @@
                                     this.items.push(value);
                                 },
                                 checkItem() {
-                                    if (this.filteredItems.length == 0) {
-                                        this.search = ''
-                                    }     
+                                    this.search = ''  
                                 },
                                 enterEvent() {
                                     if (typeof this.filteredItems[this.choose] !== 'undefined') {
