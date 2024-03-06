@@ -416,14 +416,129 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <!-- nơi sinh -->
+                        <div x-data="{
+                            showoptions: false,
+                            output: [],
+                            dataframe: [],
+                            research: '',
+                            backspace: true,
+                            choose: 0,
+                            miniSearch,
+                            async getData() {
+                                this.miniSearch = new MiniSearch({
+                                    fields: ['value'],
+                                    searchOptions: {
+                                        prefix: true,
+                                        combineWith: 'AND',
+                                    }
+                                })
+                                fetch('/api/danhmuc/tinhthanh')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
+                            },
+                            filteredItems() {
+                                this.showoptions = true;
+                                if (thinhgiang.noisinh) {
+                                    this.output = this.miniSearch.search(thinhgiang.noisinh).map(({ id }) => this.dataframe[id])
+                                } else {
+                                    this.output = Object.values(this.dataframe);
+                                }
+                            },
+                            addItem(item) {
+                                thinhgiang.noisinh = item.value;
+                                this.showoptions = false;
+                            },
+                            checkItem() {
+                                if (this.output.length == 0) {
+                                    thinhgiang.noisinh = ''
+                                }     
+                            },
+                            enterEvent() {
+                                if (this.output) {
+                                    this.addItem(this.output[this.choose])
+                                } else {
+                                    thinhgiang.noisinh = ''
+                                }
+                            },
+                            eventBackspace() {
+                                this.backspace = true;
+                            },
+                            showoptionscheck(e) {
+                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                    this.choose = 0;
+                                }
+                            },
+                            focusinputcheck() {
+                                this.filteredItems();
+                                this.showoptions = true;
+                            },
+                            checkchoose(index) {
+                                return index === this.choose
+                            },
+                            selectoption(type) {
+                                if (type === 'up' && this.choose > 0) {
+                                    this.choose = this.choose - 1
+                                    item = document.getElementById('noisinh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.noisinh.getBoundingClientRect()
+                                    if ((item.bottom - frame.top) < item.height) {
+                                        $refs.noisinh.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    }
+                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                    this.choose = this.choose + 1
+                                    item = document.getElementById('noisinh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.noisinh.getBoundingClientRect()
+                                    if ((frame.bottom - item.top) < item.height) {
+                                        $refs.noisinh.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                    }
+                                }
+                            }
+                        }" x-init="getData()"
+                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Nơi sinh
                             </div>
-                            <input type="text" 
+                            <input type="search"
+                            @click.outside="checkItem();showoptions = false;"
+                            @keyup.enter="enterEvent()"
+                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                            @keyup.up.prevent
+                            @keyup.down.prevent
+                            x-ref="input"
+                            @focus="focusinputcheck()"
+                            @keyup = 'showoptionscheck'
+                            @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.noisinh"
+                            @input="filteredItems()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+
+                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                <ul x-ref="noisinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                    <template x-if="output.length === 0">
+                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                    </template>
+                                    <template x-for="(item, index) in output" :key="item.id">
+                                        <li x-text="item.value"
+                                        :id="'noisinh'+index"
+                                        @click="addItem(item)"
+                                        @mouseover="choose = index"
+                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        
                         </div>
+                        <!-- end nơi sinh -->
+
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div class="basis-[24%] shrink flex flex-col justify-start items-start gap-2">

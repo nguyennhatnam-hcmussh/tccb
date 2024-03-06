@@ -23,6 +23,7 @@ from main.apps import (
     error,
     chucnang,
     donvi,
+    danhmuc
 )
 
 
@@ -64,6 +65,7 @@ app.include_router(nhansu.router)
 app.include_router(error.router)
 app.include_router(chucnang.router)
 app.include_router(donvi.router)
+app.include_router(danhmuc.router)
 
 
 @app.get('/favicon.ico', include_in_schema=False)
