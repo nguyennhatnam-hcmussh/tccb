@@ -22,7 +22,7 @@ router = APIRouter()
 
 db_dependency = Annotated[Session, Depends(get_session)]
 
-@router.get("/api/danhmuc/tinhthanh")
+@router.get("/api/danhmuc/{filename}")
 @requires('auth', redirect='login')
-async def api_donvi_download(request: Request):
-    return await file(request, "danhmuc/tinhthanh.json")
+async def api_donvi_download(request: Request, filename: str):
+    return await file(request, f"danhmuc/{filename}.json")

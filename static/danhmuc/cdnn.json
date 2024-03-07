@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "value": "Giảng viên"
+    },
+    {
+        "id": 2,
+        "value": "Giảng viên chính"
+    },
+    {
+        "id": 3,
+        "value": "Giảng viên cao cấp"
+    },
+    {
+        "id": 4,
+        "value": "Nghiên cứu viên"
+    },
+    {
+        "id": 5,
+        "value": "Nghiên cứu viên chính"
+    },
+    {
+        "id": 6,
+        "value": "Nghiên cứu viên cao cấp"
+    },
+    {
+        "id": 7,
+        "value": "Chuyên viên"
+    },
+    {
+        "id": 8,
+        "value": "Chuyên viên chính"
+    },
+    {
+        "id": 9,
+        "value": "Chuyên viên cao cấp"
+    }
+]
