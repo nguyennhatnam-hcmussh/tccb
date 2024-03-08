@@ -2422,6 +2422,10 @@ input.tab:checked + .tab-content,
   width: 100vw;
 }
 
+.w-\[560px\] {
+  width: 560px;
+}
+
 .min-w-\[100px\] {
   min-width: 100px;
 }
