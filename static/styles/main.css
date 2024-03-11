@@ -2390,6 +2390,10 @@ input.tab:checked + .tab-content,
   width: 50px;
 }
 
+.w-\[560px\] {
+  width: 560px;
+}
+
 .w-\[600px\] {
   width: 600px;
 }
@@ -2420,10 +2424,6 @@ input.tab:checked + .tab-content,
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[560px\] {
-  width: 560px;
 }
 
 .min-w-\[100px\] {

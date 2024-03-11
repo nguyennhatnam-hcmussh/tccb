@@ -448,9 +448,14 @@
                                 this.showoptions = false;
                             },
                             checkItem() {
-                                if (this.output.length == 0) {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.quoctich != this.output[0].value) {
+                                        thinhgiang.quoctich = ''
+                                    }
+                                } else {
                                     thinhgiang.quoctich = ''
-                                }     
+                                }
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -571,9 +576,14 @@
                                 this.showoptions = false;
                             },
                             checkItem() {
-                                if (this.output.length == 0) {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.noisinh != this.output[0].value) {
+                                        thinhgiang.noisinh = ''
+                                    }
+                                } else {
                                     thinhgiang.noisinh = ''
-                                }     
+                                }
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -748,9 +758,14 @@
                                 $dispatch('hocvi');
                             },
                             checkItem() {
-                                if (this.output.length == 0) {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.hocvi != this.output[0].value) {
+                                        thinhgiang.hocvi = ''
+                                    }
+                                } else {
                                     thinhgiang.hocvi = ''
-                                }     
+                                }
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -892,7 +907,7 @@
                             },
                             checkItem() {
                                 this.filteredItems()
-                                if (this.output.length == 1) {
+                                if (this.output.length >= 1) {
                                     if (thinhgiang.hocvi_nganh != this.output[0].value) {
                                         thinhgiang.hocvi_nganh = ''
                                     }
@@ -1023,9 +1038,14 @@
                                 this.showoptions = false;
                             },
                             checkItem() {
-                                if (this.output.length == 0) {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.hocham != this.output[0].value) {
+                                        thinhgiang.hocham = ''
+                                    }
+                                } else {
                                     thinhgiang.hocham = ''
-                                }     
+                                }
                             },
                             enterEvent() {
                                 if (this.output) {

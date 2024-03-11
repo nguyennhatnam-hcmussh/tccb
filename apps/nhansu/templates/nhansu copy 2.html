@@ -407,14 +407,128 @@
                         </div>
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <!-- nơi sinh -->
+                        <div x-data="{
+                            showoptions: false,
+                            output: [],
+                            dataframe: [],
+                            research: '',
+                            backspace: true,
+                            choose: 0,
+                            miniSearch,
+                            async getData() {
+                                this.miniSearch = new MiniSearch({
+                                    fields: ['value'],
+                                    searchOptions: {
+                                        prefix: true,
+                                        combineWith: 'AND',
+                                    }
+                                })
+                                fetch('/api/danhmuc/quocgia')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
+                            },
+                            filteredItems() {
+                                this.showoptions = true;
+                                if (thinhgiang.quoctich) {
+                                    this.output = this.miniSearch.search(thinhgiang.quoctich).map(({ id }) => this.dataframe[id])
+                                } else {
+                                    this.output = Object.values(this.dataframe);
+                                }
+                            },
+                            addItem(item) {
+                                thinhgiang.quoctich = item.value;
+                                this.showoptions = false;
+                            },
+                            checkItem() {
+                                if (this.output.length == 0) {
+                                    thinhgiang.quoctich = ''
+                                }     
+                            },
+                            enterEvent() {
+                                if (this.output) {
+                                    this.addItem(this.output[this.choose])
+                                } else {
+                                    thinhgiang.quoctich = ''
+                                }
+                            },
+                            eventBackspace() {
+                                this.backspace = true;
+                            },
+                            showoptionscheck(e) {
+                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                    this.choose = 0;
+                                }
+                            },
+                            focusinputcheck() {
+                                this.filteredItems();
+                                this.showoptions = true;
+                            },
+                            checkchoose(index) {
+                                return index === this.choose
+                            },
+                            selectoption(type) {
+                                if (type === 'up' && this.choose > 0) {
+                                    this.choose = this.choose - 1
+                                    item = document.getElementById('quoctich'+this.choose).getBoundingClientRect()
+                                    frame = $refs.quoctich.getBoundingClientRect()
+                                    if ((item.bottom - frame.top) < item.height) {
+                                        $refs.quoctich.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    }
+                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                    this.choose = this.choose + 1
+                                    item = document.getElementById('quoctich'+this.choose).getBoundingClientRect()
+                                    frame = $refs.quoctich.getBoundingClientRect()
+                                    if ((frame.bottom - item.top) < item.height) {
+                                        $refs.quoctich.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                    }
+                                }
+                            }
+                        }" x-init="getData()"
+                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Quốc tịch
                             </div>
-                            <input type="text" 
+                            <input type="search"
+                            @click.outside="checkItem();showoptions = false;"
+                            @keyup.enter="enterEvent()"
+                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                            @keyup.up.prevent
+                            @keyup.down.prevent
+                            x-ref="input"
+                            @focus="focusinputcheck()"
+                            @keyup = 'showoptionscheck'
+                            @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.quoctich"
+                            @input="filteredItems()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+
+                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                <ul x-ref="quoctich" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                    <template x-if="output.length === 0">
+                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                    </template>
+                                    <template x-for="(item, index) in output" :key="item.id">
+                                        <li x-text="item.value"
+                                        :id="'quoctich'+index"
+                                        @click="addItem(item)"
+                                        @mouseover="choose = index"
+                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        
                         </div>
+                        <!-- end quốc tịch -->
 
                         <!-- nơi sinh -->
                         <div x-data="{
@@ -596,7 +710,6 @@
                         <div x-data="{
                             showoptions: false,
                             output: [],
-                            items: [{id:1,value:'Cử nhân'},{id:2,value:'Thạc sĩ'},{id:3,value:'Tiến sĩ'},{id:4,value:'Tiến sĩ khoa học'}],
                             dataframe: [],
                             research: '',
                             backspace: true,
@@ -610,12 +723,16 @@
                                         combineWith: 'AND',
                                     }
                                 })
-                                this.dataframe = this.items.reduce((byId, song) => {
-                                    byId[song.id] = song;
-                                    return byId;
-                                }, {});
-                                this.output = Object.values(this.dataframe);
-                                this.miniSearch.addAll(this.items);
+                                fetch('/api/danhmuc/hocvi')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
                             },
                             filteredItems() {
                                 this.showoptions = true;
@@ -628,6 +745,7 @@
                             addItem(item) {
                                 thinhgiang.hocvi = item.value;
                                 this.showoptions = false;
+                                $dispatch('hocvi');
                             },
                             checkItem() {
                                 if (this.output.length == 0) {
@@ -713,13 +831,150 @@
                         <!-- end học vị -->
 
                         <!-- chuyên ngành -->
-                        <div class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
+                        <div x-data="{
+                            showoptions: false,
+                            output: [],
+                            dataframe: [],
+                            research: '',
+                            backspace: true,
+                            choose: 0,
+                            miniSearch,
+                            async updateData() {
+                                switch (thinhgiang.hocvi) {
+                                    case 'Cử nhân':
+                                        url = '/api/danhmuc/nganh-daihoc';
+                                        break;
+                                    case 'Thạc sĩ':
+                                        url = '/api/danhmuc/nganh-thacsi';
+                                        break;
+                                    case 'Tiến sĩ':
+                                        url = '/api/danhmuc/nganh-tiensi';
+                                        break;
+                                    case 'Tiến sĩ khoa học':
+                                        url = '/api/danhmuc/nganh-tiensi';
+                                        break;
+                                    default:
+                                        url = '/api/danhmuc/nganh-thacsi';
+                                }
+                                fetch(url)            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.removeAll();
+                                    this.miniSearch.addAll(result);
+                                });
+                            },
+                            getData() {
+                                this.miniSearch = new MiniSearch({
+                                    fields: ['value'],
+                                    searchOptions: {
+                                        prefix: true,
+                                        combineWith: 'AND'
+                                    }
+                                })
+                                this.updateData()
+                            },
+                            filteredItems() {
+                                this.showoptions = true;
+                                if (thinhgiang.hocvi_nganh) {
+                                    this.output = this.miniSearch.search(thinhgiang.hocvi_nganh).map(({ id }) => this.dataframe[id])
+                                } else {
+                                    this.output = Object.values(this.dataframe);
+                                }
+                            },
+                            addItem(item) {
+                                thinhgiang.hocvi_nganh = item.value;
+                                this.showoptions = false;
+                            },
+                            checkItem() {
+                                this.filteredItems()
+                                if (this.output.length == 1) {
+                                    if (thinhgiang.hocvi_nganh != this.output[0].value) {
+                                        thinhgiang.hocvi_nganh = ''
+                                    }
+                                } else {
+                                    thinhgiang.hocvi_nganh = ''
+                                }
+                            },
+                            enterEvent() {
+                                if (this.output) {
+                                    this.addItem(this.output[this.choose])
+                                } else {
+                                    thinhgiang.hocvi_nganh = ''
+                                }
+                            },
+                            eventBackspace() {
+                                this.backspace = true;
+                            },
+                            showoptionscheck(e) {
+                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                    this.choose = 0;
+                                }
+                            },
+                            focusinputcheck() {
+                                this.filteredItems();
+                                this.showoptions = true;
+                            },
+                            checkchoose(index) {
+                                return index === this.choose
+                            },
+                            selectoption(type) {
+                                if (type === 'up' && this.choose > 0) {
+                                    this.choose = this.choose - 1
+                                    item = document.getElementById('hocvi_nganh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.hocvi_nganh.getBoundingClientRect()
+                                    if ((item.bottom - frame.top) < item.height) {
+                                        $refs.hocvi_nganh.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    }
+                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                    this.choose = this.choose + 1
+                                    item = document.getElementById('hocvi_nganh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.hocvi_nganh.getBoundingClientRect()
+                                    if ((frame.bottom - item.top) < item.height) {
+                                        $refs.hocvi_nganh.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                    }
+                                }
+                            }
+                        }" x-init="getData()" @hocvi.window="updateData()"
+                        class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Chuyên ngành
                             </div>
-                            <input type="text" 
-                            x-model="thinhgiang.donvicongtac"
+                            <input type="search"
+                            @click.outside="checkItem();showoptions = false;"
+                            @keyup.enter="enterEvent()"
+                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                            @keyup.up.prevent
+                            @keyup.down.prevent
+                            x-ref="input"
+                            @focus="focusinputcheck()"
+                            @keyup = 'showoptionscheck'
+                            @keyup.backspace="eventBackspace"
+                            x-model="thinhgiang.hocvi_nganh"
+                            @input="filteredItems()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+
+                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                <ul x-ref="hocvi_nganh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[560px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                    <template x-if="output.length === 0">
+                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                    </template>
+                                    <template x-for="(item, index) in output" :key="item.id">
+                                        <li x-text="item.value"
+                                        :id="'hocvi_nganh'+index"
+                                        @click="addItem(item)"
+                                        @mouseover="choose = index"
+                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        
                         </div>
                         <!-- end chuyên ngành -->
                     </div>
@@ -744,12 +999,16 @@
                                         combineWith: 'AND',
                                     }
                                 })
-                                this.dataframe = this.items.reduce((byId, song) => {
-                                    byId[song.id] = song;
-                                    return byId;
-                                }, {});
-                                this.output = Object.values(this.dataframe);
-                                this.miniSearch.addAll(this.items);
+                                fetch('/api/danhmuc/hocham')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
                             },
                             filteredItems() {
                                 this.showoptions = true;
@@ -852,7 +1111,7 @@
                                 Chuyên ngành
                             </div>
                             <input type="text" 
-                            x-model="thinhgiang.donvicongtac"
+                            x-model="thinhgiang.hocham_nganh"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                         <!-- end chuyên ngành học hàm -->
@@ -894,12 +1153,16 @@
                                             combineWith: 'AND',
                                         }
                                     })
-                                    this.dataframe = this.items.reduce((byId, song) => {
-                                        byId[song.id] = song;
-                                        return byId;
-                                    }, {});
-                                    this.output = Object.values(this.dataframe);
-                                    this.miniSearch.addAll(this.items);
+                                    fetch('/api/danhmuc/donvi')            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.addAll(result);
+                                    });
                                 },
                                 filteredItems() {
                                     this.showoptions = true;
@@ -1062,17 +1325,6 @@
                             focusinput: false,
                             showoptions: false,
                             output: [],
-                            items: [
-                            {id:1,value:'Giảng viên'},
-                            {id:2,value:'Giảng viên chính'},
-                            {id:3,value:'Giảng viên cao cấp'},
-                            {id:4,value:'Nghiên cứu viên'},
-                            {id:5,value:'Nghiên cứu viên chính'},
-                            {id:6,value:'Nghiên cứu viên cao cấp'},
-                            {id:7,value:'Chuyên viên'},
-                            {id:8,value:'Chuyên viên chính'},
-                            {id:9,value:'Chuyên viên cao cấp'}
-                            ],
                             dataframe: [],
                             research: '',
                             backspace: true,
@@ -1086,12 +1338,16 @@
                                         combineWith: 'AND',
                                     }
                                 })
-                                this.dataframe = this.items.reduce((byId, song) => {
-                                    byId[song.id] = song;
-                                    return byId;
-                                }, {});
-                                this.output = Object.values(this.dataframe);
-                                this.miniSearch.addAll(this.items);
+                                fetch('/api/danhmuc/cdnn')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
                             },
                             filteredItems() {
                                 this.showoptions = true;
