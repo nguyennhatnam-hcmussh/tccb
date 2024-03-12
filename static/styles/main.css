@@ -1110,6 +1110,15 @@ html {
   text-decoration-line: underline;
 }
 
+.mask {
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+}
+
 .menu {
   display: flex;
   flex-direction: column;
@@ -2364,6 +2373,10 @@ input.tab:checked + .tab-content,
 
 .w-\[380px\] {
   width: 380px;
+}
+
+.w-\[385px\] {
+  width: 385px;
 }
 
 .w-\[40\%\] {

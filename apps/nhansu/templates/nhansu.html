@@ -57,7 +57,7 @@
             {# End Trang chủ/nhân sự #} -->
 
 
-            {# Search #}
+            <!-- {# Search #} -->
             <div class="w-[500px] h-[50px] rounded-3xl bg-gray-100 flex flex-row justify-start items-center mb-[20px]">
                 <div class="basis-[50px] shrink-0 rounded-full">
                     <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-400"></i>
@@ -67,7 +67,7 @@
                 class="transition-none bg-gray-100 p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
                 type="search">
             </div>
-            {# End search #}
+            <!-- {# End search #} -->
 
         </div>
 
@@ -373,41 +373,219 @@
                             <div>
                                 Họ và tên <span class="text-red-600"> *</span>
                             </div>
-                            <input type="text" 
+                            <input type="search" 
                             x-model="thinhgiang.hovaten"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                MSCB <span class="text-red-600"> *</span>
-                            </div>
-                            <input type="text" 
-                            x-model="thinhgiang.maso"
-                            class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
                                 Ngày sinh <span class="text-red-600"> *</span>
                             </div>
-                            <input type="text" 
+                            <input x-data="{
+                                checkStrDate(str) {
+                                    const result = [...str].every(
+                                        char => (char >= '0' && char <= '9') || (char == '/')
+                                    );
+                                    return result;
+                                },
+                                converDay() {
+                                    if (this.checkStrDate(thinhgiang.ngaysinh)) {
+                                        list = thinhgiang.ngaysinh.split('/');
+                                        d = Number(list[0])
+                                        m = Number(list[1])
+                                        y = Number(list[2])
+                                        if (list.length !== 3 || 
+                                            list[0].length > 2 || 
+                                            list[1].length > 2 || 
+                                            list[2].length > 4 || 
+                                            list[2].length == 3 ||
+                                            d > 31 ||
+                                            m > 12 ||
+                                            y > 2999) {
+                                            thinhgiang.ngaysinh = ''
+                                        } else {
+                                            today = new Date();
+                                            currentYear = today.getFullYear();
+
+                                            if (list[2].length == 2) {
+                                                if (y > (currentYear - 2000)) {
+                                                    year_num = y + 1900
+                                                } else {
+                                                    year_num = y + 2000
+                                                }
+                                            } else {
+                                                year_num = y
+                                            }
+                                            if ((m == 2 && d > 29) || ([1,3,5,7,8,10,12].includes(m) && d > 31) || ([2,4,6,9,11].includes(m) && d > 30)) {
+                                                thinhgiang.ngaysinh = ''
+                                            } else {
+                                                day = d.toString().padStart(2,'0')
+                                                if ([1,2].includes(m)) {
+                                                    month = m.toString().padStart(2,'0')
+                                                } else {
+                                                    month = m.toString()
+                                                }
+                                                year = year_num.toString()
+                                                thinhgiang.ngaysinh = `${day}/${month}/${year}`
+                                            }
+                                        }
+                                    } else {
+                                        thinhgiang.ngaysinh = ''
+                                    }
+ 
+                                }
+                            }"
+                            type="search"
+                            @focusout="converDay()"
+                            @keyup.enter="converDay()"
+                            placeholder="dd/mm/yyyy"
                             x-model="thinhgiang.ngaysinh"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <!-- start giới tính -->
+                        <div x-data="{
+                            showoptions: false,
+                            output: [],
+                            dataframe: [],
+                            research: '',
+                            backspace: true,
+                            choose: 0,
+                            miniSearch,
+                            async getData() {
+                                this.miniSearch = new MiniSearch({
+                                    fields: ['value'],
+                                    searchOptions: {
+                                        prefix: true,
+                                        combineWith: 'AND',
+                                    }
+                                })
+                                fetch('/api/danhmuc/gioitinh')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
+                            },
+                            filteredItems() {
+                                this.showoptions = true;
+                                if (thinhgiang.gioitinh) {
+                                    this.output = this.miniSearch.search(thinhgiang.gioitinh).map(({ id }) => this.dataframe[id])
+                                } else {
+                                    this.output = Object.values(this.dataframe);
+                                }
+                            },
+                            addItem(item) {
+                                thinhgiang.gioitinh = item.value;
+                                this.showoptions = false;
+                            },
+                            checkItem() {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.gioitinh != this.output[0].value) {
+                                        thinhgiang.gioitinh = ''
+                                    }
+                                } else {
+                                    thinhgiang.gioitinh = ''
+                                }
+                            },
+                            enterEvent() {
+                                if (this.output) {
+                                    this.addItem(this.output[this.choose])
+                                } else {
+                                    thinhgiang.gioitinh = ''
+                                }
+                            },
+                            eventBackspace() {
+                                this.backspace = true;
+                            },
+                            showoptionscheck(e) {
+                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                    this.choose = 0;
+                                }
+                            },
+                            focusinputcheck() {
+                                this.filteredItems();
+                                this.showoptions = true;
+                            },
+                            checkchoose(index) {
+                                return index === this.choose
+                            },
+                            selectoption(type) {
+                                if (type === 'up' && this.choose > 0) {
+                                    this.choose = this.choose - 1
+                                    item = document.getElementById('gioitinh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.gioitinh.getBoundingClientRect()
+                                    if ((item.bottom - frame.top) < item.height) {
+                                        $refs.gioitinh.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    }
+                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                    this.choose = this.choose + 1
+                                    item = document.getElementById('gioitinh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.gioitinh.getBoundingClientRect()
+                                    if ((frame.bottom - item.top) < item.height) {
+                                        $refs.gioitinh.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                    }
+                                }
+                            }
+                        }" x-init="getData()"
+                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Giới tính <span class="text-red-600"> *</span>
                             </div>
-                            <input type="text" 
+                            <input type="search"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
+                            @keyup.enter="enterEvent()"
+                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                            @keyup.up.prevent
+                            @keyup.down.prevent
+                            x-ref="input"
+                            @focus="focusinputcheck()"
+                            @keyup = 'showoptionscheck'
+                            @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.gioitinh"
+                            @input="filteredItems()"
+                            class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+
+                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                <ul x-ref="gioitinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                    <template x-if="output.length === 0">
+                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                    </template>
+                                    <template x-for="(item, index) in output" :key="item.id">
+                                        <li x-text="item.value"
+                                        :id="'gioitinh'+index"
+                                        @click="addItem(item)"
+                                        @mouseover="choose = index"
+                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        
+                        </div>
+                        <!-- end giới tính -->
+
+                        <!-- start mã số cán bộ -->
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                MSCB <span class="text-red-600"> *</span>
+                            </div>
+                            <input type="search" 
+                            x-model="thinhgiang.maso"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
+                        <!-- end mã số cán bộ -->
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <!-- nơi sinh -->
+                        <!-- start quốc tịch -->
                         <div x-data="{
                             showoptions: false,
                             output: [],
@@ -502,7 +680,7 @@
                                 Quốc tịch
                             </div>
                             <input type="search"
-                            @click.outside="checkItem();showoptions = false;"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -630,7 +808,7 @@
                                 Nơi sinh
                             </div>
                             <input type="search"
-                            @click.outside="checkItem();showoptions = false;"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -669,7 +847,7 @@
                             <div>
                                 Số CCCD/Hộ chiếu
                             </div>
-                            <input type="text" 
+                            <input type="search" 
                             value="060097007040"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
@@ -678,8 +856,64 @@
                             <div>
                                 Ngày cấp
                             </div>
-                            <input type="date" 
-                            value="1997-08-20"
+                            <input x-data="{
+                                checkStrDate(str) {
+                                    const result = [...str].every(
+                                        char => (char >= '0' && char <= '9') || (char == '/')
+                                    );
+                                    return result;
+                                },
+                                converDay() {
+                                    if (this.checkStrDate(thinhgiang.CCCD_ngay)) {
+                                        list = thinhgiang.CCCD_ngay.split('/');
+                                        d = Number(list[0])
+                                        m = Number(list[1])
+                                        y = Number(list[2])
+                                        if (list.length !== 3 || 
+                                            list[0].length > 2 || 
+                                            list[1].length > 2 || 
+                                            list[2].length > 4 || 
+                                            list[2].length == 3 ||
+                                            d > 31 ||
+                                            m > 12 ||
+                                            y > 2999) {
+                                            thinhgiang.CCCD_ngay = ''
+                                        } else {
+                                            today = new Date();
+                                            currentYear = today.getFullYear();
+
+                                            if (list[2].length == 2) {
+                                                if (y > (currentYear - 2000)) {
+                                                    year_num = y + 1900
+                                                } else {
+                                                    year_num = y + 2000
+                                                }
+                                            } else {
+                                                year_num = y
+                                            }
+                                            if ((m == 2 && d > 29) || ([1,3,5,7,8,10,12].includes(m) && d > 31) || ([2,4,6,9,11].includes(m) && d > 30)) {
+                                                thinhgiang.CCCD_ngay = ''
+                                            } else {
+                                                day = d.toString().padStart(2,'0')
+                                                if ([1,2].includes(m)) {
+                                                    month = m.toString().padStart(2,'0')
+                                                } else {
+                                                    month = m.toString()
+                                                }
+                                                year = year_num.toString()
+                                                thinhgiang.CCCD_ngay = `${day}/${month}/${year}`
+                                            }
+                                        }
+                                    } else {
+                                        thinhgiang.CCCD_ngay = ''
+                                    }
+ 
+                                }
+                            }"
+                            type="search"
+                            @click.outside="converDay()"
+                            @keyup.enter="converDay()"
+                            x-model="thinhgiang.CCCD_ngay"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
@@ -687,7 +921,7 @@
                             <div>
                                 Nơi cấp
                             </div>
-                            <input type="text" 
+                            <input type="search" 
                             value="Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội"
                             class="w-full h-[45px] text-[15px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
@@ -697,7 +931,7 @@
                             <div>
                                 Email
                             </div>
-                            <input type="text" 
+                            <input type="search" 
                             x-model="thinhgiang.email"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
@@ -706,7 +940,7 @@
                             <div>
                                 Số điện thoại
                             </div>
-                            <input type="text" 
+                            <input type="search" 
                             value="0123456789"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
@@ -812,7 +1046,7 @@
                                 Học vị
                             </div>
                             <input type="search"
-                            @click.outside="checkItem();showoptions = false;"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -960,7 +1194,7 @@
                                 Chuyên ngành
                             </div>
                             <input type="search"
-                            @click.outside="checkItem();showoptions = false;"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -1038,7 +1272,7 @@
                                 this.showoptions = false;
                             },
                             checkItem() {
-                                this.filteredItems()
+                                this.filteredItems();
                                 if (this.output.length >= 1) {
                                     if (thinhgiang.hocham != this.output[0].value) {
                                         thinhgiang.hocham = ''
@@ -1046,6 +1280,8 @@
                                 } else {
                                     thinhgiang.hocham = ''
                                 }
+                                this.showoptions = false;
+                                
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1092,7 +1328,7 @@
                                 Học hàm
                             </div>
                             <input type="search"
-                            @click.outside="checkItem();showoptions = false;"
+                            @focusout.debounce.100ms="checkItem()"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -1126,13 +1362,129 @@
 
 
                         <!-- chuyên ngành học hàm -->
-                        <div class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
+                        <div x-data="{
+                            showoptions: false,
+                            output: [],
+                            dataframe: [],
+                            research: '',
+                            backspace: true,
+                            choose: 0,
+                            miniSearch,
+                            getData() {
+                                this.miniSearch = new MiniSearch({
+                                    fields: ['value'],
+                                    searchOptions: {
+                                        prefix: true,
+                                        combineWith: 'AND',
+                                    }
+                                })
+                                fetch('/api/danhmuc/nganh-gs-pgs')            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.addAll(result);
+                                });
+                            },
+                            filteredItems() {
+                                this.showoptions = true;
+                                if (thinhgiang.hocham_nganh) {
+                                    this.output = this.miniSearch.search(thinhgiang.hocham_nganh).map(({ id }) => this.dataframe[id])
+                                } else {
+                                    this.output = Object.values(this.dataframe);
+                                }
+                            },
+                            addItem(item) {
+                                thinhgiang.hocham_nganh = item.value;
+                                this.showoptions = false;
+                            },
+                            checkItem() {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.hocham_nganh != this.output[0].value) {
+                                        thinhgiang.hocham_nganh = ''
+                                    }
+                                } else {
+                                    thinhgiang.hocham_nganh = ''
+                                }
+                            },
+                            enterEvent() {
+                                if (this.output) {
+                                    this.addItem(this.output[this.choose])
+                                } else {
+                                    thinhgiang.hocham_nganh = ''
+                                }
+                            },
+                            eventBackspace() {
+                                this.backspace = true;
+                            },
+                            showoptionscheck(e) {
+                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                    this.choose = 0;
+                                }
+                            },
+                            focusinputcheck() {
+                                this.filteredItems();
+                                this.showoptions = true;
+                            },
+                            checkchoose(index) {
+                                return index === this.choose
+                            },
+                            selectoption(type) {
+                                if (type === 'up' && this.choose > 0) {
+                                    this.choose = this.choose - 1
+                                    item = document.getElementById('hocham_nganh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.hocham_nganh.getBoundingClientRect()
+                                    if ((item.bottom - frame.top) < item.height) {
+                                        $refs.hocham_nganh.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    }
+                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                    this.choose = this.choose + 1
+                                    item = document.getElementById('hocham_nganh'+this.choose).getBoundingClientRect()
+                                    frame = $refs.hocham_nganh.getBoundingClientRect()
+                                    if ((frame.bottom - item.top) < item.height) {
+                                        $refs.hocham_nganh.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                    }
+                                }
+                            }
+                        }" x-init="getData()"
+                        class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Chuyên ngành
+                                Ngành
                             </div>
-                            <input type="text" 
+                            <input type="search"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
+                            @keyup.enter="enterEvent()"
+                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                            @keyup.up.prevent
+                            @keyup.down.prevent
+                            x-ref="input"
+                            @focus="focusinputcheck()"
+                            @keyup = 'showoptionscheck'
+                            @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.hocham_nganh"
+                            @input="filteredItems()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+
+                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                <ul x-ref="hocham_nganh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[560px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                    <template x-if="output.length === 0">
+                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                    </template>
+                                    <template x-for="(item, index) in output" :key="item.id">
+                                        <li x-text="item.value"
+                                        :id="'hocham_nganh'+index"
+                                        @click="addItem(item)"
+                                        @mouseover="choose = index"
+                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                    </template>
+                                </ul>
+                            </div>
                         </div>
                         <!-- end chuyên ngành học hàm -->
                     </div>
@@ -1142,7 +1494,7 @@
 
 
                     <div class="w-full flex flex-row justify-start items-start gap-6">
-                        {# Đơn vị công tác #}
+                        <!-- {# Đơn vị mời giảng #} -->
                         <div id="donvi" class="w-full h-auto flex flex-row justify-center items-start">
                             <div x-data="{
                                 showoptions: false,
@@ -1273,7 +1625,7 @@
                                     Đơn vị mời giảng
                                 </div>
                                 <div x-ref="divinput"
-                                @click.outside="showoptions = false;"
+                                @focusout.debounce.100ms="showoptions = false;"
                                 @click.self="$refs.input.focus()"
                                 class="cursor-text basis-[100%] w-full shrink relative rounded-lg flex flex-row justify-start items-start flex-wrap py-[12px] gap-2 bg-gray-100 p-[15px]">
                                     <template x-for="result in results" :key="result.id">
@@ -1288,7 +1640,7 @@
                                         x-ref="span" 
                                         class="invisible text-[15px] p-0"></span>
                                         <input type="text"
-                                        @click.outside="checkItem()"
+                                        @focusout.debounce.100ms="checkItem()"
                                         @keyup.enter="enterEvent()"
                                         @keydown.up.prevent.throttle.100ms="selectoption('up')"
                                         @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -1322,7 +1674,7 @@
                                 </div>
                             </div>
                         </div>
-                        {# End Đơn vị công tác #}
+                        <!-- End Đơn vị mời giảng -->
                     </div>
 
 
@@ -1342,9 +1694,9 @@
 
                         <!-- chức danh nghề nghiệp chính -->
                         <div x-data="{
-                            focusinput: false,
                             showoptions: false,
                             output: [],
+                            items: [{id:1,value:'Phó giáo sư'},{id:2,value:'Giáo sư'}],
                             dataframe: [],
                             research: '',
                             backspace: true,
@@ -1358,7 +1710,7 @@
                                         combineWith: 'AND',
                                     }
                                 })
-                                fetch('/api/danhmuc/cdnn')            
+                                fetch('/api/danhmuc/chucdanh')            
                                 .then((response) => response.json())
                                 .then((result) => {
                                     this.dataframe = result.reduce((byId, song) => {
@@ -1382,9 +1734,14 @@
                                 this.showoptions = false;
                             },
                             checkItem() {
-                                if (this.output.length == 0) {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.chucdanh != this.output[0].value) {
+                                        thinhgiang.chucdanh = ''
+                                    }
+                                } else {
                                     thinhgiang.chucdanh = ''
-                                }     
+                                }
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1397,14 +1754,12 @@
                                 this.backspace = true;
                             },
                             showoptionscheck(e) {
-                                console.log('show option')
                                 if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
                                     this.choose = 0;
                                 }
                             },
                             focusinputcheck() {
                                 this.filteredItems();
-                                this.focusinput = true;
                                 this.showoptions = true;
                             },
                             checkchoose(index) {
@@ -1433,7 +1788,7 @@
                                 Chức danh nghề nghiệp chính
                             </div>
                             <input type="search"
-                            @click.outside="checkItem();focusinput = false;showoptions = false;"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -1441,14 +1796,14 @@
                             @keyup.down.prevent
                             x-ref="input"
                             @focus="focusinputcheck()"
-                            @keyup='showoptionscheck'
+                            @keyup = 'showoptionscheck'
                             @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.chucdanh"
                             @input="filteredItems()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="chucdanh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul x-ref="chucdanh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
@@ -1495,7 +1850,7 @@
 
 
 
-        {# Điều chỉnh #}
+        <!-- {# Điều chỉnh #} -->
         <div class="fixed bottom-[10px] right-[10px] w-[150px] flex flex-row justify-end items-center z-[1]">
             <div x-data 
             @click="$dispatch('modify')"
@@ -1503,10 +1858,10 @@
                 <i class="fa-solid fa-gear"></i>
             </div>
         </div>
-        {# End Điều chỉnh #}
+        <!-- {# End Điều chỉnh #} -->
 
 
-        {# download/upload #}
+        <!-- {# download/upload #} -->
         <div x-data="{open: false}" @modify.window="open = ! open" class="fixed left-0 top-0 z-[2000]">
             <div x-show="open" 
             @click="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
@@ -1528,7 +1883,7 @@
                 </div>
             </div>
         </div>
-        {# End download/upload #}
+        <!-- {# End download/upload #} -->
 
     </div>  
 </div>
