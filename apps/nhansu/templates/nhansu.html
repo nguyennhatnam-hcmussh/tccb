@@ -347,6 +347,8 @@
         .then((result) => {
             thinhgiang = result;
         });"
+        @newportfolio.window="open = true;
+        thinhgiang = {}"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
@@ -369,6 +371,7 @@
                         Thông tin cá nhân
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <!-- start họ và tên -->
                         <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Họ và tên <span class="text-red-600"> *</span>
@@ -377,17 +380,24 @@
                             x-model="thinhgiang.hovaten"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
+                        <!-- end họ và tên -->
 
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <!-- start ngày sinh -->
+                        <div class="basis-[24%] shrink flex flex-col justify-start items-start gap-2">
+                            
                             <div>
                                 Ngày sinh <span class="text-red-600"> *</span>
                             </div>
                             <input x-data="{
                                 checkStrDate(str) {
-                                    const result = [...str].every(
-                                        char => (char >= '0' && char <= '9') || (char == '/')
-                                    );
-                                    return result;
+                                    if (str) {
+                                        const result = [...str].every(
+                                            char => (char >= '0' && char <= '9') || (char == '/')
+                                        );
+                                        return result;
+                                    } else {
+                                        return false
+                                    }
                                 },
                                 converDay() {
                                     if (this.checkStrDate(thinhgiang.ngaysinh)) {
@@ -402,7 +412,7 @@
                                             list[2].length == 3 ||
                                             d > 31 ||
                                             m > 12 ||
-                                            y > 2999) {
+                                            y > 2099) {
                                             thinhgiang.ngaysinh = ''
                                         } else {
                                             today = new Date();
@@ -443,8 +453,8 @@
                             x-model="thinhgiang.ngaysinh"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
-                    </div>
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <!-- end ngày sinh -->
+
                         <!-- start giới tính -->
                         <div x-data="{
                             showoptions: false,
@@ -535,7 +545,7 @@
                                 }
                             }
                         }" x-init="getData()"
-                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        class="basis-[23%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Giới tính <span class="text-red-600"> *</span>
                             </div>
@@ -555,7 +565,7 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="gioitinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul x-ref="gioitinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[175px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
@@ -572,17 +582,6 @@
                         
                         </div>
                         <!-- end giới tính -->
-
-                        <!-- start mã số cán bộ -->
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                MSCB <span class="text-red-600"> *</span>
-                            </div>
-                            <input type="search" 
-                            x-model="thinhgiang.maso"
-                            class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
-                        <!-- end mã số cán bộ -->
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <!-- start quốc tịch -->
@@ -695,7 +694,7 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="quoctich" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul x-ref="quoctich" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[375px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
@@ -713,142 +712,26 @@
                         </div>
                         <!-- end quốc tịch -->
 
-                        <!-- nơi sinh -->
-                        <div x-data="{
-                            showoptions: false,
-                            output: [],
-                            dataframe: [],
-                            research: '',
-                            backspace: true,
-                            choose: 0,
-                            miniSearch,
-                            async getData() {
-                                this.miniSearch = new MiniSearch({
-                                    fields: ['value'],
-                                    searchOptions: {
-                                        prefix: true,
-                                        combineWith: 'AND',
-                                    }
-                                })
-                                fetch('/api/danhmuc/tinhthanh')            
-                                .then((response) => response.json())
-                                .then((result) => {
-                                    this.dataframe = result.reduce((byId, song) => {
-                                        byId[song.id] = song;
-                                        return byId;
-                                    }, {});
-                                    this.output = Object.values(this.dataframe);
-                                    this.miniSearch.addAll(result);
-                                });
-                            },
-                            filteredItems() {
-                                this.showoptions = true;
-                                if (thinhgiang.noisinh) {
-                                    this.output = this.miniSearch.search(thinhgiang.noisinh).map(({ id }) => this.dataframe[id])
-                                } else {
-                                    this.output = Object.values(this.dataframe);
-                                }
-                            },
-                            addItem(item) {
-                                thinhgiang.noisinh = item.value;
-                                this.showoptions = false;
-                            },
-                            checkItem() {
-                                this.filteredItems()
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.noisinh != this.output[0].value) {
-                                        thinhgiang.noisinh = ''
-                                    }
-                                } else {
-                                    thinhgiang.noisinh = ''
-                                }
-                            },
-                            enterEvent() {
-                                if (this.output) {
-                                    this.addItem(this.output[this.choose])
-                                } else {
-                                    thinhgiang.noisinh = ''
-                                }
-                            },
-                            eventBackspace() {
-                                this.backspace = true;
-                            },
-                            showoptionscheck(e) {
-                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
-                                    this.choose = 0;
-                                }
-                            },
-                            focusinputcheck() {
-                                this.filteredItems();
-                                this.showoptions = true;
-                            },
-                            checkchoose(index) {
-                                return index === this.choose
-                            },
-                            selectoption(type) {
-                                if (type === 'up' && this.choose > 0) {
-                                    this.choose = this.choose - 1
-                                    item = document.getElementById('noisinh'+this.choose).getBoundingClientRect()
-                                    frame = $refs.noisinh.getBoundingClientRect()
-                                    if ((item.bottom - frame.top) < item.height) {
-                                        $refs.noisinh.scrollBy(0,-(item.height - (item.bottom - frame.top)))
-                                    }
-                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
-                                    this.choose = this.choose + 1
-                                    item = document.getElementById('noisinh'+this.choose).getBoundingClientRect()
-                                    frame = $refs.noisinh.getBoundingClientRect()
-                                    if ((frame.bottom - item.top) < item.height) {
-                                        $refs.noisinh.scrollBy(0,(item.height + (item.top - frame.bottom)))
-                                    }
-                                }
-                            }
-                        }" x-init="getData()"
-                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <!-- start mã số cán bộ -->
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Nơi sinh
+                                MSCB <span class="text-red-600"> *</span>
                             </div>
-                            <input type="search"
-                            @focusout.debounce.100ms="checkItem();showoptions = false;"
-                            @keyup.enter="enterEvent()"
-                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
-                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
-                            @keyup.up.prevent
-                            @keyup.down.prevent
-                            x-ref="input"
-                            @focus="focusinputcheck()"
-                            @keyup = 'showoptionscheck'
-                            @keyup.backspace="eventBackspace"
-                            x-model="thinhgiang.noisinh"
-                            @input="filteredItems()"
+                            <input type="search" 
+                            x-model="thinhgiang.maso"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-
-                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="noisinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[380px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
-                                    <template x-if="output.length === 0">
-                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
-                                    </template>
-                                    <template x-for="(item, index) in output" :key="item.id">
-                                        <li x-text="item.value"
-                                        :id="'noisinh'+index"
-                                        @click="addItem(item)"
-                                        @mouseover="choose = index"
-                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
-                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
-                                    </template>
-                                </ul>
-                            </div>
-                        
                         </div>
-                        <!-- end nơi sinh -->
-
+                        <!-- end mã số cán bộ -->
                     </div>
+
+
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div class="basis-[24%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Số CCCD/Hộ chiếu
                             </div>
                             <input type="search" 
-                            value="060097007040"
+                            x-model="thinhgiang.CCCD_so"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
@@ -858,10 +741,14 @@
                             </div>
                             <input x-data="{
                                 checkStrDate(str) {
-                                    const result = [...str].every(
-                                        char => (char >= '0' && char <= '9') || (char == '/')
-                                    );
-                                    return result;
+                                    if (str) {
+                                        const result = [...str].every(
+                                            char => (char >= '0' && char <= '9') || (char == '/')
+                                        );
+                                        return result;
+                                    } else {
+                                        return false
+                                    }
                                 },
                                 converDay() {
                                     if (this.checkStrDate(thinhgiang.CCCD_ngay)) {
@@ -911,7 +798,7 @@
                                 }
                             }"
                             type="search"
-                            @click.outside="converDay()"
+                            @focusout="converDay()"
                             @keyup.enter="converDay()"
                             x-model="thinhgiang.CCCD_ngay"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
@@ -927,12 +814,23 @@
                         </div>
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <div x-data="{
+                            checkemail () {
+                                if (thinhgiang.email.includes('@hcmussh.edu.vn')) {
+                                    return true
+                                } else {
+                                    thinhgiang.email += '@hcmussh.edu.vn'
+                                }
+                            }
+                        }"
+                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Email
                             </div>
                             <input type="search" 
                             x-model="thinhgiang.email"
+                            @focusout="checkemail()"
+                            @keyup.enter="checkemail()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
@@ -1832,11 +1730,11 @@
                     <div class="w-full shrink flex flex-row justify-center items-start gap-2 text-[16px] mt-[10px]">
                         <input type="button" 
                         value="Cập nhật"
-                        @click="{id, ...donvii} = donvi; 
-                        fetch(`/api/donvi/update?donvi_id=${donvi.id}`,
+                        @click="{id, ...thinhgiangg} = thinhgiang; 
+                        fetch(`/api/nhansu/thinhgiang/update?id=${thinhgiang.id}`,
                         {method:'POST',
                         headers:{'Content-Type': 'application/json',},
-                        body: JSON.stringify({...donvii})})
+                        body: JSON.stringify({...thinhgiangg})})
                         .then((response) => {
                             console.log(response)
                         });"
@@ -1851,11 +1749,16 @@
 
 
         <!-- {# Điều chỉnh #} -->
-        <div class="fixed bottom-[10px] right-[10px] w-[150px] flex flex-row justify-end items-center z-[1]">
+        <div class="fixed bottom-[50%] right-[10px] flex flex-col justify-center items-center gap-2">
+            <div x-data 
+            @click="$dispatch('newportfolio')"
+            class="w-[40px] h-[40px] bg-orange text-white text-[18px] font-[500] px-[12px] py-[12px] rounded-full flex justify-center items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-plus"></i>
+            </div>
             <div x-data 
             @click="$dispatch('modify')"
-            class="bg-orange text-white text-[20px] font-[500] px-[15px] py-[15px] rounded-3xl flex justify-center items-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-gear"></i>
+            class="w-[40px] h-[40px] bg-orange text-white text-[18px] font-[500] px-[12px] py-[12px] rounded-full flex justify-center items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-arrow-up"></i>
             </div>
         </div>
         <!-- {# End Điều chỉnh #} -->

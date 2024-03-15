@@ -15,12 +15,10 @@ class ThinhgiangBase(Base):
     gioitinh: str | None = Field(default=None)
     ngaysinh: str | None = Field(default=None, index=True)
     quoctich: str | None = Field(default="Việt Nam")
-    noisinh: str | None = Field(default=None)
     hocvi: str | None = Field(default=None)
     hocvi_nganh: str | None = Field(default=None)
     hocham: str | None = Field(default=None)
     hocham_nganh: str | None = Field(default=None)
-    hocham_nam: str | None = Field(default=None)
     CCCD_so: str | None = Field(default=None)
     CCCD_ngay: str | None = Field(default=None)
     CCCD_noi: str | None = Field(default=None)
@@ -90,3 +88,4 @@ class ThinhgiangSearch(Base):
     
 class ListThinhgiangSearch(Base):
     data: List[ThinhgiangSearch]
+    

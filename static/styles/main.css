@@ -1110,15 +1110,6 @@ html {
   text-decoration-line: underline;
 }
 
-.mask {
-  -webkit-mask-size: contain;
-          mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-          mask-position: center;
-}
-
 .menu {
   display: flex;
   flex-direction: column;
@@ -2093,6 +2084,22 @@ input.tab:checked + .tab-content,
   top: 60px;
 }
 
+.bottom-\[50px\] {
+  bottom: 50px;
+}
+
+.bottom-\[70px\] {
+  bottom: 70px;
+}
+
+.bottom-\[60px\] {
+  bottom: 60px;
+}
+
+.bottom-\[50\%\] {
+  bottom: 50%;
+}
+
 .z-\[1000\] {
   z-index: 1000;
 }
@@ -2343,6 +2350,10 @@ input.tab:checked + .tab-content,
   width: 15px;
 }
 
+.w-\[175px\] {
+  width: 175px;
+}
+
 .w-\[20\%\] {
   width: 20%;
 }
@@ -2369,6 +2380,10 @@ input.tab:checked + .tab-content,
 
 .w-\[350px\] {
   width: 350px;
+}
+
+.w-\[375px\] {
+  width: 375px;
 }
 
 .w-\[380px\] {
@@ -2667,6 +2682,14 @@ input.tab:checked + .tab-content,
 
 .gap-8 {
   gap: 2rem;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
@@ -2970,6 +2993,11 @@ input.tab:checked + .tab-content,
   padding-bottom: 8px;
 }
 
+.px-\[12px\] {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .pb-\[16px\] {
   padding-bottom: 16px;
 }
@@ -3091,6 +3119,10 @@ input.tab:checked + .tab-content,
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[18px\] {
+  font-size: 18px;
 }
 
 .font-\[300\] {

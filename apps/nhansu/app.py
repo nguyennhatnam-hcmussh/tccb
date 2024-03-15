@@ -14,7 +14,7 @@ from main import config
 from main.shortcuts import redirect, render, file
 from main.services import AuthGoogle, encode
 from main.models import User, Auth, Thinhgiang
-from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch, ThinhgiangRead
+from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch, ThinhgiangRead, ThinhgiangBase
 
 settings = config.get_settings()
 
@@ -137,6 +137,19 @@ async def api_donvi_read(*, request: Request, session: db_dependency, thinhgiang
     if not thinhgiang:
         raise HTTPException(status_code=404, detail="Hero not found")
     return thinhgiang
+
+@router.post("/api/nhansu/thinhgiang/update")
+@requires('auth', redirect='login')
+async def api_nhansu_thinhgiang_update(*, request: Request, session: db_dependency, id: int, thinhgiang: ThinhgiangBase):
+    db_thinhgiang = session.get(Thinhgiang, id)
+    if not db_thinhgiang:
+        raise HTTPException(status_code=404, detail="Thinhgiang not found")
+    thinhgiang_data = thinhgiang.model_dump(exclude_unset=True)
+    for key, value in thinhgiang_data.items():
+        setattr(db_thinhgiang, key, value)
+        session.add(db_thinhgiang)
+    session.commit()
+    return 'success'
 
 
 @router.get("/api/nhansu/search", response_model=List[ThinhgiangSearch])
