@@ -11,10 +11,10 @@ import datetime
 from main.functions import Requests
 from main.db_setup import get_session, engine
 from main import config
-from main.shortcuts import redirect, render, file
+from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import User, Auth, Donvi
-from main.schemas import UserList, DonviCreate, DonviRead, DonviUpdate
+from main.schemas import UserList, DonviCreate, DonviRead, DonviUpdate, DonviSearch, ListDonviSearch, ListDonviRead
 
 settings = config.get_settings()
 
@@ -102,13 +102,14 @@ async def api_donvi_upload(*, request: Request, session: db_dependency, file: Up
     return await render(request, "donvi", "form_upload_success.html", context)
 
 
-@router.get("/api/donvi/read/{donvi_id}", response_model=DonviRead)
+@router.get("/api/donvi/read/{donvi_id}")
 @requires('auth', redirect='login')
 async def api_donvi_read(*, request: Request, session: db_dependency, donvi_id: int):
     donvi = session.get(Donvi, donvi_id)
     if not donvi:
         raise HTTPException(status_code=404, detail="Hero not found")
-    return donvi
+    data = DonviRead.model_validate(donvi)
+    return await sendjson(request, data)
 
 @router.post("/api/donvi/update")
 @requires('auth', redirect='login')
@@ -121,11 +122,18 @@ async def api_donvi_update(*, request: Request, session: db_dependency, donvi_id
         setattr(db_donvi, key, value)
         session.add(db_donvi)
     session.commit()
-    return 'success'
+    return await sendjson(request, {'message': 'success'})
 
-@router.get("/api/donvi/search", response_model=List[DonviRead])
+@router.get("/api/donvi/search")
 @requires('auth', redirect='login')
 async def api_donvi_search(*, request: Request, session: db_dependency):
     donvis = session.exec(select(Donvi)).all()
-    # results = ListThinhgiangSearch.model_validate({'data':thinhgiangs})
-    return donvis
+    data = (ListDonviRead.model_validate({'data':donvis})).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+@router.get("/api/donvi/danhmuc")
+@requires('auth', redirect='login')
+async def api_donvi_danhmuc(*, request: Request, session: db_dependency):
+    donvis = session.exec(select(Donvi)).all()
+    data = (ListDonviSearch.model_validate({'data':donvis})).model_dump(exclude_unset=True)
+    return await sendjson(request, data)

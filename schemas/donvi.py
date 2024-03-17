@@ -32,7 +32,14 @@ class DonviCreate(DonviBase):
 class DonviRead(DonviBase):
     id: int
 
-class DonviList(Base):
+class DonviSearch(Base):
+    id: int
+    ten: str | None = None
+
+class ListDonviSearch(Base):
+    data: List[DonviSearch]
+
+class ListDonviRead(Base):
     data: List[DonviRead]
     
 class DonviUpdate(DonviBase):

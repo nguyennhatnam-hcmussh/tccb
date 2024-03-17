@@ -14,7 +14,7 @@ from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import User, Auth, Thinhgiang
-from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch, ChucnangRead
+from main.schemas import ChucnangRead
 
 settings = config.get_settings()
 

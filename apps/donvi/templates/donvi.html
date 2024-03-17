@@ -27,7 +27,8 @@
             this.isLoading = true;
             fetch('/api/donvi/search')            
                 .then((response) => response.json())
-                .then((result) => { 
+                .then((result) => {
+                    result = result.data
                     this.dataframe = result.reduce((byId, song) => {
                         byId[song.id] = song;
                         return byId;
@@ -232,7 +233,7 @@
         x-show="show"
         class="w-full max-w-[1000px]">
             {# Table #}
-            <div id="table-donvi" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
+            <div id="table-donvi" class="z-[1] shadow-lg relative rounded-lg w-full min-w-[750px] max-w-[1000px] flex flex-col justify-start text-left">
                 <!-- head of table -->
                 <div id="thead-donvi" 
                 class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
@@ -260,7 +261,7 @@
                 <!-- body of table -->
                 <div id="tbody-donvi" 
                 x-show="! isLoading"
-                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
+                class="bg-white min-w-[750px] max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
                     <template x-for="(item, index) in output" :key="index">
                         <div id="trow-donvi" class="hover:bg-gray-100 cursor-default w-full min-w-[750px] flex flex-row bg-white font-[500]">
                             {# index #}
@@ -427,15 +428,28 @@
 
 
 
-        {# Điều chỉnh #}
-        <div class="fixed bottom-[10px] right-[10px] w-[150px] flex flex-row justify-end items-center z-[1]">
-            <div x-data 
-            @click="$dispatch('modify')"
-            class="bg-orange text-white text-[20px] font-[500] px-[15px] py-[15px] rounded-3xl flex justify-center items-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-gear"></i>
+        <!-- {# Điều chỉnh #} -->
+        <div x-data="{show: false}"
+        class="transition-none fixed bottom-[50%] translate-y-[60%] right-[0px] z-[2]">
+            <div class="transition-none min-h-[50px] min-w-[10px] border-l-2 border-y-2 border-orange px-[5px] py-[20px] shadow-md flex flex-col justify-center items-center gap-4 relative"
+            :class="show ? 'bg-white cursor-default rounded-l-2xl' : 'bg-orange cursor-pointer rounded-l-full'"
+            @mouseover="show=true" @mouseover.away="show=false">
+                <div class="absolute left-[1px]">
+                    <i x-show="!show" class="text-white fa-solid fa-caret-left"></i>
+                </div>
+                <div x-show="show"
+                @click="$dispatch('newportfolio')"
+                class="w-[30px] h-[30px] bg-orange text-white text-[16px] font-[500] rounded-full flex justify-center items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div x-show="show"
+                @click="$dispatch('modify')"
+                class="w-[30px] h-[30px] bg-orange text-white text-[16px] font-[500] rounded-full flex justify-center items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-table"></i>
+                </div>
             </div>
         </div>
-        {# End Điều chỉnh #}
+        <!-- {# End Điều chỉnh #} -->
 
 
         {# download/upload #}

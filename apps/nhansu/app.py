@@ -11,10 +11,10 @@ import datetime
 from main.functions import Requests
 from main.db_setup import get_session, engine
 from main import config
-from main.shortcuts import redirect, render, file
+from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
-from main.models import User, Auth, Thinhgiang
-from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearch, ThinhgiangRead, ThinhgiangBase
+from main.models import User, Auth, Thinhgiang, Donvi
+from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearchWithDonvi, ThinhgiangRead, ThinhgiangBase, ThinhgiangReadWithDonvi, ThinhgiangCreateWithDonvi, ListThinhgiangSearchWithDonvi
 
 settings = config.get_settings()
 
@@ -96,14 +96,10 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
             gioitinh = nhansu.loc[i].gioitinh if nhansu.loc[i].gioitinh else None,
             ngaysinh = nhansu.loc[i].ngaysinh.strftime('%d/%m/%Y') if nhansu.loc[i].ngaysinh else None,
             quoctich = nhansu.loc[i].quoctich if nhansu.loc[i].quoctich else None,
-            noisinh = nhansu.loc[i].noisinh if nhansu.loc[i].noisinh else None,
-            dantoc = nhansu.loc[i].dantoc if nhansu.loc[i].dantoc else None,
-            tongiao = nhansu.loc[i].tongiao if nhansu.loc[i].tongiao else None,
             hocvi = nhansu.loc[i].hocvi if nhansu.loc[i].hocvi else None,
             hocvi_nganh = nhansu.loc[i].hocvi_nganh if nhansu.loc[i].hocvi_nganh else None,
             hocham = nhansu.loc[i].hocham if nhansu.loc[i].hocham else None,
             hocham_nganh = nhansu.loc[i].hocham_nganh if nhansu.loc[i].hocham_nganh else None,
-            hocham_nam = nhansu.loc[i].hocham_nam if nhansu.loc[i].hocham_nam else None,
             CCCD_so = nhansu.loc[i].CCCD_so if nhansu.loc[i].CCCD_so else None,
             CCCD_ngay = nhansu.loc[i].CCCD_ngay.strftime('%d/%m/%Y') if nhansu.loc[i].CCCD_ngay else None,
             CCCD_noi = nhansu.loc[i].CCCD_noi if nhansu.loc[i].CCCD_noi else None,
@@ -130,31 +126,62 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
     return await render(request, "nhansu", "form_upload_success.html", context)
 
 
-@router.get("/api/nhansu/thinhgiang/read/{thinhgiang_maso}", response_model=ThinhgiangRead)
+@router.get("/api/nhansu/thinhgiang/read/{thinhgiang_maso}")
 @requires('auth', redirect='login')
 async def api_donvi_read(*, request: Request, session: db_dependency, thinhgiang_maso: str):
     thinhgiang = session.exec(select(Thinhgiang).where(thinhgiang_maso == Thinhgiang.maso)).first()
     if not thinhgiang:
         raise HTTPException(status_code=404, detail="Hero not found")
-    return thinhgiang
+    data = (ThinhgiangReadWithDonvi.model_validate(thinhgiang)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
 
 @router.post("/api/nhansu/thinhgiang/update")
 @requires('auth', redirect='login')
-async def api_nhansu_thinhgiang_update(*, request: Request, session: db_dependency, id: int, thinhgiang: ThinhgiangBase):
+async def api_nhansu_thinhgiang_update(*, request: Request, session: db_dependency, id: int, thinhgiang: ThinhgiangCreateWithDonvi):
+    donvi = thinhgiang.donvi
+    thinhgiang.donvi = []
+
     db_thinhgiang = session.get(Thinhgiang, id)
     if not db_thinhgiang:
         raise HTTPException(status_code=404, detail="Thinhgiang not found")
+    
     thinhgiang_data = thinhgiang.model_dump(exclude_unset=True)
     for key, value in thinhgiang_data.items():
         setattr(db_thinhgiang, key, value)
-        session.add(db_thinhgiang)
+
+    for i in range(len(donvi)):
+        db_thinhgiang.donvi.append(session.get(Donvi, donvi[i].id))
+
+    session.add(db_thinhgiang)
     session.commit()
-    return 'success'
+    session.refresh(db_thinhgiang)
+    data = (ThinhgiangSearchWithDonvi.model_validate(db_thinhgiang)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
 
 
-@router.get("/api/nhansu/search", response_model=List[ThinhgiangSearch])
+@router.post("/api/nhansu/thinhgiang/create")
+@requires('auth', redirect='login')
+async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependency, thinhgiang: ThinhgiangCreateWithDonvi):
+    donvi = thinhgiang.donvi
+    thinhgiang.donvi = []
+    new_person = Thinhgiang.model_validate(thinhgiang)
+    session.add(new_person)
+    session.commit()
+    session.refresh(new_person)
+    for i in range(len(donvi)):
+        new_person.donvi.append(session.get(Donvi, donvi[i].id))
+    session.add(new_person)
+    session.commit()
+    session.refresh(new_person)
+    data = (ThinhgiangSearchWithDonvi.model_validate(new_person)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+
+@router.get("/api/nhansu/thinhgiang/search")
 @requires('auth', redirect='login')
 async def api_nhansu_search(*, request: Request, session: db_dependency):
     thinhgiangs = session.exec(select(Thinhgiang)).all()
-    # results = ListThinhgiangSearch.model_validate({'data':thinhgiangs})
-    return thinhgiangs
+    data = (ListThinhgiangSearchWithDonvi.model_validate({'data':thinhgiangs})).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+

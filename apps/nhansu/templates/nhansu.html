@@ -17,6 +17,7 @@
             }
         },
         async getData() {
+            console.log('namprooooo')
             this.miniSearch = new MiniSearch({
                 fields: ['maso','hovaten','ngaysinh'],
                 searchOptions: {
@@ -34,9 +35,10 @@
                 },
             })
             this.isLoading = true;
-            fetch('/api/nhansu/search')            
+            fetch('/api/nhansu/thinhgiang/search')            
                 .then((response) => response.json())
-                .then((result) => { 
+                .then((result) => {
+                    result = result.data
                     this.dataframe = result.reduce((byId, song) => {
                         byId[song.id] = song;
                         return byId;
@@ -45,9 +47,20 @@
                     this.miniSearch.addAll(result);
                     this.isLoading = false;
                 });
+        },
+        updateThinhgiang(data) {
+            console.log(this.dataframe[data.id])
+            console.log(data)
+            if (this.dataframe[data.id]) {
+                this.miniSearch.remove(this.dataframe[data.id])
+                delete this.dataframe[data.id]
+            }
+            this.dataframe[data.id] = data
+            this.miniSearch.add(this.dataframe[data.id])
+            this.getSearchResults()
         }
-    }"
-    x-init="getData()"
+    }" @updatethinhgiang="updateThinhgiang($event.detail.data)"
+    x-init="console.log('laplai');getData()"
     class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
         <div class="w-full flex flex-row justify-center items-center shrink-0">
 
@@ -250,7 +263,7 @@
         x-show="show"
         class="w-full max-w-[1000px]">
             {# Table #}
-            <div id="table" class="z-[1] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
+            <div id="table" class="z-[1] min-w-[750px] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
                 <!-- head of table -->
                 <div id="thead" 
                 class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
@@ -260,14 +273,14 @@
                     <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
                         <div class="py-[15px]">MSCB</div>
                     </div>
-                    <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center">
+                    <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center">
                         <div class="py-[15px]">Họ và tên</div>
                     </div>
-                    <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center">
+                    <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
                         <div class="py-[15px]">Ngày sinh</div>
                     </div>
-                    <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center">
-                        <div class="py-[15px]">Đơn vị</div>
+                    <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Đơn vị mời giảng gần nhất</div>
                     </div>
                     <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
                         <div class="py-[15px]">@</div>
@@ -278,7 +291,7 @@
                 <!-- body of table -->
                 <div id="tbody" 
                 x-show="! isLoading"
-                class="bg-white max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
+                class="bg-white min-w-[750px] max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
                     <template x-for="(item, index) in output" :key="index">
                         <div id="trow" class="hover:bg-gray-100 cursor-default w-full min-w-[750px] flex flex-row bg-white font-[500]">
                             {# index #}
@@ -294,28 +307,28 @@
                             {# end maso #}
 
                             {# hovaten #}
-                            <div class="w-[25%] min-w-[200px] flex flex-row justify-start items-center text-blue">
+                            <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center text-blue">
                                 <div @click="$dispatch('portfolio', {target: item.maso})"
                                 x-text="item.hovaten" class="py-[10px] hover:underline cursor-pointer"></div>
                             </div>
                             {# end hovaten #}
 
                             {# ngaysinh #}
-                            <div class="w-[20%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
+                            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
                                 <div x-text="item.ngaysinh" class="py-[10px]"></div>
                             </div>
                             {# end ngaysinh #}
 
                             {# donvi #}
-                            <div class="w-[25%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
-                                <div class="py-[10px]">Khoa Ngữ văn Tây Ban Nha - Italia</div>
+                            <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
+                                <div x-text="item.donvi[0].ten" class="py-[10px]"></div>
                             </div>
                             {# end donvi #}
 
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                >Chọn</div>
+                                >Lấy số HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -325,7 +338,7 @@
 
                 {# skeleton #}
                 <div x-show="isLoading"
-                class="mt-[20px] relative w-full flex flex-col gap-8">
+                class="mt-[20px] relative min-w-[750px] w-full flex flex-col gap-8">
                     <div class="skeleton h-32 w-full"></div>
                     <div class="skeleton h-4 w-28"></div>
                     <div class="skeleton h-4 w-full"></div>
@@ -339,15 +352,19 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: '', thinhgiang: {}}" x-show="open" 
-        @portfolio.window="target = $event.detail.target; 
+        <div x-data="{open: false, target: '', thinhgiang: {}, button_text: 'Cập nhật'}" x-show="open" 
+        @portfolio.window="target = $event.detail.target;
         open = true
+        button_text = 'Cập nhật'
         fetch(`/api/nhansu/thinhgiang/read/${target}`)
         .then((response) => response.json())
         .then((result) => {
             thinhgiang = result;
         });"
-        @newportfolio.window="open = true;
+        @newportfolio.window="
+        open = true,
+        button_text = 'Thêm mới'
+        target='NEW';
         thinhgiang = {}"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
             <div x-show="open" 
@@ -449,7 +466,6 @@
                             type="search"
                             @focusout="converDay()"
                             @keyup.enter="converDay()"
-                            placeholder="dd/mm/yyyy"
                             x-model="thinhgiang.ngaysinh"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
@@ -735,11 +751,21 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
-                        <div class="basis-[23%] shrink flex flex-col justify-start items-start gap-2">
+                        <div x-data="{get checkcccd() {
+                            if (thinhgiang.CCCD_so) {
+                                return false
+                            } else {
+                                thinhgiang.CCCD_ngay = ''
+                                return true
+                            }
+                        }}"
+                        class="basis-[23%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Ngày cấp
                             </div>
-                            <input x-data="{
+                            <input :disabled="checkcccd"
+                            :class="checkcccd ? 'cursor-not-allowed' : ''"
+                            x-data="{
                                 checkStrDate(str) {
                                     if (str) {
                                         const result = [...str].every(
@@ -804,19 +830,31 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <div x-data="{
+                            cccd_noi: '',
+                            checkcccd() {
+                            if (thinhgiang.CCCD_so) {
+                                this.cccd_noi = 'Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội'
+                            } else {
+                                this.cccd_noi = ''
+                            }
+                            console.log(this.cccd_noi)
+                            return true
+                        }}"
+                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Nơi cấp
                             </div>
-                            <input type="search" 
-                            value="Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội"
-                            class="w-full h-[45px] text-[15px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            <input type="search"
+                            :disabled="checkcccd"
+                            x-model="cccd_noi"
+                            class="cursor-not-allowed w-full h-[45px] text-[15px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
                     <div class="w-full flex flex-row justify-start items-start gap-6">
                         <div x-data="{
                             checkemail () {
-                                if (thinhgiang.email.includes('@hcmussh.edu.vn')) {
+                                if ((thinhgiang.email) && (thinhgiang.email.includes('@hcmussh.edu.vn'))) {
                                     return true
                                 } else {
                                     thinhgiang.email += '@hcmussh.edu.vn'
@@ -839,7 +877,7 @@
                                 Số điện thoại
                             </div>
                             <input type="search" 
-                            value="0123456789"
+                            x-model="thinhgiang.sdt"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
@@ -987,6 +1025,7 @@
                             choose: 0,
                             miniSearch,
                             async updateData() {
+                                thinhgiang.hocvi_nganh = ''
                                 switch (thinhgiang.hocvi) {
                                     case 'Cử nhân':
                                         url = '/api/danhmuc/nganh-daihoc';
@@ -1085,13 +1124,23 @@
                                         $refs.hocvi_nganh.scrollBy(0,(item.height + (item.top - frame.bottom)))
                                     }
                                 }
+                            },
+                            get checkhocvi() {
+                                if (thinhgiang.hocvi) {
+                                    return false
+                                } else {
+                                    thinhgiang.hocvi_nganh = ''
+                                    return true
+                                }
                             }
-                        }" x-init="getData()" @hocvi.window="updateData()"
+                        }" x-init="getData()" 
                         class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Chuyên ngành
                             </div>
                             <input type="search"
+                            :disabled="checkhocvi"
+                            :class="checkhocvi ? 'cursor-not-allowed' : ''"
                             @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
@@ -1099,7 +1148,7 @@
                             @keyup.up.prevent
                             @keyup.down.prevent
                             x-ref="input"
-                            @focus="focusinputcheck()"
+                            @focus="updateData(); focusinputcheck();"
                             @keyup = 'showoptionscheck'
                             @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.hocvi_nganh"
@@ -1219,6 +1268,14 @@
                                         $refs.hocham.scrollBy(0,(item.height + (item.top - frame.bottom)))
                                     }
                                 }
+                            },
+                            get checkhocvi() {
+                                if ((thinhgiang.hocvi) && (thinhgiang.hocvi.includes('Tiến sĩ'))) {
+                                    return false
+                                } else {
+                                    thinhgiang.hocham = ''
+                                    return true
+                                }
                             }
                         }" x-init="getData()"
                         class="basis-[25%] shrink flex flex-col justify-start items-start gap-2">
@@ -1226,6 +1283,8 @@
                                 Học hàm
                             </div>
                             <input type="search"
+                            :disabled="checkhocvi"
+                            :class="checkhocvi ? 'cursor-not-allowed' : ''"
                             @focusout.debounce.100ms="checkItem()"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
@@ -1347,6 +1406,13 @@
                                         $refs.hocham_nganh.scrollBy(0,(item.height + (item.top - frame.bottom)))
                                     }
                                 }
+                            },
+                            get checkhocham() {
+                                if (thinhgiang.hocham) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
                             }
                         }" x-init="getData()"
                         class="basis-[75%] shrink flex flex-col justify-start items-start gap-2">
@@ -1354,6 +1420,8 @@
                                 Ngành
                             </div>
                             <input type="search"
+                            :disabled="checkhocham"
+                            :class="checkhocham ? 'cursor-not-allowed' : ''"
                             @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
@@ -1396,20 +1464,8 @@
                         <div id="donvi" class="w-full h-auto flex flex-row justify-center items-start">
                             <div x-data="{
                                 showoptions: false,
-                                items: [
-                                {id:1,value:'Khoa Ngữ văn Tây Ban Nha - Italia'},
-                                {id:2,value:'Khoa Triết học'},
-                                {id:3,value:'Khoa Thư viện - Thông tin học'},
-                                {id:4,value:'Khoa Báo chí và Truyền thông'},
-                                {id:5,value:'Khoa Văn học'},
-                                {id:6,value:'Khoa Nhân học'},
-                                {id:7,value:'Khoa Ngữ văn Anh'},
-                                {id:8,value:'Khoa Ngữ văn Nga'},
-                                {id:9,value:'Khoa Nhật Bản học'}
-                                ],
                                 dataframe: [],
                                 output: [],
-                                results: [],
                                 search: '',
                                 research: '',
                                 backspace: true,
@@ -1417,15 +1473,16 @@
                                 miniSearch,
                                 getData() {
                                     this.miniSearch = new MiniSearch({
-                                        fields: ['value'],
+                                        fields: ['ten'],
                                         searchOptions: {
                                             prefix: true,
                                             combineWith: 'AND',
                                         }
                                     })
-                                    fetch('/api/danhmuc/donvi')            
+                                    fetch('/api/donvi/danhmuc')            
                                     .then((response) => response.json())
                                     .then((result) => {
+                                        result = result.data
                                         this.dataframe = result.reduce((byId, song) => {
                                             byId[song.id] = song;
                                             return byId;
@@ -1443,13 +1500,15 @@
                                     }
                                 },
                                 get checkresults() {
-                                    return this.results.length === 0
+                                    return thinhgiang.donvi.length === 0
                                 },
                                 addItem(value) {
-                                    console.log(value);
+                                    if (! thinhgiang.donvi) {
+                                        thinhgiang.donvi = [];
+                                    }
                                     this.miniSearch.remove(value);
                                     delete this.dataframe[value.id]
-                                    this.results.push(value);
+                                    thinhgiang.donvi.push(value);
                                     this.search = '';
                                     this.filteredItems();
                                     this.showoptions = false;
@@ -1457,7 +1516,7 @@
                                 },
                                 removeItem(value) {
                                     console.log(value);
-                                    this.results = this.results.filter(i => i !== value);
+                                    thinhgiang.donvi = thinhgiang.donvi.filter(i => i !== value);
                                     this.miniSearch.add(value);
                                     this.dataframe[value.id] = value;
                                     this.filteredItems();
@@ -1482,8 +1541,8 @@
                                     if (this.backspace === true) {
                                         this.research = this.search;
                                         this.backspace = false;
-                                        if (this.research === '' && this.results.length > 0) {
-                                            value = this.results.at(-1);
+                                        if (this.research === '' && thinhgiang.donvi.length > 0) {
+                                            value = thinhgiang.donvi.at(-1);
                                             this.removeItem(value)
                                         }
                                     }
@@ -1526,9 +1585,9 @@
                                 @focusout.debounce.100ms="showoptions = false;"
                                 @click.self="$refs.input.focus()"
                                 class="cursor-text basis-[100%] w-full shrink relative rounded-lg flex flex-row justify-start items-start flex-wrap py-[12px] gap-2 bg-gray-100 p-[15px]">
-                                    <template x-for="result in results" :key="result.id">
+                                    <template x-for="result in thinhgiang.donvi" :key="result.id">
                                         <div class="text-[15px] bg-[#ff4b4b] rounded-md text-white px-[15px] py-[3px] cursor-default flex flex-row items-center relative">
-                                            <div x-text="result.value"></div>
+                                            <div x-text="result.ten"></div>
                                             <i @click="removeItem(result)"
                                             class="fa-solid fa-xmark cursor-pointer pl-[10px]"></i>
                                         </div>
@@ -1561,7 +1620,7 @@
                                             <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                         </template>
                                         <template x-for="(item, index) in output" :key="item.id">
-                                            <li x-text="item.value"
+                                            <li x-text="item.ten"
                                             :id="'donvi'+index"
                                             @click="addItem(item)"
                                             @mouseover="choose = index"
@@ -1718,25 +1777,70 @@
                         </div>
                         <!-- end chức danh nghề nghiệp chính -->
 
-
-
                     </div>
+            
+
+                    <div class="text-[16px] text-black font-[500] mt-[10px]">
+                        Tình trạng hồ sơ
+                    </div>
+
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[32%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Bằng cấp
+                            </div>
+                            <input type="checkbox" x-model="thinhgiang.co_bang">
+                        </div>
+                        <div class="basis-[32%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Lý lịch khoa học
+                            </div>
+                            <input type="checkbox" x-model="thinhgiang.co_llkh">
+                        </div>
+                        <div class="basis-[32%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Nghiệp vụ sư phạm
+                            </div>
+                            <input type="checkbox" x-model="thinhgiang.co_nvsp">
+                        </div>
+                    </div>
+
                     <div class="w-full border my-[15px]"></div>
                 </div>
+
+
+
+
+
+
+
+
+
+
                 <!-- end noi dung -->
 
                 <!-- button -->
                 <div>
                     <div class="w-full shrink flex flex-row justify-center items-start gap-2 text-[16px] mt-[10px]">
                         <input type="button" 
-                        value="Cập nhật"
-                        @click="{id, ...thinhgiangg} = thinhgiang; 
-                        fetch(`/api/nhansu/thinhgiang/update?id=${thinhgiang.id}`,
-                        {method:'POST',
-                        headers:{'Content-Type': 'application/json',},
-                        body: JSON.stringify({...thinhgiangg})})
-                        .then((response) => {
-                            console.log(response)
+                        x-model="button_text"
+                        @click="{id, ...thinhgiangg} = thinhgiang;
+                        if (target == 'NEW') {
+                            url = '/api/nhansu/thinhgiang/create'
+                        } else {
+                            url = `/api/nhansu/thinhgiang/update?id=${thinhgiang.id}`
+                        }
+                        fetch(url, {
+                            method:'POST',
+                            headers:{'Content-Type': 'application/json',},
+                            body: JSON.stringify({...thinhgiangg})
+                        })
+                        .then((response) => response.json())
+                        .then((result) => {
+                            console.log(result)
+                            $dispatch('updatethinhgiang', {data: result})
+                            open = false; 
+                            $dispatch('closepopup');
                         });"
                         class="bg-orange text-white py-[10px] px-[15px] rounded-md cursor-pointer font-[500]">
                     </div>
@@ -1749,16 +1853,24 @@
 
 
         <!-- {# Điều chỉnh #} -->
-        <div class="fixed bottom-[50%] right-[10px] flex flex-col justify-center items-center gap-2">
-            <div x-data 
-            @click="$dispatch('newportfolio')"
-            class="w-[40px] h-[40px] bg-orange text-white text-[18px] font-[500] px-[12px] py-[12px] rounded-full flex justify-center items-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <div x-data 
-            @click="$dispatch('modify')"
-            class="w-[40px] h-[40px] bg-orange text-white text-[18px] font-[500] px-[12px] py-[12px] rounded-full flex justify-center items-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-arrow-up"></i>
+        <div x-data="{show: false}"
+        class="transition-none fixed bottom-[50%] translate-y-[60%] right-[0px] z-[2]">
+            <div class="transition-none min-h-[50px] min-w-[10px] border-l-2 border-y-2 border-orange px-[5px] py-[20px] shadow-md flex flex-col justify-center items-center gap-4 relative"
+            :class="show ? 'bg-white cursor-default rounded-l-2xl' : 'bg-orange cursor-pointer rounded-l-full'"
+            @mouseover="show=true" @mouseover.away="show=false">
+                <div class="absolute left-[1px]">
+                    <i x-show="!show" class="text-white fa-solid fa-caret-left"></i>
+                </div>
+                <div x-show="show"
+                @click="$dispatch('newportfolio')"
+                class="w-[30px] h-[30px] bg-orange text-white text-[16px] font-[500] rounded-full flex justify-center items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div x-show="show"
+                @click="$dispatch('modify')"
+                class="w-[30px] h-[30px] bg-orange text-white text-[16px] font-[500] rounded-full flex justify-center items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-table"></i>
+                </div>
             </div>
         </div>
         <!-- {# End Điều chỉnh #} -->
