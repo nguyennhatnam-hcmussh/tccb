@@ -1,1 +1,1 @@
-from .models import User, UserOfDonvi, Donvi, Minhchung, Auth, Profile, Thinhgiang
+from .models import Donvi, Auth, Thinhgiang, Cohuu

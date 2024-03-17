@@ -13,8 +13,9 @@ from main.db_setup import get_session, engine
 from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
-from main.models import User, Auth, Thinhgiang, Donvi
-from main.schemas import UserList, ThinhgiangCreate, ThinhgiangSearchWithDonvi, ThinhgiangRead, ThinhgiangBase, ThinhgiangReadWithDonvi, ThinhgiangCreateWithDonvi, ListThinhgiangSearchWithDonvi
+from main.models import Thinhgiang, Donvi, Cohuu
+from main.schemas import ThinhgiangCreate, ThinhgiangSearchWithDonvi, ThinhgiangReadWithDonvi, ThinhgiangCreateWithDonvi, ListThinhgiangSearchWithDonvi
+from main.schemas import CohuuCreate, CohuuSearchWithDonvi, CohuuReadWithDonvi, CohuuCreateWithDonvi, ListCohuuSearchWithDonvi
 
 settings = config.get_settings()
 
@@ -128,7 +129,7 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
 
 @router.get("/api/nhansu/thinhgiang/read/{thinhgiang_maso}")
 @requires('auth', redirect='login')
-async def api_donvi_read(*, request: Request, session: db_dependency, thinhgiang_maso: str):
+async def api_nhansu_thinhgiang_read(*, request: Request, session: db_dependency, thinhgiang_maso: str):
     thinhgiang = session.exec(select(Thinhgiang).where(thinhgiang_maso == Thinhgiang.maso)).first()
     if not thinhgiang:
         raise HTTPException(status_code=404, detail="Hero not found")
@@ -179,9 +180,69 @@ async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependen
 
 @router.get("/api/nhansu/thinhgiang/search")
 @requires('auth', redirect='login')
-async def api_nhansu_search(*, request: Request, session: db_dependency):
+async def api_nhansu_thinhgiang_search(*, request: Request, session: db_dependency):
     thinhgiangs = session.exec(select(Thinhgiang)).all()
     data = (ListThinhgiangSearchWithDonvi.model_validate({'data':thinhgiangs})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 
+############################################################
+
+
+@router.get("/api/nhansu/cohuu/read/{maso}")
+@requires('auth', redirect='login')
+async def api_nhansu_cohuu_read(*, request: Request, session: db_dependency, maso: str):
+    cohuu = session.exec(select(Cohuu).where(maso == Cohuu.maso)).first()
+    if not cohuu:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    data = (CohuuReadWithDonvi.model_validate(cohuu)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+@router.post("/api/nhansu/cohuu/update")
+@requires('auth', redirect='login')
+async def api_nhansu_cohuu_update(*, request: Request, session: db_dependency, id: int, cohuu: CohuuCreateWithDonvi):
+    donvi = cohuu.donvi
+    cohuu.donvi = []
+
+    db_cohuu = session.get(Cohuu, id)
+    if not db_cohuu:
+        raise HTTPException(status_code=404, detail="Cohuu not found")
+    
+    cohuu_data = cohuu.model_dump(exclude_unset=True)
+    for key, value in cohuu_data.items():
+        setattr(db_cohuu, key, value)
+
+    for i in range(len(donvi)):
+        db_cohuu.donvi.append(session.get(Donvi, donvi[i].id))
+
+    session.add(db_cohuu)
+    session.commit()
+    session.refresh(db_cohuu)
+    data = (CohuuSearchWithDonvi.model_validate(db_cohuu)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+
+@router.post("/api/nhansu/cohuu/create")
+@requires('auth', redirect='login')
+async def api_nhansu_cohuu_create(*, request: Request, session: db_dependency, cohuu: CohuuCreateWithDonvi):
+    donvi = cohuu.donvi
+    cohuu.donvi = []
+    new_person = Cohuu.model_validate(cohuu)
+    session.add(new_person)
+    session.commit()
+    session.refresh(new_person)
+    for i in range(len(donvi)):
+        new_person.donvi.append(session.get(Donvi, donvi[i].id))
+    session.add(new_person)
+    session.commit()
+    session.refresh(new_person)
+    data = (CohuuSearchWithDonvi.model_validate(new_person)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+
+@router.get("/api/nhansu/cohuu/search")
+@requires('auth', redirect='login')
+async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
+    cohuus = session.exec(select(Cohuu)).all()
+    data = (ListCohuuSearchWithDonvi.model_validate({'data':cohuus})).model_dump(exclude_unset=True)
+    return await sendjson(request, data)

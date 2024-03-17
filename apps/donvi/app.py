@@ -1,4 +1,3 @@
-from urllib.parse import urlencode
 import aiofiles
 from fastapi import APIRouter, HTTPException, Request, Depends, UploadFile
 from typing import Annotated, List
@@ -6,15 +5,12 @@ from starlette.authentication import requires
 from fastapi.responses import HTMLResponse
 from sqlmodel import Session, select
 import pandas as pd
-import datetime
 
-from main.functions import Requests
 from main.db_setup import get_session, engine
 from main import config
-from main.shortcuts import redirect, render, file, sendjson
-from main.services import AuthGoogle, encode
-from main.models import User, Auth, Donvi
-from main.schemas import UserList, DonviCreate, DonviRead, DonviUpdate, DonviSearch, ListDonviSearch, ListDonviRead
+from main.shortcuts import render, file, sendjson
+from main.models import Donvi
+from main.schemas import DonviCreate, DonviRead, DonviUpdate, ListDonviSearch, ListDonviRead
 
 settings = config.get_settings()
 
@@ -51,8 +47,8 @@ async def template_donvi_form_upload(request: Request):
 @router.get('/api/donvi/table', response_class=HTMLResponse)
 @requires('auth', redirect='login')
 async def api_donvi_table(*, request: Request, session: db_dependency):
-    data = session.exec(select(User)).all()
-    context = UserList.model_validate({'data': data}).model_dump()
+    data = session.exec(select(Donvi)).all()
+    context = (ListDonviRead.model_validate({'data': data})).model_dump(exclude_unset=True)
     return await render(request, "donvi", "table.html", context)
 
 
@@ -108,7 +104,7 @@ async def api_donvi_read(*, request: Request, session: db_dependency, donvi_id: 
     donvi = session.get(Donvi, donvi_id)
     if not donvi:
         raise HTTPException(status_code=404, detail="Hero not found")
-    data = DonviRead.model_validate(donvi)
+    data = (DonviRead.model_validate(donvi)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 @router.post("/api/donvi/update")

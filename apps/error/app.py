@@ -1,17 +1,12 @@
-from urllib.parse import urlencode
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, Request, Depends
 from typing import Annotated
 from starlette.authentication import requires
 from fastapi.responses import HTMLResponse
-from sqlmodel import Session, select
+from sqlmodel import Session
 
-from main.functions import Requests
 from main.db_setup import get_session
 from main import config
-from main.shortcuts import redirect, render
-from main.services import AuthGoogle, encode
-from main.models import User, Auth
-from main.schemas import UserList
+from main.shortcuts import render
 
 settings = config.get_settings()
 
