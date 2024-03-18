@@ -206,3 +206,13 @@ async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
     cohuus = session.exec(select(Nhansu).where(Nhansu.type == 'cohuu')).all()
     data = (ListNhansuSearch.model_validate({'data':cohuus})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
+
+###################################################
+
+@router.get("/api/hopdong/layso")
+@requires('auth', redirect='login')
+async def api_hopdong_layso(*, request: Request, session: db_dependency):
+    uuid = request.user.data.get('uuid')
+    nhansu = session.get(Nhansu, uuid)
+    data = (NhansuSearch.model_validate(nhansu)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)

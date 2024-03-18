@@ -30,18 +30,16 @@ class AuthMiddleware(AuthenticationBackend):
                         raise Exception('Cant find auth')
                     
                     print(f"pin client = {data['pin']}, pin server = {auth.pin}")
-                    if (auth.pin - data['pin']) > 10:
+                    if (auth.pin - data['pin']) > 20:
                         session.delete(auth)
                         session.commit()
                         raise Exception('old pin')
-                    print(auth.pin)
                     auth.pin = auth.pin + 1
                     session.add(auth)
                     session.commit()
                     session.refresh(auth)
-                    print(auth)
                     crypto = await encode(auth)
                 
-                return AuthCredentials([data.get('role'), 'auth', 'guest']), SimpleUser(uuid=data.get('uuid'), newcrypto=crypto)
+                return AuthCredentials([data.get('role'), 'auth', 'guest']), SimpleUser(uuid=auth.user_id, newcrypto=crypto)
                 # except Exception as e:
                 #     return AuthCredentials(['guest']), UnauthenticatedUser()

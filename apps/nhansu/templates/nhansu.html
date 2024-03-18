@@ -167,7 +167,7 @@
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                @click="$dispatch('runlayso')">Lấy số HĐ</div>
+                                @click="$dispatch('runlayso', {giangvien: item})">Lấy số HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -2016,9 +2016,18 @@
 
 
         <!-- start lấy số hợp đồng -->
-        <div x-data="{open: false}" x-show="open" 
+        <div x-data="{open: false, giangvien: {}, nguoilayso: {}}" x-show="open" 
         @runlayso.window="
-        open = true"
+        giangvien = $event.detail.giangvien
+        console.log(giangvien)
+        console.log('nampro')
+        fetch(`/api/hopdong/layso`)
+        .then((response) => response.json())
+        .then((result) => {
+            nguoilayso = result;
+            console.log(nguoilayso)
+            open = true
+        });"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
@@ -2028,90 +2037,7 @@
 
 
             <!-- start form lấy số -->
-            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[40px] mb-[160px] border px-[16px] pt-[32px] pb-[16px]" 
-            id="form" x-data="{ 
-                search: '',
-                selected: '',
-                dataframe: [],
-                output: [],
-                miniSearch: '',
-                isLoading: false,
-                showoptions: false,
-                choose: 0,
-                get checkselected() {
-                    return this.selected ? true : false;
-                },
-                async getData() {
-                    this.miniSearch = new MiniSearch({
-                        fields: ['sohd'],
-                        searchOptions: {
-                            prefix: true,
-                            combineWith: 'AND',
-                        },
-                        tokenize: (string, _fieldName) => string.split('.')
-                    })
-                    this.isLoading = true;
-                    fetch('/api/chucnang/danhsach-hd-moi')            
-                        .then((response) => response.json())
-                        .then((result) => {
-                            this.dataframe = result.data.reduce((byId, song) => {
-                                byId[song.id] = song;
-                                return byId;
-                            }, {});
-                            this.miniSearch.addAll(result.data);
-                            this.isLoading = false;
-                        });
-                },
-                getSearchResults() {
-                    if (this.selected) {
-                        if (this.search !== this.selected.sohd) {
-                            this.selected = ''
-                        }
-                    }
-                    console.log(this.selected['giangvien'])
-                    
-                    if (this.search === '') {
-                        this.output = []
-                        this.showoptions = false
-                    } else {
-                        this.output = this.miniSearch.search(this.search).map(({ id }) => this.dataframe[id]).slice(0, 4)
-                        this.showoptions = true
-                    }
-                        
-                },
-                checkchoose(index) {
-                    return index === this.choose
-                },
-                addItem(value) {
-                    this.search = value.sohd;
-                    this.selected = value
-                    this.showoptions = false;
-                },
-                selectoption(type) {
-                    if (type === 'up' && this.choose > 0) {
-                        this.choose = this.choose - 1
-                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
-                        this.choose = this.choose + 1
-                    }
-                },
-                enterEvent() {
-                    if (this.output.length > 0) {
-                        this.search = this.output[this.choose].sohd
-                        this.selected = this.output[this.choose]
-                        this.showoptions = false;
-                    } else {
-                        this.search = ''
-                    }
-                },
-            }"
-            x-init="getData()"
-            hx-post="/template/chucnang/loai" 
-            hx-trigger="submited from:body"
-            hx-vals='js:{"chucnang": event.detail.id}'
-            hx-ext="alpine-morph,json-enc" 
-            hx-swap="multi:#form:morph">
-                {# expander button title #}
-                <div></div>
+            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[15px] mb-[160px] border px-[16px] pt-[32px] pb-[16px]">
     
                 {# tieu de form #}
                 <div class="w-full flex flex-col gap-4 justify-start items-center mb-[20px]">
@@ -2121,16 +2047,11 @@
                     <div class="flex flex-row justify-center items-start">
                         <div class="flex flex-col justify-center items-center w-[100px]">
                             <div class="w-[25px] h-[25px] rounded-full border-none text-white bg-orange font-[500] flex flex-col justify-center items-center"><span>1</span></div>
-                            <div class="font-[500] text-gray-500">TT Chung</div>
+                            <div class="font-[500] text-gray-500">Thông tin</div>
                         </div>
                         <span><i class="fa-solid fa-chevron-right text-gray-400"></i></span>
                         <div class="flex flex-col justify-center items-center w-[100px]">
                             <div class="w-[25px] h-[25px] rounded-full border-2 text-gray-400 font-[500] flex flex-col justify-center items-center"><span>2</span></div>
-                            <div class="font-[500] text-gray-500">TT môn học</div>
-                        </div>
-                        <span><i class="fa-solid fa-chevron-right text-gray-400"></i></span>
-                        <div class="flex flex-col justify-center items-center w-[100px]">
-                            <div class="w-[25px] h-[25px] rounded-full border-2 text-gray-400 font-[500] flex flex-col justify-center items-center"><span>3</span></div>
                             <div class="font-[500] text-gray-500">Xác nhận</div>
                         </div>
                     </div>
@@ -2160,9 +2081,9 @@
                             <div>
                                 Ngày ký hợp đồng
                             </div>
-                            <input type="search" 
-                            placeholder="dd/mm/yyyy"
-                            class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            <input type="search"
+                            value="19/3/2024"
+                            class="text-gray-600 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
                     </div>
                     <!-- end thông tin hợp đồng -->
@@ -2180,7 +2101,7 @@
                                 </div>
                                 <input type="search" 
                                 disabled 
-                                value="Ngô Thị Hồng Trang"
+                                x-model="giangvien.hovaten"
                                 disabled
                                 class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
@@ -2189,8 +2110,9 @@
                                 <div>
                                     Mã số
                                 </div>
-                                <input type="search" 
-                                placeholder="QSX9700123"
+                                <input type="search"
+                                disabled
+                                x-model="giangvien.maso"
                                 class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
                         </div>
@@ -2208,10 +2130,9 @@
                             <div>
                                 Tên đơn vị mời giảng
                             </div>
-                            <input type="text" 
-                            disabled 
-                            x-model="selected['giangvien']"
-                            class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            <input type="search" 
+                            x-model="nguoilayso.donvicongtac"
+                            class="text-gray-600 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
 
                         <div class="w-full flex flex-row justify-start items-start gap-6">
@@ -2221,7 +2142,7 @@
                                 </div>
                                 <input type="search" 
                                 disabled 
-                                value="Ngô Thị Hồng Trang"
+                                x-model="nguoilayso.hovaten"
                                 disabled
                                 class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
@@ -2230,8 +2151,9 @@
                                 <div>
                                     Mã số người phụ trách
                                 </div>
-                                <input type="search" 
-                                placeholder="QSX9700123"
+                                <input type="search"
+                                x-model="nguoilayso.maso"
+                                disabled
                                 class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
                         </div>
@@ -2252,10 +2174,8 @@
                                     Hệ
                                 </div>
                                 <input type="search" 
-                                disabled 
                                 value="Chính quy (Chuẩn)"
-                                disabled
-                                class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                class="text-gray-600 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
 
                             <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
@@ -2263,10 +2183,8 @@
                                     Năm học
                                 </div>
                                 <input type="search" 
-                                disabled 
                                 value="2023-2024"
-                                disabled
-                                class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                class="text-gray-600 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
     
                             <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
@@ -2274,8 +2192,8 @@
                                     Học kỳ
                                 </div>
                                 <input type="search" 
-                                placeholder="HKI"
-                                class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                value="HK1"
+                                class="text-gray-600 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
                         </div>
     

@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.0 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -2266,6 +2266,10 @@ input.tab:checked + .tab-content,
   margin-top: 10px;
 }
 
+.mt-\[15px\] {
+  margin-top: 15px;
+}
+
 .mt-\[20px\] {
   margin-top: 20px;
 }
@@ -2606,6 +2610,10 @@ input.tab:checked + .tab-content,
   flex-basis: 32%;
 }
 
+.basis-\[33\%\] {
+  flex-basis: 33%;
+}
+
 .basis-\[45px\] {
   flex-basis: 45px;
 }
@@ -2632,10 +2640,6 @@ input.tab:checked + .tab-content,
 
 .basis-full {
   flex-basis: 100%;
-}
-
-.basis-\[33\%\] {
-  flex-basis: 33%;
 }
 
 .translate-x-\[-50\%\] {
@@ -2841,14 +2845,9 @@ input.tab:checked + .tab-content,
   border-bottom-left-radius: 1rem;
 }
 
-.rounded-l-full {
-  border-top-left-radius: 9999px;
-  border-bottom-left-radius: 9999px;
-}
-
-.rounded-l-xl {
-  border-top-left-radius: 0.75rem;
-  border-bottom-left-radius: 0.75rem;
+.rounded-l-lg {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
 }
 
 .rounded-r-3xl {
@@ -2859,16 +2858,6 @@ input.tab:checked + .tab-content,
 .rounded-t-lg {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
-}
-
-.rounded-l {
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
-
-.rounded-l-lg {
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
 }
 
 .rounded-tl-lg {

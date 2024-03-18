@@ -43,7 +43,7 @@ async def render(request: Request, template_dir:str, template_name:str, context:
 
     response = await set_cookie(response, request, cookie)
     response = await delete_cookie(response, request, clear_cookie)
-    respones = await set_header(response, headers)
+    response = await set_header(response, headers)
     return response
 
 async def redirect(request: Request, url:str, cookie:dict={}, clear_cookie:bool=False, status_code:int=307):
