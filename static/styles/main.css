@@ -2634,6 +2634,10 @@ input.tab:checked + .tab-content,
   flex-basis: 100%;
 }
 
+.basis-\[33\%\] {
+  flex-basis: 33%;
+}
+
 .translate-x-\[-50\%\] {
   --tw-translate-x: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));

@@ -167,7 +167,7 @@
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                >Lấy số HĐ</div>
+                                @click="$dispatch('runlayso')">Lấy số HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -321,7 +321,7 @@
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                >Lấy số HĐ</div>
+                                @click="$dispatch('runlayso')">Lấy số HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -1964,7 +1964,6 @@
         <!-- end hoso -->
 
 
-
         <!-- {# Điều chỉnh #} -->
         <div x-data="{show: false}"
         class="transition-none fixed bottom-[50%] translate-y-[60%] right-[0px] z-[2]">
@@ -2014,6 +2013,311 @@
             </div>
         </div>
         <!-- {# End download/upload #} -->
+
+
+        <!-- start lấy số hợp đồng -->
+        <div x-data="{open: false}" x-show="open" 
+        @runlayso.window="
+        open = true"
+        class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
+            <div x-show="open" 
+            @click="open = false; $dispatch('closepopup');" 
+            @keyup.escape.window="open = false; $dispatch('closepopup');" 
+            class="fixed left-0 top-0 w-screen h-screen bg-black opacity-70">
+            </div>
+
+
+            <!-- start form lấy số -->
+            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[40px] mb-[160px] border px-[16px] pt-[32px] pb-[16px]" 
+            id="form" x-data="{ 
+                search: '',
+                selected: '',
+                dataframe: [],
+                output: [],
+                miniSearch: '',
+                isLoading: false,
+                showoptions: false,
+                choose: 0,
+                get checkselected() {
+                    return this.selected ? true : false;
+                },
+                async getData() {
+                    this.miniSearch = new MiniSearch({
+                        fields: ['sohd'],
+                        searchOptions: {
+                            prefix: true,
+                            combineWith: 'AND',
+                        },
+                        tokenize: (string, _fieldName) => string.split('.')
+                    })
+                    this.isLoading = true;
+                    fetch('/api/chucnang/danhsach-hd-moi')            
+                        .then((response) => response.json())
+                        .then((result) => {
+                            this.dataframe = result.data.reduce((byId, song) => {
+                                byId[song.id] = song;
+                                return byId;
+                            }, {});
+                            this.miniSearch.addAll(result.data);
+                            this.isLoading = false;
+                        });
+                },
+                getSearchResults() {
+                    if (this.selected) {
+                        if (this.search !== this.selected.sohd) {
+                            this.selected = ''
+                        }
+                    }
+                    console.log(this.selected['giangvien'])
+                    
+                    if (this.search === '') {
+                        this.output = []
+                        this.showoptions = false
+                    } else {
+                        this.output = this.miniSearch.search(this.search).map(({ id }) => this.dataframe[id]).slice(0, 4)
+                        this.showoptions = true
+                    }
+                        
+                },
+                checkchoose(index) {
+                    return index === this.choose
+                },
+                addItem(value) {
+                    this.search = value.sohd;
+                    this.selected = value
+                    this.showoptions = false;
+                },
+                selectoption(type) {
+                    if (type === 'up' && this.choose > 0) {
+                        this.choose = this.choose - 1
+                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                        this.choose = this.choose + 1
+                    }
+                },
+                enterEvent() {
+                    if (this.output.length > 0) {
+                        this.search = this.output[this.choose].sohd
+                        this.selected = this.output[this.choose]
+                        this.showoptions = false;
+                    } else {
+                        this.search = ''
+                    }
+                },
+            }"
+            x-init="getData()"
+            hx-post="/template/chucnang/loai" 
+            hx-trigger="submited from:body"
+            hx-vals='js:{"chucnang": event.detail.id}'
+            hx-ext="alpine-morph,json-enc" 
+            hx-swap="multi:#form:morph">
+                {# expander button title #}
+                <div></div>
+    
+                {# tieu de form #}
+                <div class="w-full flex flex-col gap-4 justify-start items-center mb-[20px]">
+                    <div class="w-full text-[27px] font-[600] leading-tight mb-[20px]">
+                        Lấy số hợp đồng mời giảng
+                    </div>
+                    <div class="flex flex-row justify-center items-start">
+                        <div class="flex flex-col justify-center items-center w-[100px]">
+                            <div class="w-[25px] h-[25px] rounded-full border-none text-white bg-orange font-[500] flex flex-col justify-center items-center"><span>1</span></div>
+                            <div class="font-[500] text-gray-500">TT Chung</div>
+                        </div>
+                        <span><i class="fa-solid fa-chevron-right text-gray-400"></i></span>
+                        <div class="flex flex-col justify-center items-center w-[100px]">
+                            <div class="w-[25px] h-[25px] rounded-full border-2 text-gray-400 font-[500] flex flex-col justify-center items-center"><span>2</span></div>
+                            <div class="font-[500] text-gray-500">TT môn học</div>
+                        </div>
+                        <span><i class="fa-solid fa-chevron-right text-gray-400"></i></span>
+                        <div class="flex flex-col justify-center items-center w-[100px]">
+                            <div class="w-[25px] h-[25px] rounded-full border-2 text-gray-400 font-[500] flex flex-col justify-center items-center"><span>3</span></div>
+                            <div class="font-[500] text-gray-500">Xác nhận</div>
+                        </div>
+                    </div>
+                    <div class="w-full border m-[15px]"></div>
+                </div>
+                {# end tieu de form #}
+    
+                <!-- {# body form #} -->
+                <!-- start thông tin hợp đồng -->
+                <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px]">
+                    <div class="text-[16px] text-black font-[500]">
+                        Thông tin hợp đồng
+                    </div>
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Số hợp đồng (dự kiến)
+                            </div>
+                            <input type="search" 
+                            disabled 
+                            value="01/2023/HĐMG-XHNV-TCCB"
+                            disabled
+                            class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Ngày ký hợp đồng
+                            </div>
+                            <input type="search" 
+                            placeholder="dd/mm/yyyy"
+                            class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+                    </div>
+                    <!-- end thông tin hợp đồng -->
+
+                    <!-- {# thông tin giảng viên #} -->
+                    <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px]">
+                        <div class="text-[16px] text-black font-[500]">
+                            Thông tin giảng viên
+                        </div>
+    
+                        <div class="w-full flex flex-row justify-start items-start gap-6">
+                            <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Họ và tên
+                                </div>
+                                <input type="search" 
+                                disabled 
+                                value="Ngô Thị Hồng Trang"
+                                disabled
+                                class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+    
+                            <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Mã số
+                                </div>
+                                <input type="search" 
+                                placeholder="QSX9700123"
+                                class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- {# end thông tin giảng viên #} -->
+    
+                    <!-- {# thông tin đơn vị mời giảng #} -->
+                    <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px]">
+                        <div class="text-[16px] text-black font-[500]">
+                            Thông tin đơn vị mời giảng
+                        </div>
+
+                        <div class="w-full shrink flex flex-col justify-start items-start gap-2">
+                            <div>
+                                Tên đơn vị mời giảng
+                            </div>
+                            <input type="text" 
+                            disabled 
+                            x-model="selected['giangvien']"
+                            class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                        </div>
+
+                        <div class="w-full flex flex-row justify-start items-start gap-6">
+                            <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Họ và tên người phụ trách
+                                </div>
+                                <input type="search" 
+                                disabled 
+                                value="Ngô Thị Hồng Trang"
+                                disabled
+                                class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+    
+                            <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Mã số người phụ trách
+                                </div>
+                                <input type="search" 
+                                placeholder="QSX9700123"
+                                class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- {# end thông tin đơn vị mời giảng #} -->
+
+
+                    <!-- {# thông tin giảng dạy #} -->
+                    <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px]">
+                        <div class="text-[16px] text-black font-[500]">
+                            Thông tin giảng dạy
+                        </div>
+                        <div class="w-full flex flex-row justify-start items-start gap-6">
+
+                            <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Hệ
+                                </div>
+                                <input type="search" 
+                                disabled 
+                                value="Chính quy (Chuẩn)"
+                                disabled
+                                class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+
+                            <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Năm học
+                                </div>
+                                <input type="search" 
+                                disabled 
+                                value="2023-2024"
+                                disabled
+                                class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+    
+                            <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Học kỳ
+                                </div>
+                                <input type="search" 
+                                placeholder="HKI"
+                                class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- {# end thông tin giảng dạy #} -->                   
+
+
+
+                    <div class="w-full border my-[15px]"></div>
+                </div>
+    
+                <div class="w-full flex flex-row justify-between items-start mb-[20px]">
+                    <div class="">
+                        <!-- {# button cancel #} -->
+                        <input type="submit"
+                        value="Cancel"
+                        @click="$dispatch('submited', {id: selected.id})"
+                        class="hover:border-orange hover:text-orange z-[1] text-[14px] font-[500] px-[20px] py-[5px] rounded-lg leading-normal cursor-pointer border border-gray-500 text-gray-600">
+                        <!-- {# end button cancel #} -->
+                    </div>
+    
+                    <div class="flex flex-row justify-end items-start gap-4">
+                        <!-- {# button back #} -->
+                        <input type="submit"
+                        value="Back"
+                        @click="$dispatch('submited', {id: selected.id})"
+                        class="hover:border-orange hover:text-orange z-[1] text-[14px] font-[500] px-[20px] py-[5px] rounded-lg leading-normal cursor-pointer border border-gray-500 text-gray-600">
+                        <!-- {# end button back #} -->
+                        <!-- {# button Next #} -->
+                        <input type="submit"
+                        value="Next"
+                        @click="$dispatch('submited', {id: selected.id})"
+                        class="hover:border-orange hover:text-orange z-[1] text-[14px] font-[500] px-[20px] py-[5px] rounded-lg leading-normal cursor-pointer border border-gray-500 text-gray-600">
+                        <!-- {# end button Next #} -->
+                    </div>
+                </div>
+    
+            </div>
+            <!-- end form lấy số -->
+
+        </div>
+        <!-- end lấy số hợp đồng -->
 
     </div>  
 </div>
