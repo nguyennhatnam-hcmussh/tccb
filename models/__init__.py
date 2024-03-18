@@ -1,1 +1,1 @@
-from .models import Donvi, Auth, Thinhgiang, Cohuu
+from .models import Donvi, Auth, Nhansu, Hopdong

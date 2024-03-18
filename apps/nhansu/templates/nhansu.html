@@ -7,15 +7,8 @@
         isLoading: false
     }"
     class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
+        <!-- {# Search #} -->
         <div class="w-full flex flex-row justify-center items-center shrink-0">
-
-            <!-- {# Trang chủ/nhân sự #}
-            <div class="w-[150px] flex flex-col justify-start items-start">
-            </div>
-            {# End Trang chủ/nhân sự #} -->
-
-
-            <!-- {# Search #} -->
             <div class="w-[500px] h-[50px] rounded-3xl bg-gray-100 flex flex-row justify-start items-center mb-[20px]">
                 <div class="basis-[50px] shrink-0 rounded-full">
                     <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-400"></i>
@@ -25,34 +18,179 @@
                 class="transition-none bg-gray-100 p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
                 type="search">
             </div>
-            <!-- {# End search #} -->
-
         </div>
+        <!-- {# End search #} -->
+
 
         <!-- tabs row-->
         <div id="tabs" 
         x-data="{tab1Active: false, tab2Active: true}"
-        class="z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
+        class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
             <div id="tab" 
             :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
             @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
-            class="p-[10px] cursor-pointer">Nhân sự trong Trường</div>
+            class="transition-none p-[10px] cursor-pointer">Nhân sự trong Trường</div>
             <div id="tab2"
             :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
             @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
-            class="p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
+            class="transition-none p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
         </div>
         <!-- end tabs row -->
 
         <!-- tab 1 -->
-        <div x-data="{show:false}"
+        <div x-data="{show:false,
+            dataframe: {},
+            output: [],
+            miniSearch: '',
+            async getData() {
+                console.log('namprooooo')
+                this.miniSearch = new MiniSearch({
+                    fields: ['maso','hovaten','ngaysinh'],
+                    searchOptions: {
+                        prefix: true,
+                        combineWith: 'AND',
+                    },
+                    extractField: (document, fieldName) => {
+                        if (fieldName === 'maso') {
+                            const nguyen = document['maso']
+                            if (nguyen) {
+                                return nguyen && nguyen + ' ' + nguyen.slice(6) + ' ' + nguyen.slice(3)
+                            }
+                        }
+                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
+                    },
+                })
+                isLoading = true;
+                fetch('/api/nhansu/cohuu/search')            
+                    .then((response) => response.json())
+                    .then((result) => {
+                        result = result.data
+                        console.log(result);
+                        this.dataframe = result.reduce((byId, song) => {
+                            byId[song.id] = song;
+                            return byId;
+                        }, {});
+                        this.output = Object.values(this.dataframe);
+                        this.miniSearch.addAll(result);
+                        isLoading = false;
+                    });
+            },
+            getSearchResults() {
+                if (search === '') {
+                    this.output = Object.values(this.dataframe);
+                } else {
+                    this.output = this.miniSearch.search(search).map(({ id }) => this.dataframe[id])
+                }
+            },
+            updateCohuu(data) {
+                console.log(this.dataframe[data.id])
+                console.log(data)
+                if (this.dataframe[data.id]) {
+                    this.miniSearch.remove(this.dataframe[data.id])
+                    delete this.dataframe[data.id]
+                }
+                this.dataframe[data.id] = data
+                this.miniSearch.add(this.dataframe[data.id])
+                this.getSearchResults()
+            }
+        }"
         @tab2.window="show = false"
         @tab1.window="show = true"
+        x-init="getData()"
+        @updatecohuu.window="updateCohuu($event.detail.data)"
+        @searching.window="getSearchResults()"
         x-show="show"
         class="w-full max-w-[1000px]">
-        TAB NHANSU IN TRUONG - COMMING SOON...
-        </div>
+            {# Table #}
+            <div id="table" class="transition-none z-[1] min-w-[750px] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
+                <!-- head of table -->
+                <div id="thead" 
+                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
+                    <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
+                        <div class="p-[15px]">#</div>
+                    </div>
+                    <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">MSCB</div>
+                    </div>
+                    <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Họ và tên</div>
+                    </div>
+                    <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Ngày sinh</div>
+                    </div>
+                    <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center">
+                        <div class="py-[15px]">Đơn vị</div>
+                    </div>
+                    <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
+                        <div class="py-[15px]">@</div>
+                    </div>
+                </div>
+                <!-- end head of table -->            
+            
+                <!-- body of table -->
+                <div id="tbody" 
+                x-show="! isLoading"
+                class="bg-white min-w-[750px] max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
+                    <template x-for="(item, index) in output" :key="index">
+                        <div id="trow" class="hover:bg-gray-100 cursor-default w-full min-w-[750px] flex flex-row bg-white font-[500]">
+                            {# index #}
+                            <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
+                                <div x-text="index + 1" class="py-[10px] px-[15px]"></div>
+                            </div>
+                            {# end index #}
 
+                            {# maso #}
+                            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
+                                <div x-text="item.maso" class="py-[10px]"></div>
+                            </div>
+                            {# end maso #}
+
+                            {# hovaten #}
+                            <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center text-blue">
+                                <div @click="$dispatch('portfolio', {target: item.maso, type: 'cohuu'})"
+                                x-text="item.hovaten" class="py-[10px] hover:underline cursor-pointer"></div>
+                            </div>
+                            {# end hovaten #}
+
+                            {# ngaysinh #}
+                            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
+                                <div x-text="item.ngaysinh" class="py-[10px]"></div>
+                            </div>
+                            {# end ngaysinh #}
+
+                            {# donvi #}
+                            <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
+                                <div x-text="item.donvicongtac" class="py-[10px]"></div>
+                            </div>
+                            {# end donvi #}
+
+                            {# button hoso #}
+                            <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
+                                <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
+                                >Lấy số HĐ</div>
+                            </div>
+                            {# end button hoso #}
+                        </div>
+                    </template>
+                </div>
+                <!-- end body of table -->
+
+                {# skeleton #}
+                <div x-show="isLoading"
+                class="mt-[20px] relative min-w-[750px] w-full flex flex-col gap-8">
+                    <div class="skeleton h-32 w-full"></div>
+                    <div class="skeleton h-4 w-28"></div>
+                    <div class="skeleton h-4 w-full"></div>
+                    <div class="skeleton h-4 w-full"></div>
+                </div>
+                {# end skeleton #}
+
+            </div>
+            {# End Table #}
+        </div>
+        <!-- end tab 1 -->
+
+        
         <!-- tab 2 -->
         <div x-data="{show:true,
             dataframe: {},
@@ -81,6 +219,7 @@
                     .then((response) => response.json())
                     .then((result) => {
                         result = result.data
+                        console.log(result);
                         this.dataframe = result.reduce((byId, song) => {
                             byId[song.id] = song;
                             return byId;
@@ -106,18 +245,18 @@
                 }
                 this.dataframe[data.id] = data
                 this.miniSearch.add(this.dataframe[data.id])
-                getSearchResults()
+                this.getSearchResults()
             }
         }"
         @tab2.window="show = true"
         @tab1.window="show = false"
         x-init="console.log('laplai');getData()"
-        @updatethinhgiang="updateThinhgiang($event.detail.data)"
+        @updatethinhgiang.window="updateThinhgiang($event.detail.data)"
         @searching.window="getSearchResults()"
         x-show="show"
         class="w-full max-w-[1000px]">
             {# Table #}
-            <div id="table" class="z-[1] min-w-[750px] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
+            <div id="table" class="transition-none z-[1] min-w-[750px] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
                 <!-- head of table -->
                 <div id="thead" 
                 class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
@@ -134,7 +273,7 @@
                         <div class="py-[15px]">Ngày sinh</div>
                     </div>
                     <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center">
-                        <div class="py-[15px]">Đơn vị mời giảng gần nhất</div>
+                        <div class="py-[15px]">Đơn vị công tác</div>
                     </div>
                     <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
                         <div class="py-[15px]">@</div>
@@ -162,7 +301,7 @@
 
                             {# hovaten #}
                             <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center text-blue">
-                                <div @click="$dispatch('portfolio', {target: item.maso})"
+                                <div @click="$dispatch('portfolio', {target: item.maso, type: 'thinhgiang'})"
                                 x-text="item.hovaten" class="py-[10px] hover:underline cursor-pointer"></div>
                             </div>
                             {# end hovaten #}
@@ -175,7 +314,7 @@
 
                             {# donvi #}
                             <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
-                                <div x-text="item.donvi[0].ten" class="py-[10px]"></div>
+                                <div x-text="item.donvicongtac" class="py-[10px]"></div>
                             </div>
                             {# end donvi #}
 
@@ -206,20 +345,22 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: '', thinhgiang: {}, button_text: 'Cập nhật'}" x-show="open" 
-        @portfolio.window="target = $event.detail.target;
-        open = true
+        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật'}" x-show="open" 
+        @portfolio.window="target = $event.detail.target; type = $event.detail.type;
+        console.log(type)
         button_text = 'Cập nhật'
-        fetch(`/api/nhansu/thinhgiang/read/${target}`)
+        fetch(`/api/nhansu/read/${target}`)
         .then((response) => response.json())
         .then((result) => {
             thinhgiang = result;
+            open = true
         });"
         @newportfolio.window="
+        type = $event.detail.type;
         open = true,
         button_text = 'Thêm mới'
         target='NEW';
-        thinhgiang = {}"
+        thinhgiang = (type === 'cohuu') ? {co_llkh: true, co_bang: true, co_nvsp: true} : {co_llkh: false, co_bang: false, co_nvsp: false}"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
@@ -1265,6 +1406,7 @@
                                 if (thinhgiang.hocham) {
                                     return false;
                                 } else {
+                                    thinhgiang.hocham_nganh = ''
                                     return true;
                                 }
                             }
@@ -1492,16 +1634,142 @@
                     <div class="w-full flex flex-row justify-start items-start gap-6">
 
 
-
-                        <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                        <!-- start đơn vị công tác -->
+                        <div x-data="{
+                            showoptions: false,
+                            output: [],
+                            dataframe: [],
+                            research: '',
+                            backspace: true,
+                            choose: 0,
+                            miniSearch: '',
+                            async getData() {
+                                this.miniSearch = new MiniSearch({
+                                    fields: ['ten'],
+                                    searchOptions: {
+                                        prefix: true,
+                                        combineWith: 'AND',
+                                    }
+                                })
+                                console.log(type)
+                                if (type == 'cohuu') {
+                                    url = '/api/donvi/danhmuc'
+                                } else {
+                                    url = '/api/danhmuc/donvi'
+                                }
+                                fetch(url)            
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    result = (type == 'cohuu') ? result.data : result
+                                    this.dataframe = result.reduce((byId, song) => {
+                                        byId[song.id] = song;
+                                        return byId;
+                                    }, {});
+                                    this.output = Object.values(this.dataframe);
+                                    this.miniSearch.removeAll();
+                                    this.miniSearch.addAll(result);
+                                });
+                            },
+                            filteredItems() {
+                                this.showoptions = true;
+                                if (thinhgiang.donvicongtac) {
+                                    this.output = this.miniSearch.search(thinhgiang.donvicongtac).map(({ id }) => this.dataframe[id])
+                                } else {
+                                    this.output = Object.values(this.dataframe);
+                                }
+                            },
+                            addItem(item) {
+                                thinhgiang.donvicongtac = item.ten;
+                                this.showoptions = false;
+                            },
+                            checkItem() {
+                                this.filteredItems()
+                                if (this.output.length >= 1) {
+                                    if (thinhgiang.donvicongtac != this.output[0].ten) {
+                                        thinhgiang.donvicongtac = ''
+                                    }
+                                } else {
+                                    thinhgiang.donvicongtac = ''
+                                }
+                            },
+                            enterEvent() {
+                                if (this.output) {
+                                    this.addItem(this.output[this.choose])
+                                } else {
+                                    thinhgiang.donvicongtac = ''
+                                }
+                            },
+                            eventBackspace() {
+                                this.backspace = true;
+                            },
+                            showoptionscheck(e) {
+                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                    this.choose = 0;
+                                }
+                            },
+                            focusinputcheck() {
+                                this.filteredItems();
+                                this.showoptions = true;
+                            },
+                            checkchoose(index) {
+                                return index === this.choose
+                            },
+                            selectoption(type) {
+                                if (type === 'up' && this.choose > 0) {
+                                    this.choose = this.choose - 1
+                                    item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                    frame = $refs.donvicongtac.getBoundingClientRect()
+                                    if ((item.bottom - frame.top) < item.height) {
+                                        $refs.donvicongtac.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    }
+                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                    this.choose = this.choose + 1
+                                    item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                    frame = $refs.donvicongtac.getBoundingClientRect()
+                                    if ((frame.bottom - item.top) < item.height) {
+                                        $refs.donvicongtac.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                    }
+                                }
+                            }
+                        }" x-init="getData()"
+                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
                                 Đơn vị công tác chính
                             </div>
-                            <input type="text" 
+                            <input type="search"
+                            @focusout.debounce.100ms="checkItem();showoptions = false;"
+                            @keyup.enter="enterEvent()"
+                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                            @keyup.up.prevent
+                            @keyup.down.prevent
+                            x-ref="input"
+                            @focus="focusinputcheck()"
+                            @keyup = 'showoptionscheck'
+                            @keyup.backspace="eventBackspace"
+                            @portfolio.window="getData($event.detail.type)"
+                            @newportfolio.window="getData($event.detail.type)"
                             x-model="thinhgiang.donvicongtac"
+                            @input="filteredItems()"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
-                        </div>
 
+                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                <ul x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                    <template x-if="output.length === 0">
+                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                    </template>
+                                    <template x-for="(item, index) in output" :key="item.id">
+                                        <li x-text="item.ten"
+                                        :id="'donvicongtac'+index"
+                                        @click="addItem(item)"
+                                        @mouseover="choose = index"
+                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- end đơn vị công tác -->
 
                         <!-- chức danh nghề nghiệp chính -->
                         <div x-data="{
@@ -1662,15 +1930,6 @@
                     <div class="w-full border my-[15px]"></div>
                 </div>
 
-
-
-
-
-
-
-
-
-
                 <!-- end noi dung -->
 
                 <!-- button -->
@@ -1680,9 +1939,9 @@
                         x-model="button_text"
                         @click="{id, ...thinhgiangg} = thinhgiang;
                         if (target == 'NEW') {
-                            url = '/api/nhansu/thinhgiang/create'
+                            url = `/api/nhansu/${type}/create`
                         } else {
-                            url = `/api/nhansu/thinhgiang/update?id=${thinhgiang.id}`
+                            url = `/api/nhansu/update?id=${thinhgiang.id}`
                         }
                         fetch(url, {
                             method:'POST',
@@ -1692,7 +1951,7 @@
                         .then((response) => response.json())
                         .then((result) => {
                             console.log(result)
-                            $dispatch('updatethinhgiang', {data: result})
+                            $dispatch(`update${type}`, {data: result})
                             open = false; 
                             $dispatch('closepopup');
                         });"
@@ -1710,13 +1969,15 @@
         <div x-data="{show: false}"
         class="transition-none fixed bottom-[50%] translate-y-[60%] right-[0px] z-[2]">
             <div class="transition-none min-h-[50px] min-w-[10px] border-l-2 border-y-2 border-orange px-[5px] py-[20px] shadow-md flex flex-col justify-center items-center gap-4 relative"
-            :class="show ? 'bg-white cursor-default rounded-l-2xl' : 'bg-orange cursor-pointer rounded-l-full'"
+            :class="show ? 'bg-white cursor-default rounded-l-2xl' : 'bg-orange cursor-pointer rounded-l-lg'"
             @mouseover="show=true" @mouseover.away="show=false">
                 <div class="absolute left-[1px]">
                     <i x-show="!show" class="text-white fa-solid fa-caret-left"></i>
                 </div>
-                <div x-show="show"
-                @click="$dispatch('newportfolio')"
+                <div x-show="show" x-data="{type: ''}"
+                @tab1.window="type='cohuu'"
+                @tab2.window="type='thinhgiang'"
+                @click="$dispatch('newportfolio', {type: type})"
                 class="w-[30px] h-[30px] bg-orange text-white text-[16px] font-[500] rounded-full flex justify-center items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-plus"></i>
                 </div>

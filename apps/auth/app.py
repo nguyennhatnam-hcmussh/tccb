@@ -10,7 +10,7 @@ from main.db_setup import get_session
 from main import config
 from main.shortcuts import redirect, render
 from main.services import AuthGoogle, encode
-from main.models import Cohuu, Auth
+from main.models import Nhansu, Auth
 
 settings = config.get_settings()
 
@@ -60,7 +60,7 @@ async def api_user_auth_google(*, session: db_dependency, request: Request, code
 
     result = await AuthGoogle(code)
     
-    user = session.exec(select(Cohuu).where(Cohuu.email == result.get('email'))).one()
+    user = session.exec(select(Nhansu).where(Nhansu.email == result.get('email'))).one()
     
     await Requests.download_image(result.get('picture'), str(user.id))
     

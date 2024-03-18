@@ -32,15 +32,15 @@
         <!-- tabs row-->
         <div id="tabs-donvi" 
         x-data="{tab1Active: true, tab2Active: false}"
-        class="z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
+        class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
             <div id="tab1-donvi" 
             :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
             @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
-            class="p-[10px] cursor-pointer">Đơn vị thuộc Trường</div>
+            class="transition-none p-[10px] cursor-pointer">Đơn vị thuộc Trường</div>
             <div id="tab2-donvi"
             :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
             @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
-            class="p-[10px] cursor-pointer">Đơn vị thuộc đơn vị</div>
+            class="transition-none p-[10px] cursor-pointer">Đơn vị thuộc đơn vị</div>
         </div>
         <!-- end tabs row -->
 
@@ -285,7 +285,7 @@
         <div x-data="{show: false}"
         class="transition-none fixed bottom-[50%] translate-y-[60%] right-[0px] z-[2]">
             <div class="transition-none min-h-[50px] min-w-[10px] border-l-2 border-y-2 border-orange px-[5px] py-[20px] shadow-md flex flex-col justify-center items-center gap-4 relative"
-            :class="show ? 'bg-white cursor-default rounded-l-2xl' : 'bg-orange cursor-pointer rounded-l-full'"
+            :class="show ? 'bg-white cursor-default rounded-l-2xl' : 'bg-orange cursor-pointer rounded-l-lg'"
             @mouseover="show=true" @mouseover.away="show=false">
                 <div class="absolute left-[1px]">
                     <i x-show="!show" class="text-white fa-solid fa-caret-left"></i>

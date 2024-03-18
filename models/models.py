@@ -6,21 +6,16 @@ from main.schemas import (
     Base, 
     DonviBase, 
     AuthBase, 
-    ThinhgiangBase,
-    CohuuBase,
+    NhansuBase,
+    HopdongBase
 )
 
 settings = get_settings()
 
 ################# LINK ##################
 
-class ThinhgiangOfDonvi(Base, table=True):
-    thinhgiang_id: int | None = Field(default=None, foreign_key="thinhgiang.id", primary_key=True)
-    donvi_id: int | None = Field(default=None, foreign_key="donvi.id", primary_key=True)
-
-
-class CohuuOfDonvi(Base, table=True):
-    cohuu_id: int | None = Field(default=None, foreign_key="cohuu.id", primary_key=True)
+class NhansuOfDonvi(Base, table=True):
+    nhansu_id: int | None = Field(default=None, foreign_key="nhansu.id", primary_key=True)
     donvi_id: int | None = Field(default=None, foreign_key="donvi.id", primary_key=True)
 
 
@@ -29,30 +24,27 @@ class CohuuOfDonvi(Base, table=True):
 class Donvi(DonviBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
-    cohuu: List["Cohuu"] = Relationship(back_populates="donvi", link_model=CohuuOfDonvi)
-    thinhgiang: List["Thinhgiang"] = Relationship(back_populates="donvi", link_model=ThinhgiangOfDonvi)
+    nhansu: List["Nhansu"] = Relationship(back_populates="donvi", link_model=NhansuOfDonvi)
 
+
+################# HOP DONG ##################
+    
+class Hopdong(HopdongBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+    nhansu_id: Optional[int] = Field(default=None, foreign_key="nhansu.id")
 
 
 ################# CƠ HỮU ##################
     
-class Cohuu(CohuuBase, table=True):
+class Nhansu(NhansuBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
-    donvi: List["Donvi"] = Relationship(back_populates="cohuu", link_model=CohuuOfDonvi)
-
-
-
-################# THỈNH GIẢNG ##################
-    
-class Thinhgiang(ThinhgiangBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
-    donvi: List["Donvi"] = Relationship(back_populates="thinhgiang", link_model=ThinhgiangOfDonvi)
-
+    donvi: List["Donvi"] = Relationship(back_populates="nhansu", link_model=NhansuOfDonvi)
 
 
 ################# AUTH ##################
     
 class Auth(AuthBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+

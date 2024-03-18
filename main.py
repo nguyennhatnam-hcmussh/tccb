@@ -13,7 +13,7 @@ from main.config import get_settings
 from main.db_setup import get_session
 from main.shortcuts import file, redirect, render
 from main.functions import Requests
-from main.models import Cohuu
+from main.models import Nhansu
 from main.middlewares.process_time import CustomHeaderMiddleware
 from main.middlewares.auth import AuthMiddleware
 from main.apps import (
@@ -82,13 +82,14 @@ async def notfound_gif(request: Request):
 @requires('guest')
 async def active_root(*, request: Request, session: db_dependency, key_secret:str):
     if key_secret == 'MrfzY7EhnRv6RQqa6tf1eeJxxUyt6Xrrj3xcepcZJrTMMewh':
-        if not session.exec(select(Cohuu).where(Cohuu.maso == 'QSX9710428')).first():
-            nampro = Cohuu(
+        if not session.exec(select(Nhansu).where(Nhansu.maso == 'QSX9710428')).first():
+            nampro = Nhansu(
                 maso='QSX9710428',
                 hovaten="Nguyễn Nhật Nam",
                 email="nguyennhatnam@hcmussh.edu.vn",
                 sdt="0353469292",
                 role="root",
+                type='cohuu'
             )
             session.add(nampro)
             session.commit()

@@ -8,7 +8,7 @@ from main.functions import CheckEnum
 from .base import Base
 from .donvi import DonviSearch
 
-class ThinhgiangBase(Base):
+class NhansuBase(Base):
     id: int | None = Field(default=None)
     maso: str | None = Field(default=None, index=True)
     email: str | None = Field(default=None, index=True)
@@ -24,17 +24,15 @@ class ThinhgiangBase(Base):
     CCCD_so: str | None = Field(default=None)
     CCCD_ngay: str | None = Field(default=None)
     chucdanh: str | None = Field(default=None)
-    donvicongtac: str | None = Field(default=None)
-    co_bang: bool = Field(default=False)
-    co_llkh: bool = Field(default=False)
-    co_nvsp: bool = Field(default=False)
-
-
-class ThinhgiangCreate(ThinhgiangBase):
-    ngaysinh: str | None = Field(default=None)
-    CCCD_ngay: str | None = Field(default=None)
-    email: str | None = Field(default=None)
-    gioitinh: str | None = Field(default=None)
+    donvicongtac: str | None = Field(default="Lao động tự do")
+    co_bang: bool = Field(default=True)
+    co_llkh: bool = Field(default=True)
+    co_nvsp: bool = Field(default=True)
+    type: str = Field(default='thinhgiang') # cohuu - thinhgiang
+    role: str = Field(default='user') # user - mod - admin - root
+    
+    
+class NhansuCreate(NhansuBase):
 
     @field_validator('gioitinh')
     @classmethod
@@ -62,11 +60,7 @@ class ThinhgiangCreate(ThinhgiangBase):
         return v
 
 
-class ThinhgiangCreateWithDonvi(ThinhgiangBase):
-    ngaysinh: str | None = Field(default=None)
-    CCCD_ngay: str | None = Field(default=None)
-    email: str | None = Field(default=None)
-    gioitinh: str | None = Field(default=None)
+class NhansuCreateWithDonvi(NhansuBase):
     donvi: List["DonviSearch"] | None = Field(default=None)
 
     @field_validator('gioitinh')
@@ -95,10 +89,7 @@ class ThinhgiangCreateWithDonvi(ThinhgiangBase):
         return v
 
 
-class ThinhgiangRead(ThinhgiangBase):
-    id: int
-    ngaysinh: str | None
-
+class NhansuRead(NhansuBase):
     @field_validator('ngaysinh','CCCD_ngay')
     @classmethod
     def modify_ngaysinh(cls, v: str | None) -> str | None:
@@ -108,9 +99,7 @@ class ThinhgiangRead(ThinhgiangBase):
         return v
 
 
-class ThinhgiangReadWithDonvi(ThinhgiangBase):
-    id: int
-    ngaysinh: str | None
+class NhansuReadWithDonvi(NhansuBase):
     donvi: List["DonviSearch"]
 
     @field_validator('ngaysinh','CCCD_ngay')
@@ -120,16 +109,31 @@ class ThinhgiangReadWithDonvi(ThinhgiangBase):
             date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
             return date
         return v
-
-
-class ThinhgiangSearchWithDonvi(Base):
+    
+    
+class NhansuSearch(Base):
     id: int
     maso: str | None = Field(default=None)
     hovaten: str | None = Field(default=None)
     ngaysinh: str | None = Field(default=None)
+    donvicongtac: str | None = Field(default=None)
+    
+    @field_validator('ngaysinh')
+    @classmethod
+    def modify_ngaysinh(cls, v: str | None) -> str | None:
+        if v:
+            date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
+            return date
+        return v
+
+
+class ListNhansuSearch(Base):
+    data: List[NhansuSearch]
+
+
+class NhansuSearchWithDonvi(NhansuSearch):
     donvi: List["DonviSearch"]
     
-
     @field_validator('ngaysinh')
     @classmethod
     def modify_ngaysinh(cls, v: str | None) -> str | None:
@@ -138,6 +142,5 @@ class ThinhgiangSearchWithDonvi(Base):
             return date
         return v
     
-class ListThinhgiangSearchWithDonvi(Base):
-    data: List[ThinhgiangSearchWithDonvi]
-    
+class ListNhansuSearchWithDonvi(Base):
+    data: List[NhansuSearchWithDonvi]
