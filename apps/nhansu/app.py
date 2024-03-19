@@ -13,8 +13,9 @@ from main.db_setup import get_session, engine
 from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
-from main.models import Donvi, Nhansu
+from main.models import Donvi, Nhansu, Hopdong
 from main.schemas import NhansuCreate, NhansuRead, NhansuSearch, NhansuCreateWithDonvi, NhansuReadWithDonvi, NhansuSearchWithDonvi, ListNhansuSearch, ListNhansuSearchWithDonvi
+from main.schemas import HopdongCreate
 
 settings = config.get_settings()
 
@@ -162,8 +163,9 @@ async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependen
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
-    for i in range(len(donvi)):
-        new_person.donvi.append(session.get(Donvi, donvi[i].id))
+    if donvi:
+        for i in range(len(donvi)):
+            new_person.donvi.append(session.get(Donvi, donvi[i].id))
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
@@ -191,8 +193,9 @@ async def api_nhansu_cohuu_create(*, request: Request, session: db_dependency, c
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
-    for i in range(len(donvi)):
-        new_person.donvi.append(session.get(Donvi, donvi[i].id))
+    if donvi:
+        for i in range(len(donvi)):
+            new_person.donvi.append(session.get(Donvi, donvi[i].id))
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
@@ -209,10 +212,38 @@ async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
 
 ###################################################
 
-@router.get("/api/hopdong/layso")
+@router.get("/api/nhansu/me/search")
 @requires('auth', redirect='login')
-async def api_hopdong_layso(*, request: Request, session: db_dependency):
+async def api_nhansu_me_search(*, request: Request, session: db_dependency):
     uuid = request.user.data.get('uuid')
     nhansu = session.get(Nhansu, uuid)
     data = (NhansuSearch.model_validate(nhansu)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
+
+
+############################################################
+
+@router.post("/api/hopdong/create")
+@requires('auth', redirect='login')
+async def api_hopdong_create(*, request: Request, session: db_dependency, hopdong: NhansuCreateWithDonvi):
+    donvimoi = hopdong.donvimoi
+    giangvien = hopdong.giangvien
+    nguoiphutrach = hopdong.nguoiphutrach
+    hopdong.donvimoi = None
+    hopdong.giangvien = None
+    hopdong.nguoiphutrach = None
+
+    new_hopdong = Hopdong.model_validate(hopdong)
+    session.add(new_hopdong)
+    session.commit()
+    session.refresh(new_hopdong)
+    if donvimoi:
+        new_hopdong.donvimoi.append(session.exec(select(Donvi).where(Donvi.ten == donvimoi)))
+    if giangvien:
+        new_hopdong.giangvien.append(session.exec(select(Nhansu).where(Nhansu.maso == giangvien)))
+    if nguoiphutrach:
+        new_hopdong.nguoiphutrach.append(session.exec(select(Nhansu).where(Nhansu.maso == nguoiphutrach)))
+    session.add(new_hopdong)
+    session.commit()
+    session.refresh(new_hopdong)
+    return await sendjson(request, {'message': 'success'})

@@ -24,7 +24,7 @@
 
         <!-- tabs row-->
         <div id="tabs" 
-        x-data="{tab1Active: false, tab2Active: true}"
+        x-data="{tab1Active: true, tab2Active: false}"
         class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
             <div id="tab" 
             :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
@@ -38,7 +38,7 @@
         <!-- end tabs row -->
 
         <!-- tab 1 -->
-        <div x-data="{show:false,
+        <div x-data="{show:true,
             dataframe: {},
             output: [],
             miniSearch: '',
@@ -192,7 +192,7 @@
 
         
         <!-- tab 2 -->
-        <div x-data="{show:true,
+        <div x-data="{show:false,
             dataframe: {},
             output: [],
             miniSearch: '',
@@ -357,6 +357,7 @@
         });"
         @newportfolio.window="
         type = $event.detail.type;
+        console.log(type)
         open = true,
         button_text = 'Thêm mới'
         target='NEW';
@@ -1973,7 +1974,7 @@
                 <div class="absolute left-[1px]">
                     <i x-show="!show" class="text-white fa-solid fa-caret-left"></i>
                 </div>
-                <div x-show="show" x-data="{type: ''}"
+                <div x-show="show" x-data="{type: 'cohuu'}"
                 @tab1.window="type='cohuu'"
                 @tab2.window="type='thinhgiang'"
                 @click="$dispatch('newportfolio', {type: type})"
@@ -2038,7 +2039,7 @@
         currentR = 1
         success = false
         giangvien = $event.detail.giangvien
-        fetch(`/api/hopdong/layso`)
+        fetch(`/api/nhansu/me/search`)
         .then((response) => response.json())
         .then((result) => {
             nguoilayso = result;
@@ -2068,7 +2069,7 @@
 
 
             <!-- start form lấy số -->
-            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[25px] mb-[160px] border px-[16px] pt-[32px] pb-[16px]">
+            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[25px] mb-[25px] border px-[16px] pt-[32px] pb-[16px]">
     
                 {# tieu de form #}
                 <div class="w-full flex flex-col gap-4 justify-start items-center mb-[20px]">
