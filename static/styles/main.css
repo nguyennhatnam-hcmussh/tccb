@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.0 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -2164,10 +2164,6 @@ input.tab:checked + .tab-content,
   z-index: 1000;
 }
 
-.z-\[100\] {
-  z-index: 100;
-}
-
 .z-\[1011\] {
   z-index: 1011;
 }
@@ -2242,10 +2238,6 @@ input.tab:checked + .tab-content,
   margin-bottom: 20px;
 }
 
-.mb-\[40px\] {
-  margin-bottom: 40px;
-}
-
 .mb-\[5px\] {
   margin-bottom: 5px;
 }
@@ -2266,24 +2258,12 @@ input.tab:checked + .tab-content,
   margin-top: 10px;
 }
 
-.mt-\[15px\] {
-  margin-top: 15px;
-}
-
 .mt-\[20px\] {
   margin-top: 20px;
 }
 
-.mt-\[3px\] {
-  margin-top: 3px;
-}
-
-.mt-\[40px\] {
-  margin-top: 40px;
-}
-
-.mt-\[80px\] {
-  margin-top: 80px;
+.mt-\[25px\] {
+  margin-top: 25px;
 }
 
 .flex {
@@ -2316,10 +2296,6 @@ input.tab:checked + .tab-content,
 
 .h-\[15px\] {
   height: 15px;
-}
-
-.h-\[20px\] {
-  height: 20px;
 }
 
 .h-\[250px\] {
@@ -2382,6 +2358,10 @@ input.tab:checked + .tab-content,
   height: 100vh;
 }
 
+.h-\[12px\] {
+  height: 12px;
+}
+
 .max-h-\[200px\] {
   max-height: 200px;
 }
@@ -2408,10 +2388,6 @@ input.tab:checked + .tab-content,
 
 .w-\[100px\] {
   width: 100px;
-}
-
-.w-\[110px\] {
-  width: 110px;
 }
 
 .w-\[15\%\] {
@@ -2514,10 +2490,6 @@ input.tab:checked + .tab-content,
   width: 60px;
 }
 
-.w-\[700px\] {
-  width: 700px;
-}
-
 .w-\[770px\] {
   width: 770px;
 }
@@ -2536,6 +2508,18 @@ input.tab:checked + .tab-content,
 
 .w-screen {
   width: 100vw;
+}
+
+.w-\[12px\] {
+  width: 12px;
+}
+
+.w-\[768px\] {
+  width: 768px;
+}
+
+.w-\[240px\] {
+  width: 240px;
 }
 
 .min-w-\[100px\] {
@@ -2769,6 +2753,10 @@ input.tab:checked + .tab-content,
   gap: 0.5rem;
 }
 
+.gap-3 {
+  gap: 0.75rem;
+}
+
 .gap-4 {
   gap: 1rem;
 }
@@ -2891,11 +2879,6 @@ input.tab:checked + .tab-content,
 
 .border-none {
   border-style: none;
-}
-
-.border-gray-300 {
-  --tw-border-opacity: 1;
-  border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
 .border-gray-400 {
@@ -3203,10 +3186,6 @@ input.tab:checked + .tab-content,
   font-size: 30px;
 }
 
-.text-\[35px\] {
-  font-size: 35px;
-}
-
 .text-\[40px\] {
   font-size: 40px;
 }
@@ -3227,10 +3206,6 @@ input.tab:checked + .tab-content,
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.font-\[300\] {
-  font-weight: 300;
 }
 
 .font-\[400\] {
@@ -3305,6 +3280,11 @@ input.tab:checked + .tab-content,
   color: rgb(41 223 179 / var(--tw-text-opacity));
 }
 
+.text-orange {
+  --tw-text-opacity: 1;
+  color: rgb(253 114 121 / var(--tw-text-opacity));
+}
+
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
@@ -3330,18 +3310,18 @@ input.tab:checked + .tab-content,
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-yellow-500 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity));
+}
+
+.text-\[\#29dfb3\] {
+  --tw-text-opacity: 1;
+  color: rgb(41 223 179 / var(--tw-text-opacity));
+}
+
 .underline {
   text-decoration-line: underline;
-}
-
-.placeholder-gray-400::-moz-placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
-}
-
-.placeholder-gray-400::placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
 }
 
 .opacity-0 {
@@ -3369,12 +3349,6 @@ input.tab:checked + .tab-content,
 .shadow-\[0_3px_8px_-1px_rgba\(0\2c 0\2c 0\2c 0\.24\)\] {
   --tw-shadow: 0 3px 8px -1px rgba(0,0,0,0.24);
   --tw-shadow-colored: 0 3px 8px -1px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.shadow-\[0px_4px_16px_0px_rgba\(0\2c 0\2c 0\2c 0\.16\)\] {
-  --tw-shadow: 0px 4px 16px 0px rgba(0,0,0,0.16);
-  --tw-shadow-colored: 0px 4px 16px 0px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
@@ -3486,6 +3460,11 @@ input.tab:checked + .tab-content,
 .hover\:text-orange:hover {
   --tw-text-opacity: 1;
   color: rgb(253 114 121 / var(--tw-text-opacity));
+}
+
+.hover\:text-sky-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(2 132 199 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {

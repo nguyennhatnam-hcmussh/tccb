@@ -19,7 +19,6 @@ class Settings(BaseSettings):
         "auth": MAIN_DIR / "apps" / "auth" / "templates",
         "nhansu": MAIN_DIR / "apps" / "nhansu" / "templates",
         "error": MAIN_DIR / "apps" / "error" / "templates",
-        "chucnang": MAIN_DIR / "apps" / "chucnang" / "templates",
         "donvi": MAIN_DIR / "apps" / "donvi" / "templates",
     })
     STATIC_MAIN_DIR: Path = MAIN_DIR / "static"

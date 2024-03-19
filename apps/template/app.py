@@ -40,7 +40,6 @@ async def template_footer(request: Request):
 async def template_nav(request: Request, tab: str):
     tabs = {
         'trangchu': {'Trang chủ':"fa-house"},
-        'chucnang': {'Chức năng': 'fa-screwdriver-wrench'},
         'nhansu': {'Nhân sự': 'fa-address-book'},
         'donvi': {'Đơn vị': 'fa-folder-tree'},
         'hopdong': {'Hợp đồng': 'fa-file-contract'}
@@ -61,7 +60,7 @@ async def template_nav(request: Request, tab: str):
 @router.get('/template/screen/{tab}', response_class=HTMLResponse)
 @requires('auth', redirect='login')
 async def template_screen(request: Request, tab: str):
-    tabs = ['trangchu', 'chucnang', 'nhansu', 'donvi','hopdong']
+    tabs = ['trangchu', 'nhansu', 'donvi','hopdong']
     if tab in tabs:
         context = {
             'url': f'/template/{tab}'

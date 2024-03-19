@@ -21,7 +21,6 @@ from main.apps import (
     auth,
     nhansu,
     error,
-    chucnang,
     donvi,
     danhmuc
 )
@@ -63,7 +62,6 @@ app.include_router(template.router)
 app.include_router(auth.router)
 app.include_router(nhansu.router)
 app.include_router(error.router)
-app.include_router(chucnang.router)
 app.include_router(donvi.router)
 app.include_router(danhmuc.router)
 
