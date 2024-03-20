@@ -20,6 +20,7 @@ class Settings(BaseSettings):
         "nhansu": MAIN_DIR / "apps" / "nhansu" / "templates",
         "error": MAIN_DIR / "apps" / "error" / "templates",
         "donvi": MAIN_DIR / "apps" / "donvi" / "templates",
+        "hopdong": MAIN_DIR / "apps" / "hopdong" / "templates",
     })
     STATIC_MAIN_DIR: Path = MAIN_DIR / "static"
     # GOOGLE OAUTH2

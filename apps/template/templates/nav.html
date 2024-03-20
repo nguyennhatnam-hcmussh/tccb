@@ -14,14 +14,14 @@ class="transition-all overflow-hidden h-screen bg-blue flex flex-col justify-sta
     </div>
     {# end button click show hid #}
 
-    <div id="logo" 
+    <a id="logo" href="/"
     class="w-full h-[130px] flex flex-row justify-center items-center mb-[10px]">
         <img class="h-[45px]"
         x-show="show"
         src="static/images/logo.png" 
         height="45" 
         alt="logo">
-    </div>
+    </a>
     <div id="menu" 
     x-data 
     x-init="$store.tab.activeTab = {{ current_tab }}"
@@ -37,12 +37,12 @@ class="transition-all overflow-hidden h-screen bg-blue flex flex-col justify-sta
         hx-trigger="click" 
         hx-ext="alpine-morph" 
         hx-swap="multi:#boder:morph" 
-        class="w-full h-[60px] text-[14px]">
+        class="w-full h-[60px] text-[14px] transition-none">
         {% for name, icon in value.items() %}
             <div :class="show ? 'justify-start px-[20px]' : 'justify-center'"
-            class="w-full flex flex-row items-center py-[20px] h-[50px]">
+            class="transition-none w-full flex flex-row items-center py-[20px] h-[50px]">
                 <i class="fa-solid {{ icon }} mr-[20px] ml-[10px]"></i>
-                <p x-show="show" x-transition>{{ name }}</p>
+                <p x-show="show">{{ name }}</p>
             </div>
         {% endfor %} 
         </a>

@@ -2733,6 +2733,10 @@ input.tab:checked + .tab-content,
   gap: 1rem;
 }
 
+.gap-5 {
+  gap: 1.25rem;
+}
+
 .gap-6 {
   gap: 1.5rem;
 }
@@ -3039,6 +3043,11 @@ input.tab:checked + .tab-content,
 .py-\[5px\] {
   padding-top: 5px;
   padding-bottom: 5px;
+}
+
+.px-\[25px\] {
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 .pb-\[16px\] {

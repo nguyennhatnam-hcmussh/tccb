@@ -23,17 +23,33 @@
 
 
         <!-- tabs row-->
-        <div id="tabs-nhansu" 
-        x-data="{tab1Active: true, tab2Active: false}"
+        <div id="tabs-hopdong" 
+        x-data="{tab1Active: true, tab2Active: false, tab3Active: false, tab4Active: false, tab5Active: false, tab6Active: false}"
         class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
-            <div id="tab1-nhansu" 
+            <div id="tab1-hopdong" 
             :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
-            class="transition-none p-[10px] cursor-pointer">Nhân sự trong Trường</div>
-            <div id="tab2-nhansu"
+            @click="$dispatch('tab1'); tab1Active = true; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
+            class="transition-none py-[10px] px-[20px] cursor-pointer">Đã tạo / Có sẵn</div>
+            <div id="tab2-hopdong"
             :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
-            class="transition-none p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
+            @click="$dispatch('tab2'); tab1Active = false; tab2Active = true; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
+            class="transition-none py-[10px] px-[20px] cursor-pointer">P.TCCB đã nhận</div>
+            <div id="tab3-hopdong"
+            :class="tab3Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+            @click="$dispatch('tab3'); tab1Active = false; tab2Active = false; tab3Active = true; tab4Active = false; tab5Active = false; tab6Active = false"
+            class="transition-none py-[10px] px-[20px] cursor-pointer">Đang trình ký HT</div>
+            <div id="tab4-hopdong"
+            :class="tab4Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+            @click="$dispatch('tab4'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = true; tab5Active = false; tab6Active = false"
+            class="transition-none py-[10px] px-[20px] cursor-pointer">HT đã ký - chờ nhận</div>
+            <div id="tab5-hopdong"
+            :class="tab5Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+            @click="$dispatch('tab5'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = true; tab6Active = false"
+            class="transition-none py-[10px] px-[20px] cursor-pointer">Hoàn thành</div>
+            <div id="tab6-hopdong"
+            :class="tab6Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+            @click="$dispatch('tab6'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = true"
+            class="transition-none py-[10px] px-[20px] cursor-pointer">Có lỗi - chờ nhận</div>
         </div>
         <!-- end tabs row -->
 
@@ -167,7 +183,7 @@
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                @click="$dispatch('runlayso', {giangvien: item})">Tạo HĐ</div>
+                                @click="$dispatch('runlayso', {giangvien: item})">Lấy số HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -190,159 +206,6 @@
         </div>
         <!-- end tab 1 -->
 
-        
-        <!-- tab 2 -->
-        <div x-data="{show:false,
-            dataframe: {},
-            output: [],
-            miniSearch: '',
-            async getData() {
-                console.log('namprooooo')
-                this.miniSearch = new MiniSearch({
-                    fields: ['maso','hovaten','ngaysinh'],
-                    searchOptions: {
-                        prefix: true,
-                        combineWith: 'AND',
-                    },
-                    extractField: (document, fieldName) => {
-                        if (fieldName === 'maso') {
-                            const nguyen = document['maso']
-                            if (nguyen) {
-                                return nguyen && nguyen + ' ' + nguyen.slice(6) + ' ' + nguyen.slice(3)
-                            }
-                        }
-                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
-                    },
-                })
-                isLoading = true;
-                fetch('/api/nhansu/thinhgiang/search')            
-                    .then((response) => response.json())
-                    .then((result) => {
-                        result = result.data
-                        console.log(result);
-                        this.dataframe = result.reduce((byId, song) => {
-                            byId[song.id] = song;
-                            return byId;
-                        }, {});
-                        this.output = Object.values(this.dataframe);
-                        this.miniSearch.addAll(result);
-                        isLoading = false;
-                    });
-            },
-            getSearchResults() {
-                if (search === '') {
-                    this.output = Object.values(this.dataframe);
-                } else {
-                    this.output = this.miniSearch.search(search).map(({ id }) => this.dataframe[id])
-                }
-            },
-            updateThinhgiang(data) {
-                console.log(this.dataframe[data.id])
-                console.log(data)
-                if (this.dataframe[data.id]) {
-                    this.miniSearch.remove(this.dataframe[data.id])
-                    delete this.dataframe[data.id]
-                }
-                this.dataframe[data.id] = data
-                this.miniSearch.add(this.dataframe[data.id])
-                this.getSearchResults()
-            }
-        }"
-        @tab2.window="show = true"
-        @tab1.window="show = false"
-        x-init="console.log('laplai');getData()"
-        @updatethinhgiang.window="updateThinhgiang($event.detail.data)"
-        @searching.window="getSearchResults()"
-        x-show="show"
-        class="w-full max-w-[1000px]">
-            {# Table #}
-            <div id="table" class="transition-none z-[1] min-w-[750px] shadow-lg relative rounded-lg w-full max-w-[1000px] flex flex-col justify-start text-left">
-                <!-- head of table -->
-                <div id="thead" 
-                class="sticky top-[-15px] w-full min-w-[750px] flex flex-row bg-gray-200 text-black font-[700] rounded-t-lg z-[1]">
-                    <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center">
-                        <div class="p-[15px]">#</div>
-                    </div>
-                    <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
-                        <div class="py-[15px]">MSCB</div>
-                    </div>
-                    <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center">
-                        <div class="py-[15px]">Họ và tên</div>
-                    </div>
-                    <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
-                        <div class="py-[15px]">Ngày sinh</div>
-                    </div>
-                    <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center">
-                        <div class="py-[15px]">Đơn vị công tác</div>
-                    </div>
-                    <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center">
-                        <div class="py-[15px]">@</div>
-                    </div>
-                </div>
-                <!-- end head of table -->            
-            
-                <!-- body of table -->
-                <div id="tbody" 
-                x-show="! isLoading"
-                class="bg-white min-w-[750px] max-w-[1000px] rounded-b-lg flex flex-col w-auto justify-start items-start overflow-y-hidden">
-                    <template x-for="(item, index) in output" :key="index">
-                        <div id="trow" class="hover:bg-gray-100 cursor-default w-full min-w-[750px] flex flex-row bg-white font-[500]">
-                            {# index #}
-                            <div class="w-[5%] min-w-[50px] flex flex-row justify-start items-center font-[400]">
-                                <div x-text="index + 1" class="py-[10px] px-[15px]"></div>
-                            </div>
-                            {# end index #}
-
-                            {# maso #}
-                            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center">
-                                <div x-text="item.maso" class="py-[10px]"></div>
-                            </div>
-                            {# end maso #}
-
-                            {# hovaten #}
-                            <div class="w-[20%] min-w-[200px] flex flex-row justify-start items-center text-blue">
-                                <div @click="$dispatch('portfolio', {target: item.maso, type: 'thinhgiang'})"
-                                x-text="item.hovaten" class="py-[10px] hover:underline cursor-pointer"></div>
-                            </div>
-                            {# end hovaten #}
-
-                            {# ngaysinh #}
-                            <div class="w-[15%] min-w-[100px] flex flex-row justify-start items-center font-[400]">
-                                <div x-text="item.ngaysinh" class="py-[10px]"></div>
-                            </div>
-                            {# end ngaysinh #}
-
-                            {# donvi #}
-                            <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
-                                <div x-text="item.donvicongtac" class="py-[10px]"></div>
-                            </div>
-                            {# end donvi #}
-
-                            {# button hoso #}
-                            <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
-                                <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                @click="$dispatch('runlayso', {giangvien: item})">Tạo HĐ</div>
-                            </div>
-                            {# end button hoso #}
-                        </div>
-                    </template>
-                </div>
-                <!-- end body of table -->
-
-                {# skeleton #}
-                <div x-show="isLoading"
-                class="mt-[20px] relative min-w-[750px] w-full flex flex-col gap-8">
-                    <div class="skeleton h-32 w-full"></div>
-                    <div class="skeleton h-4 w-28"></div>
-                    <div class="skeleton h-4 w-full"></div>
-                    <div class="skeleton h-4 w-full"></div>
-                </div>
-                {# end skeleton #}
-
-            </div>
-            {# End Table #}
-        </div>
-        <!-- end tab 2 -->
         
         <!-- hoso -->
         <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật'}" x-show="open" 
@@ -1989,31 +1852,6 @@
             </div>
         </div>
         <!-- {# End Điều chỉnh #} -->
-
-
-        <!-- {# download/upload #} -->
-        <div x-data="{open: false}" @modify.window="open = ! open" class="fixed left-0 top-0 z-[2000]">
-            <div x-show="open" 
-            @click="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
-            @keyup.escape.window="open = ! open; $dispatch('closepopup'); htmx.trigger('#upload-form', 'htmx:abort')" 
-            class="w-screen h-screen bg-black opacity-70"></div>
-            <div x-show="open" class="rounded-xl overflow-hidden fixed top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] w-[500px] h-[400px] bg-white opacity-100">
-                <div id="form" 
-                hx-trigger="modify from:body"
-                hx-get="/template/nhansu/form/upload"
-                hx-ext="alpine-morph"
-                hx-swap="multi:#form:morph"
-                class="w-full h-full flex justify-center items-center">
-                    <div class="htmx-indicator flex flex-col gap-6 w-[400px]">
-                        <div class="skeleton h-32 w-full"></div>
-                        <div class="skeleton h-4 w-28"></div>
-                        <div class="skeleton h-4 w-full"></div>
-                        <div class="skeleton h-4 w-full"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- {# End download/upload #} -->
 
 
         <!-- start lấy số hợp đồng -->

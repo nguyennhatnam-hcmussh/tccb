@@ -40,9 +40,9 @@ async def template_footer(request: Request):
 async def template_nav(request: Request, tab: str):
     tabs = {
         'trangchu': {'Trang chủ':"fa-house"},
+        'hopdong': {'Hợp đồng': 'fa-file-contract'},
         'nhansu': {'Nhân sự': 'fa-address-book'},
         'donvi': {'Đơn vị': 'fa-folder-tree'},
-        'hopdong': {'Hợp đồng': 'fa-file-contract'}
     }
     index = None
     keys = list(tabs.keys())

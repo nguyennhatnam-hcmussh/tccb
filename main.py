@@ -16,14 +16,7 @@ from main.functions import Requests
 from main.models import Nhansu
 from main.middlewares.process_time import CustomHeaderMiddleware
 from main.middlewares.auth import AuthMiddleware
-from main.apps import (
-    template,
-    auth,
-    nhansu,
-    error,
-    donvi,
-    danhmuc
-)
+from main.apps import (template, auth, nhansu, error, donvi, danhmuc, hopdong)
 
 
 settings = get_settings()
@@ -64,6 +57,7 @@ app.include_router(nhansu.router)
 app.include_router(error.router)
 app.include_router(donvi.router)
 app.include_router(danhmuc.router)
+app.include_router(hopdong.router)
 
 
 @app.get('/favicon.ico', include_in_schema=False)
