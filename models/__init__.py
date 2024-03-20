@@ -1,1 +1,1 @@
-from .models import Donvi, Auth, Nhansu, Hopdong, Test
+from .models import Donvi, Auth, Nhansu, Hopdong

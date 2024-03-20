@@ -2018,6 +2018,7 @@
 
         <!-- start lấy số hợp đồng -->
         <div x-data="{
+            sohopdong:'',
             hopdong: {},
             success: false,
             open: false, 
@@ -2813,9 +2814,9 @@
                     <!-- {# start trang hoàn thành #} -->
                     <div x-show="checkER(6)" class="w-full flex flex-col justify-center items-center gap-6 mb-[10px]">
                         <div class="flex flex-col justify-center items-center text-[30px]  font-[500] gap-10">
-                            <i class="fa-solid fa-spinner fa-spin-pulse text-yellow-500 text-[60px]"></i>
+                            <i x-show="!success" class="fa-solid fa-spinner fa-spin-pulse text-yellow-500 text-[60px]"></i>
                             <i x-show="success" class="fa-regular fa-circle-check text-green text-[60px]"></i>
-                            <div x-show="success" class="text-black">Đã tạo: 123/2023/HĐMG-XHNV-TCCB</div>
+                            <div x-show="success" x-text="'Đã tạo hợp đồng: '+sohopdong" class="text-black"></div>
                             <div x-show="success" class="text-black hover:text-sky-600 text-[16px] underline font-[400] cursor-pointer">Tới trang quản lý hợp đồng</div>
                             <div x-show="success" class="text-black hover:text-sky-600 text-[16px] underline font-[400] cursor-pointer"
                             @click="open = false; $dispatch('closepopup');">Tiếp tục lấy số</div>
@@ -2850,7 +2851,24 @@
                         <input type="submit"
                         x-show="!checkR(6)"
                         :value="checkER(5) ? 'Finish' : 'Next'"
-                        @click="currentR+=1"
+                        @click="
+                            currentR+=1
+                            if (checkER(6)) {
+                                console.log(hopdong)
+                                url = '/api/hopdong/create'
+                                fetch(url, {
+                                    method:'POST',
+                                    headers:{'Content-Type': 'application/json',},
+                                    body: JSON.stringify({...hopdong})
+                                })
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    console.log(result)
+                                    sohopdong = result.hopdong
+                                    success = result.message == 'success' ? true : false
+                                })
+                            }
+                        "
                         :class="checkER(5) ? 'bg-orange text-white border-orange' : 'hover:border-orange hover:text-orange text-gray-600  border-gray-500'"
                         class="z-[1] text-[14px] font-[500] px-[20px] py-[5px] rounded-lg leading-normal border cursor-pointer">
                         <!-- {# end button Next #} -->

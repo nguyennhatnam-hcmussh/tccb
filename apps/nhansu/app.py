@@ -15,7 +15,7 @@ from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import Donvi, Nhansu, Hopdong
 from main.schemas import NhansuCreate, NhansuRead, NhansuSearch, NhansuCreateWithDonvi, NhansuReadWithDonvi, NhansuSearchWithDonvi, ListNhansuSearch, ListNhansuSearchWithDonvi
-from main.schemas import HopdongCreate
+from main.schemas import HopdongCreate, HopdongReadFull
 
 settings = config.get_settings()
 
@@ -225,7 +225,7 @@ async def api_nhansu_me_search(*, request: Request, session: db_dependency):
 
 @router.post("/api/hopdong/create")
 @requires('auth', redirect='login')
-async def api_hopdong_create(*, request: Request, session: db_dependency, hopdong: NhansuCreateWithDonvi):
+async def api_hopdong_create(*, request: Request, session: db_dependency, hopdong: HopdongCreate):
     donvimoi = hopdong.donvimoi
     giangvien = hopdong.giangvien
     nguoiphutrach = hopdong.nguoiphutrach
@@ -237,13 +237,29 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
     session.add(new_hopdong)
     session.commit()
     session.refresh(new_hopdong)
+    
+    # lay so hop dong
+    hopdong_pre = session.get(Hopdong, (int(new_hopdong.id) - 1))
+    if (hopdong_pre) and (hopdong_pre.nam == new_hopdong.nam):
+        new_hopdong.so = hopdong_pre.so + 1
+    else:
+        new_hopdong.so = 1
+
     if donvimoi:
-        new_hopdong.donvimoi.append(session.exec(select(Donvi).where(Donvi.ten == donvimoi)))
+        new_hopdong.donvimoi = (session.exec(select(Donvi).where(Donvi.ten == donvimoi)).first())
     if giangvien:
-        new_hopdong.giangvien.append(session.exec(select(Nhansu).where(Nhansu.maso == giangvien)))
+        new_hopdong.giangvien = (session.exec(select(Nhansu).where(Nhansu.maso == giangvien)).first())
     if nguoiphutrach:
-        new_hopdong.nguoiphutrach.append(session.exec(select(Nhansu).where(Nhansu.maso == nguoiphutrach)))
+        new_hopdong.nguoiphutrach = (session.exec(select(Nhansu).where(Nhansu.maso == nguoiphutrach)).first())
     session.add(new_hopdong)
     session.commit()
-    session.refresh(new_hopdong)
-    return await sendjson(request, {'message': 'success'})
+    return await sendjson(request, {'message': 'success', 'hopdong': f'{new_hopdong.so}/{new_hopdong.nam}/HĐMG-XHNV-TCCB'})
+
+@router.get("/api/hopdong/read/{id}")
+@requires('auth', redirect='login')
+async def api_hopdong_read(*, request: Request, session: db_dependency, id: int):
+    hopdong = session.exec(select(Hopdong).where(id == Hopdong.id)).first()
+    if not hopdong:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    data = (HopdongReadFull.model_validate(hopdong)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
