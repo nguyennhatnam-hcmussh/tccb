@@ -2242,6 +2242,10 @@ input.tab:checked + .tab-content,
   margin-top: 10px;
 }
 
+.mt-\[15px\] {
+  margin-top: 15px;
+}
+
 .mt-\[20px\] {
   margin-top: 20px;
 }
@@ -2330,6 +2334,10 @@ input.tab:checked + .tab-content,
   height: 60px;
 }
 
+.h-\[70px\] {
+  height: 70px;
+}
+
 .h-\[80\%\] {
   height: 80%;
 }
@@ -2380,10 +2388,6 @@ input.tab:checked + .tab-content,
 
 .w-\[15\%\] {
   width: 15%;
-}
-
-.w-\[150px\] {
-  width: 150px;
 }
 
 .w-\[15px\] {
@@ -2962,6 +2966,10 @@ input.tab:checked + .tab-content,
   padding: 15px;
 }
 
+.p-\[16px\] {
+  padding: 16px;
+}
+
 .p-\[1px\] {
   padding: 1px;
 }
@@ -3020,6 +3028,11 @@ input.tab:checked + .tab-content,
   padding-bottom: 15px;
 }
 
+.py-\[1px\] {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
 .py-\[20px\] {
   padding-top: 20px;
   padding-bottom: 20px;
@@ -3043,11 +3056,6 @@ input.tab:checked + .tab-content,
 .py-\[5px\] {
   padding-top: 5px;
   padding-bottom: 5px;
-}
-
-.px-\[25px\] {
-  padding-left: 25px;
-  padding-right: 25px;
 }
 
 .pb-\[16px\] {
@@ -3105,6 +3113,10 @@ input.tab:checked + .tab-content,
 
 .text-\[10px\] {
   font-size: 10px;
+}
+
+.text-\[11px\] {
+  font-size: 11px;
 }
 
 .text-\[12px\] {
@@ -3280,6 +3292,12 @@ input.tab:checked + .tab-content,
 
 .opacity-70 {
   opacity: 0.7;
+}
+
+.shadow {
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .shadow-\[0_3px_8px_-1px_rgba\(0\2c 0\2c 0\2c 0\.24\)\] {

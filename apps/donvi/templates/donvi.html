@@ -7,15 +7,9 @@
         isLoading: false
     }"
     class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
+        <!-- {# Search #} -->
         <div class="w-full flex flex-row justify-center items-center shrink-0">
-
-            <!-- {# Trang chủ/nhân sự #}
-            <div class="w-[150px] flex flex-col justify-start items-start">
-            </div>
-            {# End Trang chủ/nhân sự #} -->
-
-
-            {# Search #}
+            
             <div class="w-[500px] h-[50px] rounded-3xl bg-gray-100 flex flex-row justify-start items-center mb-[20px]">
                 <div class="basis-[50px] shrink-0 rounded-full">
                     <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-400"></i>
@@ -25,22 +19,19 @@
                 class="transition-none bg-gray-100 p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
                 type="search">
             </div>
-            {# End search #}
-
         </div>
+        <!-- {# End search #} -->
 
         <!-- tabs row-->
-        <div id="tabs-donvi" 
-        x-data="{tab1Active: true, tab2Active: false}"
-        class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
-            <div id="tab1-donvi" 
-            :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
-            class="transition-none p-[10px] cursor-pointer">Đơn vị thuộc Trường</div>
-            <div id="tab2-donvi"
-            :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
-            class="transition-none p-[10px] cursor-pointer">Đơn vị thuộc đơn vị</div>
+        <div class="w-full max-w-[1000px]">
+            <div id="tabs-donvi" 
+                x-data="{tab1Active: true, tab2Active: false}"
+                class="transition-none z-[1] relative rounded-md w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start border">
+                <div id="tab1-donvi" 
+                :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
+                class="transition-none p-[10px] cursor-pointer">Đơn vị thuộc Trường</div>
+            </div>
         </div>
         <!-- end tabs row -->
 
@@ -172,16 +163,6 @@
             </div>
             {# End Table #}
         </div>
-
-        <!-- tab 2 -->
-        <div x-data="{show:false}"
-        @tab2.window="show = true"
-        @tab1.window="show = false"
-        x-show="show"
-        class="w-full max-w-[1000px]">
-        TAB TABLE DONVI OF DONVI - COMMING SOON...
-        </div>
-        <!-- end tab 2 -->
         
         <!-- hoso -->
         <div x-data="{open: false, target: '', donvi: {}, donvii: {}}" x-show="open" 

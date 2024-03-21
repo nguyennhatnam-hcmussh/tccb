@@ -93,7 +93,7 @@ async def active_root(*, request: Request, session: db_dependency, key_secret:st
 @requires('guest')
 async def homepage(request: Request):
     context = {}
-    return await redirect(request, "/nhansu")
+    return await redirect(request, "/hopdong")
 
 
 @app.exception_handler(StarletteHTTPException)

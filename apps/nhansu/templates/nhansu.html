@@ -23,18 +23,21 @@
 
 
         <!-- tabs row-->
-        <div id="tabs-nhansu" 
-        x-data="{tab1Active: true, tab2Active: false}"
-        class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
-            <div id="tab1-nhansu" 
-            :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
-            class="transition-none p-[10px] cursor-pointer">Nhân sự trong Trường</div>
-            <div id="tab2-nhansu"
-            :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
-            class="transition-none p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
+        <div class="w-full max-w-[1000px]">
+            <div id="tabs-nhansu" 
+            x-data="{tab1Active: true, tab2Active: false}"
+            class="transition-none z-[1] relative rounded-md w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start border">
+                <div id="tab1-nhansu" 
+                :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
+                class="transition-none p-[10px] cursor-pointer">Nhân sự trong Trường</div>
+                <div id="tab2-nhansu"
+                :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
+                class="transition-none p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
+            </div>
         </div>
+
         <!-- end tabs row -->
 
         <!-- tab 1 -->
@@ -345,7 +348,7 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật'}" x-show="open" 
+        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật', old_hocvi: ''}" x-show="open" 
         @portfolio.window="target = $event.detail.target; type = $event.detail.type;
         console.log(type)
         button_text = 'Cập nhật'
@@ -353,6 +356,7 @@
         .then((response) => response.json())
         .then((result) => {
             thinhgiang = result;
+            old_hocvi = thinhgiang.hocvi
             open = true
         });"
         @newportfolio.window="
@@ -1013,6 +1017,7 @@
 
                         <!-- chuyên ngành -->
                         <div x-data="{
+                            old_hocvi_2: '',
                             showoptions: false,
                             output: [],
                             dataframe: [],
@@ -1021,36 +1026,44 @@
                             choose: 0,
                             miniSearch: '',
                             async updateData() {
-                                thinhgiang.hocvi_nganh = ''
-                                switch (thinhgiang.hocvi) {
-                                    case 'Cử nhân':
-                                        url = '/api/danhmuc/nganh-daihoc';
-                                        break;
-                                    case 'Thạc sĩ':
-                                        url = '/api/danhmuc/nganh-thacsi';
-                                        break;
-                                    case 'Tiến sĩ':
-                                        url = '/api/danhmuc/nganh-tiensi';
-                                        break;
-                                    case 'Tiến sĩ khoa học':
-                                        url = '/api/danhmuc/nganh-tiensi';
-                                        break;
-                                    default:
-                                        url = '/api/danhmuc/nganh-thacsi';
+                                if (thinhgiang.hocvi != old_hocvi) {
+                                    thinhgiang.hocvi_nganh = ''
+                                    old_hocvi = thinhgiang.hocvi
                                 }
-                                fetch(url)            
-                                .then((response) => response.json())
-                                .then((result) => {
-                                    this.dataframe = result.reduce((byId, song) => {
-                                        byId[song.id] = song;
-                                        return byId;
-                                    }, {});
-                                    this.output = Object.values(this.dataframe);
-                                    this.miniSearch.removeAll();
-                                    this.miniSearch.addAll(result);
-                                });
+                                if (thinhgiang.hocvi != this.old_hocvi_2) {
+                                    switch (thinhgiang.hocvi) {
+                                        case 'Cử nhân':
+                                            url = '/api/danhmuc/nganh-daihoc';
+                                            break;
+                                        case 'Thạc sĩ':
+                                            url = '/api/danhmuc/nganh-thacsi';
+                                            break;
+                                        case 'Tiến sĩ':
+                                            url = '/api/danhmuc/nganh-tiensi';
+                                            break;
+                                        case 'Tiến sĩ khoa học':
+                                            url = '/api/danhmuc/nganh-tiensi';
+                                            break;
+                                        default:
+                                            url = '/api/danhmuc/nganh-thacsi';
+                                    }
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                        this.old_hocvi_2 = thinhgiang.hocvi
+                                        this.filteredItems()
+                                    });
+                                }
                             },
                             getData() {
+                                console.log(this.old_hocvi)
                                 this.miniSearch = new MiniSearch({
                                     fields: ['value'],
                                     searchOptions: {
@@ -1058,7 +1071,6 @@
                                         combineWith: 'AND'
                                     }
                                 })
-                                this.updateData()
                             },
                             filteredItems() {
                                 this.showoptions = true;
