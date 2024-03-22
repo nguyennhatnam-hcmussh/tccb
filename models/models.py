@@ -8,7 +8,8 @@ from main.schemas import (
     DonviBase, 
     AuthBase, 
     NhansuBase,
-    HopdongBase
+    HopdongBase,
+    TrangthaiBase
 )
 
 settings = get_settings()
@@ -31,6 +32,13 @@ class HopdongOfNguoiphutrach(Base, table=True):
     hopdong_id: int | None = Field(default=None, foreign_key="hopdong.id", primary_key=True)
     nguoiphutrach_id: int | None = Field(default=None, foreign_key="nhansu.id", primary_key=True)
 
+
+################# TRANG THAI ##################
+
+class Trangthai(TrangthaiBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    hopdong_id: int | None = Field(default=None, foreign_key="hopdong.id", primary_key=True)
+    hopdong: Optional["Hopdong"] = Relationship(back_populates="trangthais")
 ################# DON VI ##################
     
 class Donvi(DonviBase, table=True):
@@ -48,6 +56,7 @@ class Hopdong(HopdongBase, table=True):
     donvimoi: Optional["Donvi"] = Relationship(back_populates="hopdong", link_model=HopdongOfDonvi, sa_relationship_kwargs={'uselist': False})
     giangvien: Optional["Nhansu"] = Relationship(back_populates="hopdong", link_model=HopdongOfGiangvien, sa_relationship_kwargs={'uselist': False})
     nguoiphutrach: Optional["Nhansu"] = Relationship(back_populates="hopdongphutrach", link_model=HopdongOfNguoiphutrach, sa_relationship_kwargs={'uselist': False})
+    trangthais: List["Trangthai"] = Relationship(back_populates="hopdong")
 
 ################# CƠ HỮU ##################
     

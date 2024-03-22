@@ -20,12 +20,10 @@ class HopdongBase(Base):
     namhoc: str | None = Field(default=None)
     hocky: str | None = Field(default=None)
     ngayky: str | None = Field(default=None)
-    ngaytao: str | None = Field(default=None)
+    trangthai: str | None = Field(default=None)
     nguoidaidien: str = Field(default="TS. Phạm Tấn Hạ")
 
 class HopdongCreate(HopdongBase):
-    ngayky: str | None = Field(default=None)
-    ngaytao: str | None = Field(default=None)
 
     @field_validator('ngayky')
     @classmethod
@@ -36,25 +34,19 @@ class HopdongCreate(HopdongBase):
             return stamp
         return v
 
-    @field_validator('ngaytao')
-    @classmethod
-    def modify_ngaytao(cls, v: str | None) -> str | None:
-        date = str(int((datetime.datetime.now() - datetime.datetime(1970, 1, 1)).total_seconds()))
-        stamp = str(int(date))
-        return stamp
 
 class HopdongReadFull(HopdongBase):
-    id: int
-    ngayky: str | None = Field(default=None)
-    ngaytao: str | None = Field(default=None)
     giangvien: Optional["NhansuSearch"] = Field(default=None)
     nguoiphutrach : Optional["NhansuSearch"] = Field(default=None)
     donvimoi: Optional["DonviSearch"] = Field(default=None)
 
-    @field_validator('ngayky','ngaytao')
+    @field_validator('ngayky')
     @classmethod
     def modify_ngaysinh(cls, v: str | None) -> str | None:
         if v:
             date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
             return date
         return v
+    
+class ListHopdongReadFull(Base):
+    data: List[HopdongReadFull]
