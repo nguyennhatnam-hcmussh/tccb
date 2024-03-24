@@ -37,7 +37,7 @@ class HopdongOfNguoiphutrach(Base, table=True):
 
 class Trangthai(TrangthaiBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    hopdong_id: int | None = Field(default=None, foreign_key="hopdong.id", primary_key=True)
+    hopdong_id: int | None = Field(default=None, foreign_key="hopdong.id")
     hopdong: Optional["Hopdong"] = Relationship(back_populates="trangthais")
 ################# DON VI ##################
     

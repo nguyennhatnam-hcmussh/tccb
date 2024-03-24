@@ -1048,6 +1048,7 @@
                             research: '',
                             backspace: true,
                             choose: 0,
+                            mouse: false,
                             miniSearch: '',
                             async updateData() {
                                 if (thinhgiang.hocvi != old_hocvi) {
@@ -1110,13 +1111,18 @@
                             },
                             checkItem() {
                                 this.filteredItems()
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.hocvi_nganh != this.output[0].value) {
-                                        thinhgiang.hocvi_nganh = ''
-                                    }
-                                } else {
+                                if (this.output.length < 1) {
                                     thinhgiang.hocvi_nganh = ''
+                                } else {
+                                    if (thinhgiang.hocvi_nganh) {
+                                        this.enterEvent()
+                                    } else {
+                                        if (this.mouse) {
+                                            this.enterEvent()
+                                        }
+                                    }
                                 }
+                                this.showoptions = false;
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1134,6 +1140,7 @@
                                 }
                             },
                             focusinputcheck() {
+                                thinhgiang.hocvi_nganh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1188,14 +1195,14 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="hocvi_nganh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[560px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                x-ref="hocvi_nganh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[560px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
                                     <template x-for="(item, index) in output" :key="item.id">
                                         <li x-text="item.value"
                                         :id="'hocvi_nganh'+index"
-                                        @click="addItem(item)"
                                         @mouseover="choose = index"
                                         :class="checkchoose(index) ? 'bg-gray-100' : ''"
                                         class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
@@ -1218,6 +1225,7 @@
                             research: '',
                             backspace: true,
                             choose: 0,
+                            mouse: false,
                             miniSearch: '',
                             getData() {
                                 this.miniSearch = new MiniSearch({
@@ -1251,16 +1259,19 @@
                                 this.showoptions = false;
                             },
                             checkItem() {
-                                this.filteredItems();
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.hocham != this.output[0].value) {
-                                        thinhgiang.hocham = ''
-                                    }
-                                } else {
+                                this.filteredItems()
+                                if (this.output.length < 1) {
                                     thinhgiang.hocham = ''
+                                } else {
+                                    if (thinhgiang.hocham) {
+                                        this.enterEvent()
+                                    } else {
+                                        if (this.mouse) {
+                                            this.enterEvent()
+                                        }
+                                    }
                                 }
                                 this.showoptions = false;
-                                
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1278,6 +1289,7 @@
                                 }
                             },
                             focusinputcheck() {
+                                thinhgiang.hocham = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1332,14 +1344,14 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="hocham" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[200px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                x-ref="hocham" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[200px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
                                     <template x-for="(item, index) in output" :key="item.id">
                                         <li x-text="item.value"
                                         :id="'hocham'+index"
-                                        @click="addItem(item)"
                                         @mouseover="choose = index"
                                         :class="checkchoose(index) ? 'bg-gray-100' : ''"
                                         class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
@@ -1358,6 +1370,7 @@
                             research: '',
                             backspace: true,
                             choose: 0,
+                            mouse: false,
                             miniSearch: '',
                             getData() {
                                 this.miniSearch = new MiniSearch({
@@ -1392,13 +1405,18 @@
                             },
                             checkItem() {
                                 this.filteredItems()
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.hocham_nganh != this.output[0].value) {
-                                        thinhgiang.hocham_nganh = ''
-                                    }
-                                } else {
+                                if (this.output.length < 1) {
                                     thinhgiang.hocham_nganh = ''
+                                } else {
+                                    if (thinhgiang.hocham_nganh) {
+                                        this.enterEvent()
+                                    } else {
+                                        if (this.mouse) {
+                                            this.enterEvent()
+                                        }
+                                    }
                                 }
+                                this.showoptions = false;
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1416,6 +1434,7 @@
                                 }
                             },
                             focusinputcheck() {
+                                thinhgiang.hocham_nganh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1470,14 +1489,14 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="hocham_nganh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[560px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                x-ref="hocham_nganh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[560px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
                                     <template x-for="(item, index) in output" :key="item.id">
                                         <li x-text="item.value"
                                         :id="'hocham_nganh'+index"
-                                        @click="addItem(item)"
                                         @mouseover="choose = index"
                                         :class="checkchoose(index) ? 'bg-gray-100' : ''"
                                         class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
@@ -1679,6 +1698,7 @@
                             research: '',
                             backspace: true,
                             choose: 0,
+                            mouse: false,
                             miniSearch: '',
                             async getData() {
                                 this.miniSearch = new MiniSearch({
@@ -1721,13 +1741,18 @@
                             },
                             checkItem() {
                                 this.filteredItems()
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.donvicongtac != this.output[0].ten) {
-                                        thinhgiang.donvicongtac = ''
-                                    }
-                                } else {
+                                if (this.output.length < 1) {
                                     thinhgiang.donvicongtac = ''
+                                } else {
+                                    if (thinhgiang.donvicongtac) {
+                                        this.enterEvent()
+                                    } else {
+                                        if (this.mouse) {
+                                            this.enterEvent()
+                                        }
+                                    }
                                 }
+                                this.showoptions = false;
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1745,6 +1770,7 @@
                                 }
                             },
                             focusinputcheck() {
+                                thinhgiang.donvicongtac = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1791,14 +1817,14 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
                                     <template x-for="(item, index) in output" :key="item.id">
                                         <li x-text="item.ten"
                                         :id="'donvicongtac'+index"
-                                        @click="addItem(item)"
                                         @mouseover="choose = index"
                                         :class="checkchoose(index) ? 'bg-gray-100' : ''"
                                         class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
@@ -1817,6 +1843,7 @@
                             research: '',
                             backspace: true,
                             choose: 0,
+                            mouse: false,
                             miniSearch: '',
                             getData() {
                                 this.miniSearch = new MiniSearch({
@@ -1851,13 +1878,18 @@
                             },
                             checkItem() {
                                 this.filteredItems()
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.chucdanh != this.output[0].value) {
-                                        thinhgiang.chucdanh = ''
-                                    }
-                                } else {
+                                if (this.output.length < 1) {
                                     thinhgiang.chucdanh = ''
+                                } else {
+                                    if (thinhgiang.chucdanh) {
+                                        this.enterEvent()
+                                    } else {
+                                        if (this.mouse) {
+                                            this.enterEvent()
+                                        }
+                                    }
                                 }
+                                this.showoptions = false;
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -1875,6 +1907,7 @@
                                 }
                             },
                             focusinputcheck() {
+                                thinhgiang.chucdanh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1919,14 +1952,14 @@
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="chucdanh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                x-ref="chucdanh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
                                     <template x-for="(item, index) in output" :key="item.id">
                                         <li x-text="item.value"
                                         :id="'chucdanh'+index"
-                                        @click="addItem(item)"
                                         @mouseover="choose = index"
                                         :class="checkchoose(index) ? 'bg-gray-100' : ''"
                                         class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>

@@ -6,6 +6,7 @@ import datetime
 from main.functions import CheckEnum
 from main.schemas.nhansu import NhansuSearch
 from main.schemas.donvi import DonviSearch
+from main.schemas.trangthai import TrangthaiRead
 
 from .base import Base
 
@@ -39,6 +40,7 @@ class HopdongReadFull(HopdongBase):
     giangvien: Optional["NhansuSearch"] = Field(default=None)
     nguoiphutrach : Optional["NhansuSearch"] = Field(default=None)
     donvimoi: Optional["DonviSearch"] = Field(default=None)
+    trangthais: List["TrangthaiRead"]
 
     @field_validator('ngayky')
     @classmethod
