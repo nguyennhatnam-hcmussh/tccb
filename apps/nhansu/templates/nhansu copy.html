@@ -23,22 +23,25 @@
 
 
         <!-- tabs row-->
-        <div id="tabs" 
-        x-data="{tab1Active: false, tab2Active: true}"
-        class="transition-none z-[1] relative rounded-md w-full max-w-[1000px] flex flex-row justify-start items-start border">
-            <div id="tab" 
-            :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
-            class="transition-none p-[10px] cursor-pointer">Nhân sự trong Trường</div>
-            <div id="tab2"
-            :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
-            @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
-            class="transition-none p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
+        <div class="w-full max-w-[1000px]">
+            <div id="tabs-nhansu" 
+            x-data="{tab1Active: true, tab2Active: false}"
+            class="transition-none z-[1] relative rounded-md w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start border">
+                <div id="tab1-nhansu" 
+                :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                @click="$dispatch('tab1'); tab1Active = true; tab2Active = false"
+                class="transition-none p-[10px] cursor-pointer">Nhân sự trong Trường</div>
+                <div id="tab2-nhansu"
+                :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                @click="$dispatch('tab2'); tab1Active = false; tab2Active = true"
+                class="transition-none p-[10px] cursor-pointer">Nhân sự ngoài Trường</div>
+            </div>
         </div>
+
         <!-- end tabs row -->
 
         <!-- tab 1 -->
-        <div x-data="{show:false,
+        <div x-data="{show:true,
             dataframe: {},
             output: [],
             miniSearch: '',
@@ -167,7 +170,7 @@
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                @click="$dispatch('runlayso', {giangvien: item})">Lấy số HĐ</div>
+                                @click="$dispatch('runlayso', {giangvien: item})">Tạo HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -192,7 +195,7 @@
 
         
         <!-- tab 2 -->
-        <div x-data="{show:true,
+        <div x-data="{show:false,
             dataframe: {},
             output: [],
             miniSearch: '',
@@ -321,7 +324,7 @@
                             {# button hoso #}
                             <div class="w-[10%] min-w-[80px] flex flex-row justify-center items-center font-[400]">
                                 <div class="hover:bg-green hover:border-transparent rounded-2xl border-2 border-green px-[10px] py-[0px] font-[500] cursor-pointer text-[12px]"
-                                @click="$dispatch('runlayso', {giangvien: item})">Lấy số HĐ</div>
+                                @click="$dispatch('runlayso', {giangvien: item})">Tạo HĐ</div>
                             </div>
                             {# end button hoso #}
                         </div>
@@ -345,7 +348,7 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật'}" x-show="open" 
+        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật', old_hocvi: ''}" x-show="open" 
         @portfolio.window="target = $event.detail.target; type = $event.detail.type;
         console.log(type)
         button_text = 'Cập nhật'
@@ -353,10 +356,12 @@
         .then((response) => response.json())
         .then((result) => {
             thinhgiang = result;
+            old_hocvi = thinhgiang.hocvi
             open = true
         });"
         @newportfolio.window="
         type = $event.detail.type;
+        console.log(type)
         open = true,
         button_text = 'Thêm mới'
         target='NEW';
@@ -474,6 +479,7 @@
                             research: '',
                             backspace: true,
                             choose: 0,
+                            mouse: false,
                             miniSearch: '',
                             async getData() {
                                 this.miniSearch = new MiniSearch({
@@ -505,16 +511,22 @@
                             addItem(item) {
                                 thinhgiang.gioitinh = item.value;
                                 this.showoptions = false;
+                                console.log(this.showoptions);
                             },
                             checkItem() {
                                 this.filteredItems()
-                                if (this.output.length >= 1) {
-                                    if (thinhgiang.gioitinh != this.output[0].value) {
-                                        thinhgiang.gioitinh = ''
-                                    }
-                                } else {
+                                if (this.output.length < 1) {
                                     thinhgiang.gioitinh = ''
+                                } else {
+                                    if (thinhgiang.gioitinh) {
+                                        this.enterEvent()
+                                    } else {
+                                        if (this.mouse) {
+                                            this.enterEvent()
+                                        }
+                                    }
                                 }
+                                this.showoptions = false;
                             },
                             enterEvent() {
                                 if (this.output) {
@@ -532,6 +544,7 @@
                                 }
                             },
                             focusinputcheck() {
+                                thinhgiang.gioitinh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -561,7 +574,7 @@
                                 Giới tính <span class="text-red-600"> *</span>
                             </div>
                             <input type="search"
-                            @focusout.debounce.100ms="checkItem();showoptions = false;"
+                            @focusout="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
                             @keydown.down.prevent.throttle.100ms="selectoption('down')"
@@ -571,19 +584,19 @@
                             @focus="focusinputcheck()"
                             @keyup = 'showoptionscheck'
                             @keyup.backspace="eventBackspace"
-                            x-model="thinhgiang.gioitinh"
                             @input="filteredItems()"
+                            x-model="thinhgiang.gioitinh"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul x-ref="gioitinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[175px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                x-ref="gioitinh" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[175px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
                                     <template x-if="output.length === 0">
                                         <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                     </template>
                                     <template x-for="(item, index) in output" :key="item.id">
                                         <li x-text="item.value"
                                         :id="'gioitinh'+index"
-                                        @click="addItem(item)"
                                         @mouseover="choose = index"
                                         :class="checkchoose(index) ? 'bg-gray-100' : ''"
                                         class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
@@ -1012,6 +1025,7 @@
 
                         <!-- chuyên ngành -->
                         <div x-data="{
+                            old_hocvi_2: '',
                             showoptions: false,
                             output: [],
                             dataframe: [],
@@ -1020,36 +1034,44 @@
                             choose: 0,
                             miniSearch: '',
                             async updateData() {
-                                thinhgiang.hocvi_nganh = ''
-                                switch (thinhgiang.hocvi) {
-                                    case 'Cử nhân':
-                                        url = '/api/danhmuc/nganh-daihoc';
-                                        break;
-                                    case 'Thạc sĩ':
-                                        url = '/api/danhmuc/nganh-thacsi';
-                                        break;
-                                    case 'Tiến sĩ':
-                                        url = '/api/danhmuc/nganh-tiensi';
-                                        break;
-                                    case 'Tiến sĩ khoa học':
-                                        url = '/api/danhmuc/nganh-tiensi';
-                                        break;
-                                    default:
-                                        url = '/api/danhmuc/nganh-thacsi';
+                                if (thinhgiang.hocvi != old_hocvi) {
+                                    thinhgiang.hocvi_nganh = ''
+                                    old_hocvi = thinhgiang.hocvi
                                 }
-                                fetch(url)            
-                                .then((response) => response.json())
-                                .then((result) => {
-                                    this.dataframe = result.reduce((byId, song) => {
-                                        byId[song.id] = song;
-                                        return byId;
-                                    }, {});
-                                    this.output = Object.values(this.dataframe);
-                                    this.miniSearch.removeAll();
-                                    this.miniSearch.addAll(result);
-                                });
+                                if (thinhgiang.hocvi != this.old_hocvi_2) {
+                                    switch (thinhgiang.hocvi) {
+                                        case 'Cử nhân':
+                                            url = '/api/danhmuc/nganh-daihoc';
+                                            break;
+                                        case 'Thạc sĩ':
+                                            url = '/api/danhmuc/nganh-thacsi';
+                                            break;
+                                        case 'Tiến sĩ':
+                                            url = '/api/danhmuc/nganh-tiensi';
+                                            break;
+                                        case 'Tiến sĩ khoa học':
+                                            url = '/api/danhmuc/nganh-tiensi';
+                                            break;
+                                        default:
+                                            url = '/api/danhmuc/nganh-thacsi';
+                                    }
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                        this.old_hocvi_2 = thinhgiang.hocvi
+                                        this.filteredItems()
+                                    });
+                                }
                             },
                             getData() {
+                                console.log(this.old_hocvi)
                                 this.miniSearch = new MiniSearch({
                                     fields: ['value'],
                                     searchOptions: {
@@ -1057,7 +1079,6 @@
                                         combineWith: 'AND'
                                     }
                                 })
-                                this.updateData()
                             },
                             filteredItems() {
                                 this.showoptions = true;
@@ -1973,7 +1994,7 @@
                 <div class="absolute left-[1px]">
                     <i x-show="!show" class="text-white fa-solid fa-caret-left"></i>
                 </div>
-                <div x-show="show" x-data="{type: ''}"
+                <div x-show="show" x-data="{type: 'cohuu'}"
                 @tab1.window="type='cohuu'"
                 @tab2.window="type='thinhgiang'"
                 @click="$dispatch('newportfolio', {type: type})"
@@ -2017,6 +2038,9 @@
 
         <!-- start lấy số hợp đồng -->
         <div x-data="{
+            sohopdong:'',
+            hopdong: {},
+            success: false,
             open: false, 
             giangvien: {}, 
             nguoilayso: {},
@@ -2034,14 +2058,28 @@
         x-show="open" 
         @runlayso.window="
         currentR = 1
+        success = false
         giangvien = $event.detail.giangvien
-        console.log(giangvien)
-        console.log('nampro')
-        fetch(`/api/hopdong/layso`)
+        fetch(`/api/nhansu/me/search`)
         .then((response) => response.json())
         .then((result) => {
             nguoilayso = result;
-            console.log(nguoilayso)
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            if ([1,2].includes(today.getMonth() + 1)) {
+                mm = (today.getMonth()+1).toString().padStart(2,'0')
+            } else {
+                mm = (today.getMonth()+1).toString()
+            }
+            var yyyy = today.getFullYear();
+            hopdong.ngayky = dd + '/' + mm + '/' + yyyy
+            hopdong.nguoidaidien = 'TS. Phạm Tấn Hạ'
+            hopdong.giangvien = giangvien.maso
+            hopdong.donvimoi = nguoilayso.donvicongtac
+            hopdong.nguoiphutrach = nguoilayso.maso
+            hopdong.he = 'Chính quy (Chuẩn)'
+            hopdong.namhoc = '2023-2024'
+            hopdong.hocky = 'HK1'
             open = true
         });"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
@@ -2052,7 +2090,7 @@
 
 
             <!-- start form lấy số -->
-            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[25px] mb-[160px] border px-[16px] pt-[32px] pb-[16px]">
+            <div class="bg-white opacity-100 overflow-hidden z-[1] transition-none rounded-lg w-[800px] h-auto flex flex-col justify-start items-center mx-[16px] mt-[25px] mb-[25px] border px-[16px] pt-[32px] pb-[16px]">
     
                 {# tieu de form #}
                 <div class="w-full flex flex-col gap-4 justify-start items-center mb-[20px]">
@@ -2091,7 +2129,7 @@
                 {# end tieu de form #}
     
                 <!-- {# body form #} -->
-                <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px]">
+                <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px] z-[2]">
                     <!-- {# thông tin hợp đồng #} -->
                     <div x-show="checkER(1)||checkER(5)" class="w-full flex flex-col justify-start items-start gap-6 mb-[10px]">
                         <div class="text-[16px] text-black font-[500]">
@@ -2105,7 +2143,7 @@
                                 </div>
                                 <input type="search"
                                 disabled
-                                value="TS. Phạm Tấn Hạ"
+                                x-model="hopdong.nguoidaidien"
                                 class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
     
@@ -2113,8 +2151,68 @@
                                 <div>
                                     Ngày ký hợp đồng
                                 </div>
-                                <input type="search"
-                                value="19/3/2024"
+                                <input x-data="{
+                                    checkStrDate(str) {
+                                        if (str) {
+                                            const result = [...str].every(
+                                                char => (char >= '0' && char <= '9') || (char == '/')
+                                            );
+                                            return result;
+                                        } else {
+                                            return false
+                                        }
+                                    },
+                                    converDay() {
+                                        if (this.checkStrDate(hopdong.ngayky)) {
+                                            list = hopdong.ngayky.split('/');
+                                            d = Number(list[0])
+                                            m = Number(list[1])
+                                            y = Number(list[2])
+                                            if (list.length !== 3 || 
+                                                list[0].length > 2 || 
+                                                list[1].length > 2 || 
+                                                list[2].length > 4 || 
+                                                list[2].length == 3 ||
+                                                d > 31 ||
+                                                m > 12 ||
+                                                y > 2099) {
+                                                hopdong.ngayky = ''
+                                            } else {
+                                                today = new Date();
+                                                currentYear = today.getFullYear();
+    
+                                                if (list[2].length == 2) {
+                                                    if (y > (currentYear - 2000)) {
+                                                        year_num = y + 1900
+                                                    } else {
+                                                        year_num = y + 2000
+                                                    }
+                                                } else {
+                                                    year_num = y
+                                                }
+                                                if ((m == 2 && d > 29) || ([1,3,5,7,8,10,12].includes(m) && d > 31) || ([2,4,6,9,11].includes(m) && d > 30)) {
+                                                    hopdong.ngayky = ''
+                                                } else {
+                                                    day = d.toString().padStart(2,'0')
+                                                    if ([1,2].includes(m)) {
+                                                        month = m.toString().padStart(2,'0')
+                                                    } else {
+                                                        month = m.toString()
+                                                    }
+                                                    year = year_num.toString()
+                                                    hopdong.ngayky = `${day}/${month}/${year}`
+                                                }
+                                            }
+                                        } else {
+                                            hopdong.ngayky = ''
+                                        }
+     
+                                    }
+                                }"
+                                type="search"
+                                @focusout="converDay()"
+                                @keyup.enter="converDay()"
+                                x-model="hopdong.ngayky"
                                 :disabled="checkER(5)"
                                 :class="checkER(5) ? 'cursor-not-allowed text-gray-400' : 'text-gray-600'"
                                 class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
@@ -2135,7 +2233,7 @@
                                 <div>
                                     Họ và tên
                                 </div>
-                                <input type="search" 
+                                <input type="search"
                                 disabled 
                                 x-model="giangvien.hovaten"
                                 class="cursor-not-allowed text-gray-400 w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
@@ -2147,7 +2245,7 @@
                                 </div>
                                 <input type="search"
                                 disabled
-                                x-model="giangvien.maso"
+                                x-model="hopdong.giangvien"
                                 class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
                         </div>
@@ -2161,16 +2259,139 @@
                             Thông tin đơn vị mời giảng
                         </div>
 
-                        <div class="w-full shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Tên đơn vị mời giảng
+                        <!-- start đơn vị mời giảng -->
+                        <div class="w-full flex flex-row justify-start items-start gap-6">
+                            <div x-data="{
+                                showoptions: false,
+                                output: [],
+                                dataframe: [],
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                miniSearch: '',
+                                async getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['ten'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
+                                    url = '/api/donvi/danhmuc'
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result.data
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                        console.log('loading done')
+                                    });
+                                },
+                                filteredItems() {
+                                    this.showoptions = true;
+                                    if (hopdong.donvimoi) {
+                                        this.output = this.miniSearch.search(hopdong.donvimoi).map(({ id }) => this.dataframe[id])
+                                    } else {
+                                        this.output = Object.values(this.dataframe);
+                                    }
+                                },
+                                addItem(item) {
+                                    hopdong.donvimoi = item.ten;
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.filteredItems()
+                                    if (this.output.length >= 1) {
+                                        if (hopdong.donvimoi != this.output[0].ten) {
+                                            hopdong.donvimoi = ''
+                                        }
+                                    } else {
+                                        hopdong.donvimoi = ''
+                                    }
+                                },
+                                enterEvent() {
+                                    if (this.output) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        hopdong.donvimoi = ''
+                                    }
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
+                                    }
+                                }
+                            }" x-init="getData()"
+                            class="w-full shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Tên đơn vị mời giảng
+                                </div>
+                                <input type="search" 
+                                @focusout.debounce.100ms="checkItem();showoptions = false;"
+                                @keyup.enter="enterEvent()"
+                                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                @keyup.up.prevent
+                                @keyup.down.prevent
+                                @focus="focusinputcheck()"
+                                @keyup = 'showoptionscheck'
+                                @keyup.backspace="eventBackspace"
+                                @input="filteredItems()"
+                                x-ref="input"
+                                x-model="hopdong.donvimoi"
+                                :disabled="checkER(5)"
+                                :class="checkER(5) ? 'cursor-not-allowed text-gray-400' : 'text-gray-600'"
+                                class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                    <ul x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[768px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.ten"
+                                            :id="'donvicongtac'+index"
+                                            @click="addItem(item)"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
-                            <input type="search" 
-                            x-model="nguoilayso.donvicongtac"
-                            :disabled="checkER(5)"
-                            :class="checkER(5) ? 'cursor-not-allowed text-gray-400' : 'text-gray-600'"
-                            class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
+                        <!-- end đơn vị mời giảng -->
 
                         <div class="w-full flex flex-row justify-start items-start gap-6">
                             <div class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
@@ -2189,7 +2410,7 @@
                                     Mã số người phụ trách
                                 </div>
                                 <input type="search"
-                                x-model="nguoilayso.maso"
+                                x-model="hopdong.nguoiphutrach"
                                 disabled
                                 class="text-gray-400 cursor-not-allowed w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                             </div>
@@ -2206,60 +2427,427 @@
                         </div>
                         <div class="w-full flex flex-row justify-start items-start gap-6">
 
-                            <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
+                            <!-- start hệ đào tạo -->
+                            <div x-data="{
+                                showoptions: false,
+                                output: [],
+                                dataframe: [],
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                miniSearch: '',
+                                async getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['value'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
+                                    url = '/api/danhmuc/hedaotao'
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                    });
+                                },
+                                filteredItems() {
+                                    console.log('searching...')
+                                    this.showoptions = true;
+                                    if (hopdong.he) {
+                                        this.output = this.miniSearch.search(hopdong.he).map(({ id }) => this.dataframe[id])
+                                        console.log(this.output)
+                                    } else {
+                                        this.output = Object.values(this.dataframe);
+                                    }
+                                },
+                                addItem(item) {
+                                    hopdong.he = item.value;
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.filteredItems()
+                                    if (this.output.length >= 1) {
+                                        if (hopdong.he != this.output[0].value) {
+                                            hopdong.he = ''
+                                        }
+                                    } else {
+                                        hopdong.he = ''
+                                    }
+                                },
+                                enterEvent() {
+                                    if (this.output) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        hopdong.he = ''
+                                    }
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
+                                    }
+                                }
+                            }" x-init="getData()"
+                            class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
                                 <div>
-                                    Hệ
+                                    Hệ đào tạo
                                 </div>
                                 <input type="search" 
-                                value="Chính quy (Chuẩn)"
+                                @focusout.debounce.100ms="checkItem();showoptions = false;"
+                                @keyup.enter="enterEvent()"
+                                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                @keyup.up.prevent
+                                @keyup.down.prevent
+                                @focus="focusinputcheck()"
+                                @keyup = 'showoptionscheck'
+                                @keyup.backspace="eventBackspace"
+                                @input="filteredItems()"
+                                x-ref="input"
+                                x-model="hopdong.he"
                                 :disabled="checkER(5)"
                                 :class="checkER(5) ? 'cursor-not-allowed text-gray-400' : 'text-gray-600'"
                                 class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                    <ul x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[240px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.value"
+                                            :id="'donvicongtac'+index"
+                                            @click="addItem(item)"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
+                            <!-- end Hệ đào tạo -->
 
-                            <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
+                            <!-- start Nam hoc -->
+                            <div x-data="{
+                                showoptions: false,
+                                output: [],
+                                dataframe: [],
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                miniSearch: '',
+                                async getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['value'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
+                                    url = '/api/danhmuc/namhoc'
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                    });
+                                },
+                                filteredItems() {
+                                    console.log('searching...')
+                                    this.showoptions = true;
+                                    if (hopdong.namhoc) {
+                                        this.output = this.miniSearch.search(hopdong.namhoc).map(({ id }) => this.dataframe[id])
+                                        console.log(this.output)
+                                    } else {
+                                        this.output = Object.values(this.dataframe);
+                                    }
+                                },
+                                addItem(item) {
+                                    hopdong.namhoc = item.value;
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.filteredItems()
+                                    if (this.output.length >= 1) {
+                                        if (hopdong.namhoc != this.output[0].value) {
+                                            hopdong.namhoc = ''
+                                        }
+                                    } else {
+                                        hopdong.namhoc = ''
+                                    }
+                                },
+                                enterEvent() {
+                                    if (this.output) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        hopdong.namhoc = ''
+                                    }
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
+                                    }
+                                }
+                            }" x-init="getData()"
+                            class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
                                 <div>
                                     Năm học
                                 </div>
                                 <input type="search" 
-                                value="2023-2024"
+                                @focusout.debounce.100ms="checkItem();showoptions = false;"
+                                @keyup.enter="enterEvent()"
+                                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                @keyup.up.prevent
+                                @keyup.down.prevent
+                                @focus="focusinputcheck()"
+                                @keyup = 'showoptionscheck'
+                                @keyup.backspace="eventBackspace"
+                                @input="filteredItems()"
+                                x-ref="input"
+                                x-model="hopdong.namhoc"
                                 :disabled="checkER(5)"
                                 :class="checkER(5) ? 'cursor-not-allowed text-gray-400' : 'text-gray-600'"
                                 class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                    <ul x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[240px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.value"
+                                            :id="'donvicongtac'+index"
+                                            @click="addItem(item)"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
+                            <!-- end Nam hoc -->
     
-                            <div class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
+                            <!-- start học kỳ -->
+                            <div x-data="{
+                                showoptions: false,
+                                output: [],
+                                dataframe: [],
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                miniSearch: '',
+                                async getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['value'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
+                                    url = '/api/danhmuc/hocky'
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                    });
+                                },
+                                filteredItems() {
+                                    console.log('searching...')
+                                    this.showoptions = true;
+                                    if (hopdong.hocky) {
+                                        this.output = this.miniSearch.search(hopdong.hocky).map(({ id }) => this.dataframe[id])
+                                        console.log(this.output)
+                                    } else {
+                                        this.output = Object.values(this.dataframe);
+                                    }
+                                },
+                                addItem(item) {
+                                    hopdong.hocky = item.value;
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.filteredItems()
+                                    if (this.output.length >= 1) {
+                                        if (hopdong.hocky != this.output[0].value) {
+                                            hopdong.hocky = ''
+                                        }
+                                    } else {
+                                        hopdong.hocky = ''
+                                    }
+                                },
+                                enterEvent() {
+                                    if (this.output) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        hopdong.hocky = ''
+                                    }
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvicongtac.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvicongtac.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
+                                    }
+                                }
+                            }" x-init="getData()"
+                            class="basis-[33%] shrink flex flex-col justify-start items-start gap-2">
                                 <div>
-                                    Học kỳ
+                                    Năm học
                                 </div>
                                 <input type="search" 
-                                value="HK1"
+                                @focusout.debounce.100ms="checkItem();showoptions = false;"
+                                @keyup.enter="enterEvent()"
+                                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                @keyup.up.prevent
+                                @keyup.down.prevent
+                                @focus="focusinputcheck()"
+                                @keyup = 'showoptionscheck'
+                                @keyup.backspace="eventBackspace"
+                                @input="filteredItems()"
+                                x-ref="input"
+                                x-model="hopdong.hocky"
                                 :disabled="checkER(5)"
                                 :class="checkER(5) ? 'cursor-not-allowed text-gray-400' : 'text-gray-600'"
                                 class="w-full h-[40px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
+                                <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                    <ul x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[240px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.value"
+                                            :id="'donvicongtac'+index"
+                                            @click="addItem(item)"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
+                            <!-- end học kỳ -->
                         </div>
     
                     </div>
                     <!-- {# end thông tin giảng dạy #} -->                   
 
 
-                    <!-- {# thông tin giảng dạy #} -->
+                    <!-- {# start trang hoàn thành #} -->
                     <div x-show="checkER(6)" class="w-full flex flex-col justify-center items-center gap-6 mb-[10px]">
-                        <div class="flex flex-col justify-center items-center text-[30px] text-green font-[500] gap-10">
-                            <i class="fa-regular fa-circle-check text-[60px]"></i>
-                            <div class="text-black">Đã tạo: 123/2023/HĐMG-XHNV-TCCB</div>
-                            <div class="text-black hover:text-sky-600 text-[16px] underline font-[400] cursor-pointer">Tới trang quản lý hợp đồng</div>
-                            <div class="text-black hover:text-sky-600 text-[16px] underline font-[400] cursor-pointer"
+                        <div class="flex flex-col justify-center items-center text-[30px]  font-[500] gap-10">
+                            <i x-show="!success" class="fa-solid fa-spinner fa-spin-pulse text-yellow-500 text-[60px]"></i>
+                            <i x-show="success" class="fa-regular fa-circle-check text-green text-[60px]"></i>
+                            <div x-show="success" x-text="'Đã tạo hợp đồng: '+sohopdong" class="text-black"></div>
+                            <div x-show="success" class="text-black hover:text-sky-600 text-[16px] underline font-[400] cursor-pointer">Tới trang quản lý hợp đồng</div>
+                            <div x-show="success" class="text-black hover:text-sky-600 text-[16px] underline font-[400] cursor-pointer"
                             @click="open = false; $dispatch('closepopup');">Tiếp tục lấy số</div>
                         </div>
                     </div>
-                    <!-- {# end thông tin giảng dạy #} --> 
+                    <!-- {# end trang hoàn thành #} --> 
 
                     <div class="w-full border my-[15px]"></div>
                 </div>
     
-                <div class="w-full flex flex-row justify-between items-start mb-[20px]">
+                <div class="w-full flex flex-row justify-between items-start mb-[20px] z-[1]">
                     <div class="">
                         <!-- {# button cancel #} -->
                         <input type="submit"
@@ -2283,7 +2871,24 @@
                         <input type="submit"
                         x-show="!checkR(6)"
                         :value="checkER(5) ? 'Finish' : 'Next'"
-                        @click="currentR+=1"
+                        @click="
+                            currentR+=1
+                            if (checkER(6)) {
+                                console.log(hopdong)
+                                url = '/api/hopdong/create'
+                                fetch(url, {
+                                    method:'POST',
+                                    headers:{'Content-Type': 'application/json',},
+                                    body: JSON.stringify({...hopdong})
+                                })
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    console.log(result)
+                                    sohopdong = result.hopdong
+                                    success = result.message == 'success' ? true : false
+                                })
+                            }
+                        "
                         :class="checkER(5) ? 'bg-orange text-white border-orange' : 'hover:border-orange hover:text-orange text-gray-600  border-gray-500'"
                         class="z-[1] text-[14px] font-[500] px-[20px] py-[5px] rounded-lg leading-normal border cursor-pointer">
                         <!-- {# end button Next #} -->
