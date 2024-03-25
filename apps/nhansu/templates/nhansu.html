@@ -761,7 +761,9 @@
                             <div>
                                 Số CCCD/Hộ chiếu
                             </div>
-                            <input type="search" 
+                            <input type="search"
+                            x-mask="999999999999"
+                            @focusout="if (thinhgiang.CCCD_so.length < 12) {thinhgiang.CCCD_so = ''}"
                             x-model="thinhgiang.CCCD_so"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>
@@ -893,7 +895,8 @@
                             <div>
                                 Số điện thoại
                             </div>
-                            <input type="search" 
+                            <input type="search"
+                            x-mask="9999999999"
                             x-model="thinhgiang.sdt"
                             class="w-full h-[45px] rounded-lg bg-gray-100 border-transparent focus:border-orange focus:ring-0">
                         </div>

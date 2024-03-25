@@ -4,8 +4,33 @@
     <div id="container" 
     x-data="{
         search: '',
-        isLoading: false
-    }"
+        selected: [],
+        totaldataframe: {},
+        totaloutput: [],
+        isLoading: false,
+        removeselected(value) {
+            const index = this.selected.indexOf(value);
+            if (index > -1) {
+                this.selected.splice(index, 1);
+            }
+        },
+        getData() {
+            this.isloading = true;
+            fetch('/api/hopdong/search/tete')            
+            .then((response) => response.json())
+            .then((result) => {
+                this.totaloutput = result.data
+                this.totaldataframe = this.totaloutput.reduce((byId, song) => {
+                    byId[song.id] = song;
+                    return byId;
+                }, {});
+                console.log(this.totaldataframe)
+                console.log(this.totaloutput)
+                this.isLoading = false;
+                $dispatch('getdata')
+            });
+        }
+    }" x-init="getData()"
     class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
         <!-- {# Search #} -->
         <div class="w-full flex flex-row justify-center items-center shrink-0">
@@ -57,139 +82,90 @@
 
         <!-- tab 1 -->
         <div x-data="{show:true,
-            dataframe: {},
             output: [],
+            checkbox: [],
             miniSearch: '',
             async getData() {
                 console.log('namprooooo')
                 this.miniSearch = new MiniSearch({
-                    fields: ['maso','hovaten','ngaysinh'],
-                    searchOptions: {
-                        prefix: true,
-                        combineWith: 'AND',
-                    },
+                    fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
                     extractField: (document, fieldName) => {
-                        if (fieldName === 'maso') {
-                            const nguyen = document['maso']
-                            if (nguyen) {
-                                return nguyen && nguyen + ' ' + nguyen.slice(6) + ' ' + nguyen.slice(3)
+                        if (fieldName === 'sohopdong') {
+                            const so = document['so']
+                            const nam = document['nam']
+                            if (so) {
+                                console.log(so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB')
+                                return so && so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB'
                             }
                         }
                         return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
                     },
+                    searchOptions: {
+                        prefix: true,
+                        combineWith: 'AND',
+                    },
+                    tokenize: (string, _fieldName) => string.split(' ')
                 })
-                isLoading = true;
-                fetch('/api/nhansu/cohuu/search')            
-                    .then((response) => response.json())
-                    .then((result) => {
-                        result = result.data
-                        console.log(result);
-                        this.dataframe = result.reduce((byId, song) => {
-                            byId[song.id] = song;
-                            return byId;
-                        }, {});
-                        this.output = Object.values(this.dataframe);
-                        this.miniSearch.addAll(result);
-                        isLoading = false;
-                    });
+                this.output = totaloutput.filter((item) => {return item.trangthais[item.trangthais.length - 1].trangthai == 'Đã tạo'})
+                this.miniSearch.addAll(this.output);
             },
             getSearchResults() {
                 if (search === '') {
-                    this.output = Object.values(this.dataframe);
+                    this.output = totaloutput.filter((item) => {return item.trangthais[item.trangthais.length - 1].trangthai == 'Đã tạo'})
                 } else {
-                    this.output = this.miniSearch.search(search).map(({ id }) => this.dataframe[id])
+                    this.output = this.miniSearch.search(search).map(({ id }) => totaldataframe[id])
                 }
+                console.log(this.checkbox)
             },
-            updateCohuu(data) {
-                console.log(this.dataframe[data.id])
-                console.log(data)
-                if (this.dataframe[data.id]) {
-                    this.miniSearch.remove(this.dataframe[data.id])
-                    delete this.dataframe[data.id]
-                }
-                this.dataframe[data.id] = data
-                this.miniSearch.add(this.dataframe[data.id])
-                this.getSearchResults()
+            get checkoutput() {
+                return (this.output) ? true : false;
             }
         }"
         @tab2.window="show = false"
         @tab1.window="show = true"
-        x-init="getData()"
-        @updatecohuu.window="updateCohuu($event.detail.data)"
+        @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
         class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
             <!-- {# start row #} -->
-            <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
-                <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
-                    <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">#123</div>
-                    <div class="flex flex-row justify-start items-center h-[70px]">
-                        <input type="checkbox" class="checkbox" name="" id="">
-                    </div>
-                </div>
-                <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
-                    <div class="w-full flex flex-row justify-between items-center">
-                        <div class="flex flex-row justify-start items-center gap-5">
-                            <div>456/2024/HĐMG-XHNV-TCCB</div>
-                            <div>(Chính quy - Chuẩn)</div>
-                            <div>2023-2024 HKI</div>
-                        </div>
-                        <div class="flex flex-row justify-end items-center gap-5">
-                            <div class="px-[10px] py-[1px] rounded-xl bg-gray-200 text-black font-[500]">
-                                Đã tạo - 12:05 21/3/2024
-                            </div>
-                            <div class="cursor-pointer">
-                                Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
-                            </div>
+            <template x-if="checkoutput">
+            <template x-for="(item, index) in output" :key="index">
+                <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
+                        <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">#123</div>
+                        <div class="flex flex-row justify-start items-center h-[70px]">
+                            <input type="checkbox" x-model="checkbox[item.id]" 
+                            @onchange="console.log(checkbox[item.id]); if (checkbox[item.id]) {selected.push(item)} else {removeselected(item)}; console.log(selected)"
+                            class="checkbox" name="" id="">
                         </div>
                     </div>
-                    <div class="w-full flex flex-col justify-center items-start gap-3">
-                        <div class="font-[500] text-[20px] text-blue">Nguyễn Văn Thành A - [QSX9010123]</div>
+                    <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
                         <div class="w-full flex flex-row justify-between items-center">
-                            <div class="font-[500] text-[14px] text-gray-600">Khoa Ngữ văn Tây Ban Nha - Italia</div>
-                            <div class="font-[400] text-[14px] text-gray-500">Người phụ trách: Ngô Thị Thúy B</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <!-- {# End row#} -->
-        
-            <!-- {# start row #} -->
-            <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
-                <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
-                    <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">
-                        #124
-                    </div>
-                    <div class="flex flex-row justify-start items-center h-[70px]">
-                        <input type="checkbox" class="checkbox" name="" id="">
-                    </div>
-                </div>
-                <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
-                    <div class="w-full flex flex-row justify-between items-center">
-                        <div class="flex flex-row justify-start items-center gap-5">
-                            <div>789/2024/HĐMG-XHNV-TCCB</div>
-                            <div>(Vừa học vừa làm)</div>
-                            <div>2023-2024 HKI</div>
-                        </div>
-                        <div class="flex flex-row justify-end items-center gap-5">
-                            <div class="px-[10px] py-[1px] rounded-xl bg-gray-200 text-black font-[500]">
-                                Đã tạo - 16:30 22/3/2024
+                            <div class="flex flex-row justify-start items-center gap-5">
+                                <div x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div x-text="item.he"></div>
+                                <div x-text="item.namhoc + ' ' + item.hocky"></div>
                             </div>
-                            <div class="cursor-pointer">
-                                Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
+                            <div class="flex flex-row justify-end items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-gray-200 text-black font-[500]" 
+                                x-text="item.trangthais[item.trangthais.length - 1].trangthai+' - '+item.trangthais[item.trangthais.length - 1].ngaycapnhat">
+                                </div>
+                                <div class="cursor-pointer">
+                                    Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col justify-center items-start gap-3">
+                            <div class="font-[500] text-[20px] text-blue" x-text="item.giangvien.hovaten+' - ['+item.giangvien.maso+']'"></div>
+                            <div class="w-full flex flex-row justify-between items-center">
+                                <div class="font-[500] text-[14px] text-gray-600" x-text="item.donvimoi.ten"></div>
+                                <div class="font-[400] text-[14px] text-gray-500" x-text="'Người phụ trách: '+item.nguoiphutrach.hovaten"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="w-full flex flex-col justify-center items-start gap-3">
-                        <div class="font-[500] text-[20px] text-blue">Nguyễn Thị Lý Như C - [QSX9700124]</div>
-                        <div class="w-full flex flex-row justify-between items-center">
-                            <div class="font-[500] text-[14px] text-gray-600">Khoa Ngữ văn Tây Ban Nha - Italia</div>
-                            <div class="font-[400] text-[14px] text-gray-500">Người phụ trách: Ngô Thị Thúy B</div>
-                        </div>
-                    </div>
                 </div>
-
+            </template>
+            </template>
             </div>
             <!-- {# End row#} -->
 

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Request, Depends, UploadFile
 from typing import Annotated, List
 from starlette.authentication import requires
 from fastapi.responses import HTMLResponse
-from sqlmodel import Session, select
+from sqlmodel import Session, select, desc
 import pandas as pd
 import datetime
 
@@ -52,6 +52,7 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
     hopdong.donvimoi = None
     hopdong.giangvien = None
     hopdong.nguoiphutrach = None
+    hopdong.trangthai = 'Đã tạo'
 
     new_hopdong = Hopdong.model_validate(hopdong)
     session.add(new_hopdong)
@@ -73,9 +74,9 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
         new_hopdong.nguoiphutrach = (session.exec(select(Nhansu).where(Nhansu.maso == nguoiphutrach)).first())
 
     # Trang thai
-    trangthai = Trangthai(trangthai='Đã tạo', ngaycapnhat=str(1234567890))
-    # new_trangthai = Trangthai.model_validate(trangthai)
-    new_hopdong.trangthais.append(trangthai)
+    trangthai = TrangthaiCreate(trangthai=new_hopdong.trangthai, ngaycapnhat=new_hopdong.ngaycapnhat)
+    new_trangthai = Trangthai.model_validate(trangthai)
+    new_hopdong.trangthais.append(new_trangthai)
 
     session.add(new_hopdong)
     session.commit()
@@ -95,9 +96,9 @@ async def api_hopdong_read(*, request: Request, session: db_dependency, id: int)
 
 ####################################################################
 
-@router.get("/api/hopdong/search/{trangthai}")
+@router.get("/api/hopdong/search")
 @requires('auth', redirect='login')
-async def api_hopdong_search(*, request: Request, session: db_dependency, trangthai: str):
-    hopdongs = session.exec(select(Hopdong)).all()
+async def api_hopdong_search(*, request: Request, session: db_dependency):
+    hopdongs = session.exec(select(Hopdong).order_by(desc(Hopdong.id))).all()
     data = (ListHopdongReadFull.model_validate({'data':hopdongs})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
