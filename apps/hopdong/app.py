@@ -74,7 +74,7 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
         new_hopdong.nguoiphutrach = (session.exec(select(Nhansu).where(Nhansu.maso == nguoiphutrach)).first())
 
     # Trang thai
-    trangthai = TrangthaiCreate(trangthai=new_hopdong.trangthai, ngaycapnhat=new_hopdong.ngaycapnhat)
+    trangthai = TrangthaiCreate(trangthai=new_hopdong.trangthai, ngaycapnhat=str(new_hopdong.ngaycapnhat))
     new_trangthai = Trangthai.model_validate(trangthai)
     new_hopdong.trangthais.append(new_trangthai)
 
@@ -99,6 +99,6 @@ async def api_hopdong_read(*, request: Request, session: db_dependency, id: int)
 @router.get("/api/hopdong/search")
 @requires('auth', redirect='login')
 async def api_hopdong_search(*, request: Request, session: db_dependency):
-    hopdongs = session.exec(select(Hopdong).order_by(desc(Hopdong.id))).all()
+    hopdongs = session.exec(select(Hopdong).order_by(desc(Hopdong.ngaycapnhat))).all()
     data = (ListHopdongReadFull.model_validate({'data':hopdongs})).model_dump(exclude_unset=True)
     return await sendjson(request, data)

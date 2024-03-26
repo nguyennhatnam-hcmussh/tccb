@@ -16,7 +16,7 @@
         },
         getData() {
             this.isloading = true;
-            fetch('/api/hopdong/search/tete')            
+            fetch('/api/hopdong/search')            
             .then((response) => response.json())
             .then((result) => {
                 this.totaloutput = result.data
