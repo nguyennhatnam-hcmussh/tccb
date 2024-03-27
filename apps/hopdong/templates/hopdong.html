@@ -5,6 +5,7 @@
     x-data="{
         search: '',
         selected: [],
+        checkbox: [],
         totaldataframe: {},
         totaloutput: [],
         isLoading: false,
@@ -31,6 +32,8 @@
             });
         }
     }" x-init="getData()"
+    @hdchecked="checkbox[$event.detail.data.id]=true; selected.push($event.detail.data); console.log(selected);console.log(checkbox)"
+    @hdunchecked="checkbox[$event.detail.data.id]=false; removeselected($event.detail.data); console.log(selected);console.log(checkbox)"
     class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
         <!-- {# Search #} -->
         <div class="w-full flex flex-row justify-center items-center shrink-0">
@@ -83,7 +86,6 @@
         <!-- tab 1 -->
         <div x-data="{show:true,
             output: [],
-            checkbox: [],
             miniSearch: '',
             async getData() {
                 console.log('namprooooo')
@@ -106,16 +108,15 @@
                     },
                     tokenize: (string, _fieldName) => string.split(' ')
                 })
-                this.output = totaloutput.filter((item) => {return item.trangthais[item.trangthais.length - 1].trangthai == 'Đã tạo'})
+                this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo'})
                 this.miniSearch.addAll(this.output);
             },
             getSearchResults() {
                 if (search === '') {
-                    this.output = totaloutput.filter((item) => {return item.trangthais[item.trangthais.length - 1].trangthai == 'Đã tạo'})
+                    this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo'})
                 } else {
                     this.output = this.miniSearch.search(search).map(({ id }) => totaldataframe[id])
                 }
-                console.log(this.checkbox)
             },
             get checkoutput() {
                 return (this.output) ? true : false;
@@ -134,9 +135,9 @@
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">#123</div>
                         <div class="flex flex-row justify-start items-center h-[70px]">
-                            <input type="checkbox" x-model="checkbox[item.id]" 
-                            @onchange="console.log(checkbox[item.id]); if (checkbox[item.id]) {selected.push(item)} else {removeselected(item)}; console.log(selected)"
-                            class="checkbox" name="" id="">
+                            <input type="checkbox" :checked="checkbox[item.id]" 
+                            @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                            class="checkbox">
                         </div>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
@@ -148,7 +149,7 @@
                             </div>
                             <div class="flex flex-row justify-end items-center gap-5">
                                 <div class="px-[10px] py-[1px] rounded-xl bg-gray-200 text-black font-[500]" 
-                                x-text="item.trangthais[item.trangthais.length - 1].trangthai+' - '+item.trangthais[item.trangthais.length - 1].ngaycapnhat">
+                                x-text="item.trangthai+' - '+item.ngaycapnhat">
                                 </div>
                                 <div class="cursor-pointer">
                                     Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
@@ -166,11 +167,22 @@
                 </div>
             </template>
             </template>
-            </div>
             <!-- {# End row#} -->
 
         </div>
         <!-- end tab 1 -->
-
+        <template x-if="selected.length > 0">
+            <div class="cursor-pointer w-[50px] h-[50px] fixed bottom-[20px] right-[30px] bg-orange rounded-full z-[1] text-white">
+                <div class="w-full h-full relative flex justify-center items-center">
+                    <i class="fa-solid fa-box-open text-[25px]"></i>
+                    <div class="h-[25px] w-[25px] bg-red-600 rounded-full absolute top-[-5px] left-[-5px]"
+                    @hdchecked.window="$el.classList.add('animate-ping'); setTimeout(function(){$el.classList.remove('animate-ping')},500)"
+                    @hdunchecked.window="$el.classList.add('animate-ping'); setTimeout(function(){$el.classList.remove('animate-ping')},500)"></div>
+                    <div class="h-[25px] w-[25px] bg-red-600 text-white rounded-full absolute top-[-5px] left-[-5px] border border-white flex justify-center items-center">
+                        <div class="font-[600]" x-text="selected.length"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>  
 </div>
