@@ -9,11 +9,21 @@
         totaldataframe: {},
         totaloutput: [],
         isLoading: false,
+        get checkselected() {
+            return this.selected.length > 0
+        },
         removeselected(value) {
             const index = this.selected.indexOf(value);
             if (index > -1) {
                 this.selected.splice(index, 1);
             }
+        },
+        get reverseArray() {
+            const reversed = [];
+            for (let i = this.selected.length - 1; i >= 0; i--) {
+                reversed.push(this.selected[i]);
+            }
+            return reversed;
         },
         getData() {
             this.isloading = true;
@@ -171,18 +181,67 @@
 
         </div>
         <!-- end tab 1 -->
-        <template x-if="selected.length > 0">
-            <div class="cursor-pointer w-[50px] h-[50px] fixed bottom-[20px] right-[30px] bg-orange rounded-full z-[1] text-white">
+
+        <div x-data="{open: false}">
+            <!-- start button selected -->
+            <div x-show="checkselected" @click="open = ! open"
+            class="cursor-pointer w-[50px] h-[50px] fixed bottom-[20px] right-[30px] bg-orange rounded-full z-[1] text-white">
                 <div class="w-full h-full relative flex justify-center items-center">
-                    <i class="fa-solid fa-box-open text-[25px]"></i>
+                    <i x-show="!open" class="fa-solid fa-box-open text-[25px]"></i>
+                    <i x-show="open" class="fa-solid fa-xmark text-[25px]"></i>
                     <div class="h-[25px] w-[25px] bg-red-600 rounded-full absolute top-[-5px] left-[-5px]"
                     @hdchecked.window="$el.classList.add('animate-ping'); setTimeout(function(){$el.classList.remove('animate-ping')},500)"
                     @hdunchecked.window="$el.classList.add('animate-ping'); setTimeout(function(){$el.classList.remove('animate-ping')},500)"></div>
-                    <div class="h-[25px] w-[25px] bg-red-600 text-white rounded-full absolute top-[-5px] left-[-5px] border border-white flex justify-center items-center">
+                    <div x-ref="buttonselected" class="h-[25px] w-[25px] bg-red-600 text-white rounded-full absolute top-[-5px] left-[-5px] border border-white flex justify-center items-center">
                         <div class="font-[600]" x-text="selected.length"></div>
                     </div>
                 </div>
             </div>
-        </template>
+            <!-- end button selected -->
+
+            <!-- start table selected -->
+            <div @click.outside="open = false" x-show="open" x-anchor.top-end="$refs.buttonselected" class="flex flex-col w-[350px] h-[500px] rounded-xl overflow-hidden transition-none z-[1] shadow-[rgba(6,_24,_44,_0.4)_0px_0px_0px_2px,_rgba(6,_24,_44,_0.65)_0px_4px_6px_-1px,_rgba(255,_255,_255,_0.08)_0px_1px_0px_inset]">
+                <!-- start item in selected -->
+                <div class="basis-full shrink relative overflow-x-auto overflow-y-hidden flex flex-col justify-start items-center gap-4 px-[15px] pt-[20px] bg-white">
+                    <template x-for="(item, index) in reverseArray" :key="index">
+                        <div class="h-[50px] w-full border border-gray-500 rounded-xl flex flex-row justify-start items-start">
+                            <div class="h-full w-[50px] flex justify-center items-center">
+                                <i class="text-gray-400 fa-solid fa-file text-[20px]"></i>
+                            </div>
+                            <div class="w-full h-full flex flex-col justify-center items-start">
+                                <div class="font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div x-text="item.giangvien.hovaten"></div>
+                            </div>
+                            <div class="h-[50px] w-[50px] flex justify-center items-center">
+                                <i @click="checkbox[item.id]=false; removeselected(item); console.log(selected);console.log(checkbox); if(selected.length == 0){open = false}"
+                                class="cursor-pointer fa-regular fa-circle-xmark text-[20px] text-red-500"></i>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <!-- end item in selected -->
+
+                <!-- start button selected next -->
+                <div class="basis-[60px] shrink-0 w-full bg-darkblue flex flex-row justify-center items-center">
+                    <div class="h-full basis-[25%] shrink"></div>
+                    <div class="cursor-pointer h-full basis-[50%] shrink flex justify-center items-center">
+                        <div class="rounded-2xl h-[40px] w-full bg-yellow-400 flex flex-row justify-evenly items-center">
+                            <div class="text-darkblue font-[500] text-[16px]">Nhận hợp đồng</div>
+                            <div>
+                                <i class="fa-solid fa-circle-arrow-right text-darkblue text-[16px]"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-full basis-[25%] shrink flex justify-center items-center">
+                        <div @mouseover="tetttt = true" @mouseover.away="tetttt = false" x-data="{tetttt: false}" class="rounded-full bg-white w-[18px] h-[18px] flex justify-center items-center">
+                            <i x-ref="baoloibtn" class="cursor-pointer fa-solid fa-circle-exclamation text-[20px] text-red-500"></i>
+                            <div x-show="tetttt" x-anchor.offset.5="$refs.baoloibtn" class="transition-none w-[60px] p-[5px] text-[12px] rounded boder bg-yellow-100">Báo lỗi!</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end button selected next -->
+            </div>
+            <!-- end table selected -->
+        </div>
     </div>  
 </div>
