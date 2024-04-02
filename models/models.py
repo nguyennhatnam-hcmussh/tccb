@@ -9,7 +9,8 @@ from main.schemas import (
     AuthBase, 
     NhansuBase,
     HopdongBase,
-    TrangthaiBase
+    TrangthaiBase,
+    BienbanBase
 )
 
 settings = get_settings()
@@ -39,6 +40,17 @@ class Trangthai(TrangthaiBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hopdong_id: int | None = Field(default=None, foreign_key="hopdong.id")
     hopdong: Optional["Hopdong"] = Relationship(back_populates="trangthais")
+    bienban_id: int | None = Field(default=None, foreign_key="bienban.id")
+    bienban: Optional["Bienban"] = Relationship(back_populates="trangthais")
+    
+    
+################# BIÊN BẢN ##################
+
+class Bienban(BienbanBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    trangthais: List["Trangthai"] = Relationship(back_populates="bienban")
+    
+    
 ################# DON VI ##################
     
 class Donvi(DonviBase, table=True):
@@ -58,7 +70,9 @@ class Hopdong(HopdongBase, table=True):
     nguoiphutrach: Optional["Nhansu"] = Relationship(back_populates="hopdongphutrach", link_model=HopdongOfNguoiphutrach, sa_relationship_kwargs={'uselist': False})
     trangthais: List["Trangthai"] = Relationship(back_populates="hopdong")
 
-################# CƠ HỮU ##################
+
+
+################# NHÂN SỰ ##################
     
 class Nhansu(NhansuBase, table=True):
     id: int | None = Field(default=None, primary_key=True)

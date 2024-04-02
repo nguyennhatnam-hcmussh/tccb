@@ -23,6 +23,7 @@ class HopdongBase(Base):
     ngayky: int | None = Field(default=None)
     trangthai: str | None = Field(default=None)
     ngaycapnhat: int | None = Field(default=None)
+    bienban: str | None = Field(default=None)
     nguoidaidien: str = Field(default="TS. Phạm Tấn Hạ")
 
 class HopdongCreate(HopdongBase):

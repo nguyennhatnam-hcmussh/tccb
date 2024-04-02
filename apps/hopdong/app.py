@@ -14,8 +14,8 @@ from main.db_setup import get_session, engine
 from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
-from main.models import Donvi, Nhansu, Hopdong, Trangthai
-from main.schemas import HopdongCreate, HopdongReadFull, ListHopdongRead, ListHopdongReadFull, TrangthaiCreate
+from main.models import Donvi, Nhansu, Hopdong, Trangthai, Bienban
+from main.schemas import HopdongCreate, HopdongReadFull, ListHopdongRead, ListHopdongReadFull, TrangthaiCreate, HopdongRead, BienbanCreate
 
 settings = config.get_settings()
 
@@ -58,7 +58,6 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
     hopdong.ngaycapnhat = await now2stamp()
     
     test = hopdong.model_dump(exclude_unset=True)
-    print(json.dumps(test))
     
     new_hopdong = Hopdong.model_validate_json(json.dumps(test))
     # new_hopdong = Hopdong.model_validate(hopdong)
@@ -92,6 +91,8 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
 
     return await sendjson(request, {'message': 'success', 'hopdong': f'{new_hopdong.so}/{new_hopdong.nam}/HĐMG-XHNV-TCCB'})
 
+############################################################
+
 @router.get("/api/hopdong/read/{id}")
 @requires('auth', redirect='login')
 async def api_hopdong_read(*, request: Request, session: db_dependency, id: int):
@@ -111,4 +112,51 @@ async def api_hopdong_search(*, request: Request, session: db_dependency):
     for i in range(len(data['data'])):
         data['data'][i]['ngayky'] = await stamp2date(data['data'][i]['ngayky'])
         data['data'][i]['ngaycapnhat'] = await stamp2datetime(data['data'][i]['ngaycapnhat'])
+    return await sendjson(request, data)
+
+
+####################################################################
+@router.post("/api/hopdong/upgrade/{next}")
+@requires('auth', redirect='login')
+async def api_hopdong_upgrade(*, request: Request, session: db_dependency, next: str, id_hopdongs: List[int]):
+    if next == 'nhanhopdong':
+        # Tao bien ban moi
+        bienban = BienbanCreate(ngaytao=await now2stamp(), loai='nhan')
+        bienban = bienban.model_dump(exclude_unset=True)  
+        new_bienban = Bienban.model_validate_json(json.dumps(bienban))
+        session.add(new_bienban)
+        session.commit()
+        session.refresh(new_bienban)
+        # lay so bien ban
+        bienban_pre = session.get(Hopdong, (int(new_bienban.id) - 1))
+        if (bienban_pre) and (bienban_pre.nam == new_bienban.nam):
+            new_bienban.so = bienban_pre.so + 1
+        else:
+            new_bienban.so = 1
+        session.add(new_bienban)
+        session.commit()
+        session.refresh(new_bienban)
+        # start upgrade hopdong
+        for i in id_hopdongs:
+            hopdong = session.get(Hopdong, i)
+            if hopdong and ((hopdong.trangthai == 'Đã tạo') or (hopdong.trangthai == 'Có sẳn')):
+                hopdong.trangthai = 'P.TCCB đã nhận'
+                hopdong.ngaycapnhat = await now2stamp()
+                hopdong.bienban = f'{new_bienban.so}/{new_bienban.nam}/TNHS-TCCB'
+                # Trang thai
+                trangthai = TrangthaiCreate(trangthai=hopdong.trangthai, ngaycapnhat=str(hopdong.ngaycapnhat))
+                new_trangthai = Trangthai.model_validate(trangthai)
+                hopdong.trangthais.append(new_trangthai)
+                new_bienban.trangthais.append(new_trangthai)
+                session.add(hopdong)
+                session.add(new_bienban)
+
+    session.commit()
+        
+    hopdongs = session.exec(select(Hopdong).order_by(desc(Hopdong.ngaycapnhat))).all()
+    data = (ListHopdongRead.model_validate({'data':hopdongs})).model_dump(exclude_unset=True)
+    for i in range(len(data['data'])):
+        data['data'][i]['ngayky'] = await stamp2date(data['data'][i]['ngayky'])
+        data['data'][i]['ngaycapnhat'] = await stamp2datetime(data['data'][i]['ngaycapnhat'])
+    data['message'] = 'success'
     return await sendjson(request, data)
