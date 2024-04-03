@@ -120,7 +120,6 @@
             output: [],
             miniSearch: '',
             async getData() {
-                console.log('namprooooo')
                 this.miniSearch = new MiniSearch({
                     fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
                     extractField: (document, fieldName) => {
@@ -140,7 +139,7 @@
                     },
                     tokenize: (string, _fieldName) => string.split(' ')
                 })
-                this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo'})
+                this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẳn'})
                 this.miniSearch.removeAll();
                 this.miniSearch.addAll(this.output);
             },
@@ -169,18 +168,20 @@
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
                 <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
+                        <input type="checkbox" :checked="checkbox[item.id]" 
+                        @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                        class="checkbox">
+                    </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
-                        <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">#123</div>
-                        <div class="flex flex-row justify-start items-center h-[70px]">
-                            <input type="checkbox" :checked="checkbox[item.id]" 
-                            @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
-                            class="checkbox">
-                        </div>
+                        <template x-if="item.bienban">
+                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
                         <div class="w-full flex flex-row justify-between items-center">
                             <div class="flex flex-row justify-start items-center gap-5">
-                                <div x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div class="px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
                                 <div x-text="item.he"></div>
                                 <div x-text="item.namhoc + ' ' + item.hocky"></div>
                             </div>
@@ -215,7 +216,6 @@
             output: [],
             miniSearch: '',
             async getData() {
-                console.log('namprooooo')
                 this.miniSearch = new MiniSearch({
                     fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
                     extractField: (document, fieldName) => {
@@ -263,19 +263,21 @@
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
+                        <input type="checkbox" :checked="checkbox[item.id]" 
+                        @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                        class="checkbox">
+                    </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
-                        <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">#123</div>
-                        <div class="flex flex-row justify-start items-center h-[70px]">
-                            <input type="checkbox" :checked="checkbox[item.id]" 
-                            @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
-                            class="checkbox">
-                        </div>
+                        <template x-if="item.bienban">
+                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
                         <div class="w-full flex flex-row justify-between items-center">
                             <div class="flex flex-row justify-start items-center gap-5">
-                                <div x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div class="px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
                                 <div x-text="item.he"></div>
                                 <div x-text="item.namhoc + ' ' + item.hocky"></div>
                             </div>
@@ -310,7 +312,6 @@
             output: [],
             miniSearch: '',
             async getData() {
-                console.log('namprooooo')
                 this.miniSearch = new MiniSearch({
                     fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
                     extractField: (document, fieldName) => {
@@ -358,24 +359,26 @@
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
+                        <input type="checkbox" :checked="checkbox[item.id]" 
+                        @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                        class="checkbox">
+                    </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
-                        <div class="cursor-pointer px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]">#123</div>
-                        <div class="flex flex-row justify-start items-center h-[70px]">
-                            <input type="checkbox" :checked="checkbox[item.id]" 
-                            @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
-                            class="checkbox">
-                        </div>
+                        <template x-if="item.bienban">
+                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
                         <div class="w-full flex flex-row justify-between items-center">
                             <div class="flex flex-row justify-start items-center gap-5">
-                                <div x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div class="px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
                                 <div x-text="item.he"></div>
                                 <div x-text="item.namhoc + ' ' + item.hocky"></div>
                             </div>
                             <div class="flex flex-row justify-end items-center gap-5">
-                                <div class="px-[10px] py-[1px] rounded-xl bg-gray-200 text-black font-[500]" 
+                                <div class="px-[10px] py-[1px] rounded-xl bg-[#fee7c3] text-yellow-950 font-[500]" 
                                 x-text="item.trangthai+' - '+item.ngaycapnhat">
                                 </div>
                                 <div class="cursor-pointer">
@@ -398,6 +401,294 @@
 
         </div>
         <!-- end tab 3 -->  
+
+
+        <!-- tab 4 -->
+        <div x-data="{show:false,
+            output: [],
+            miniSearch: '',
+            async getData() {
+                this.miniSearch = new MiniSearch({
+                    fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
+                    extractField: (document, fieldName) => {
+                        if (fieldName === 'sohopdong') {
+                            const so = document['so']
+                            const nam = document['nam']
+                            if (so) {
+                                console.log(so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB')
+                                return so && so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB'
+                            }
+                        }
+                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
+                    },
+                    searchOptions: {
+                        prefix: true,
+                        combineWith: 'AND',
+                    },
+                    tokenize: (string, _fieldName) => string.split(' ')
+                })
+                this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã ký - chờ nhận'})
+                this.miniSearch.removeAll();
+                this.miniSearch.addAll(this.output);
+            },
+            getSearchResults() {
+                if (search === '') {
+                    this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã ký - chờ nhận'})
+                } else {
+                    this.output = this.miniSearch.search(search).map(({ id }) => totaldataframe[id])
+                }
+            },
+            get checkoutput() {
+                return (this.output) ? true : false;
+            }
+        }"
+        @tab1.window="show = false"
+        @tab2.window="show = false"
+        @tab3.window="show = false"
+        @tab4.window="show = true"
+        @tab5.window="show = false"
+        @tab6.window="show = false"
+        @getdata.window="getData()"
+        @searching.window="getSearchResults()"
+        x-show="show"
+        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+            <!-- {# start row #} -->
+            <template x-if="checkoutput">
+            <template x-for="(item, index) in output" :key="index">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
+                        <input type="checkbox" :checked="checkbox[item.id]" 
+                        @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                        class="checkbox">
+                    </div>
+                    <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
+                        <template x-if="item.bienban">
+                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        </template>
+                    </div>
+                    <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
+                        <div class="w-full flex flex-row justify-between items-center">
+                            <div class="flex flex-row justify-start items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div x-text="item.he"></div>
+                                <div x-text="item.namhoc + ' ' + item.hocky"></div>
+                            </div>
+                            <div class="flex flex-row justify-end items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-[#c3fdfe] text-[#0c4359] font-[500]" 
+                                x-text="item.trangthai+' - '+item.ngaycapnhat">
+                                </div>
+                                <div class="cursor-pointer">
+                                    Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col justify-center items-start gap-3">
+                            <div class="font-[500] text-[20px] text-blue" x-text="item.giangvien.hovaten+' - ['+item.giangvien.maso+']'"></div>
+                            <div class="w-full flex flex-row justify-between items-center">
+                                <div class="font-[500] text-[14px] text-gray-600" x-text="item.donvimoi.ten"></div>
+                                <div class="font-[400] text-[14px] text-gray-500" x-text="'Người phụ trách: '+item.nguoiphutrach.hovaten"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            </template>
+            <!-- {# End row#} -->
+
+        </div>
+        <!-- end tab 4 -->  
+
+
+        <!-- tab 5 -->
+        <div x-data="{show:false,
+            output: [],
+            miniSearch: '',
+            async getData() {
+                this.miniSearch = new MiniSearch({
+                    fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
+                    extractField: (document, fieldName) => {
+                        if (fieldName === 'sohopdong') {
+                            const so = document['so']
+                            const nam = document['nam']
+                            if (so) {
+                                console.log(so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB')
+                                return so && so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB'
+                            }
+                        }
+                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
+                    },
+                    searchOptions: {
+                        prefix: true,
+                        combineWith: 'AND',
+                    },
+                    tokenize: (string, _fieldName) => string.split(' ')
+                })
+                this.output = totaloutput.filter((item) => {return item.trangthai == 'Hoàn thành'})
+                this.miniSearch.removeAll();
+                this.miniSearch.addAll(this.output);
+            },
+            getSearchResults() {
+                if (search === '') {
+                    this.output = totaloutput.filter((item) => {return item.trangthai == 'Hoàn thành'})
+                } else {
+                    this.output = this.miniSearch.search(search).map(({ id }) => totaldataframe[id])
+                }
+            },
+            get checkoutput() {
+                return (this.output) ? true : false;
+            }
+        }"
+        @tab1.window="show = false"
+        @tab2.window="show = false"
+        @tab3.window="show = false"
+        @tab4.window="show = false"
+        @tab5.window="show = true"
+        @tab6.window="show = false"
+        @getdata.window="getData()"
+        @searching.window="getSearchResults()"
+        x-show="show"
+        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+            <!-- {# start row #} -->
+            <template x-if="checkoutput">
+            <template x-for="(item, index) in output" :key="index">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
+                        <input type="checkbox" :checked="checkbox[item.id]" 
+                        @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                        class="checkbox">
+                    </div>
+                    <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
+                        <template x-if="item.bienban">
+                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        </template>
+                    </div>
+                    <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
+                        <div class="w-full flex flex-row justify-between items-center">
+                            <div class="flex flex-row justify-start items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div x-text="item.he"></div>
+                                <div x-text="item.namhoc + ' ' + item.hocky"></div>
+                            </div>
+                            <div class="flex flex-row justify-end items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-[#dffec3] text-[#17590c] font-[500]" 
+                                x-text="item.trangthai+' - '+item.ngaycapnhat">
+                                </div>
+                                <div class="cursor-pointer">
+                                    Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col justify-center items-start gap-3">
+                            <div class="font-[500] text-[20px] text-blue" x-text="item.giangvien.hovaten+' - ['+item.giangvien.maso+']'"></div>
+                            <div class="w-full flex flex-row justify-between items-center">
+                                <div class="font-[500] text-[14px] text-gray-600" x-text="item.donvimoi.ten"></div>
+                                <div class="font-[400] text-[14px] text-gray-500" x-text="'Người phụ trách: '+item.nguoiphutrach.hovaten"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            </template>
+            <!-- {# End row#} -->
+
+        </div>
+        <!-- end tab 5 -->  
+
+
+        <!-- tab 6 -->
+        <div x-data="{show:false,
+            output: [],
+            miniSearch: '',
+            async getData() {
+                this.miniSearch = new MiniSearch({
+                    fields: ['sohopdong','giangvien.maso','giangvien.hovaten','donvimoi.ten','nguoiphutrach.hovaten','he'],
+                    extractField: (document, fieldName) => {
+                        if (fieldName === 'sohopdong') {
+                            const so = document['so']
+                            const nam = document['nam']
+                            if (so) {
+                                console.log(so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB')
+                                return so && so + '/' + nam + '/' + 'HĐMG-XHNV-TCCB'
+                            }
+                        }
+                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
+                    },
+                    searchOptions: {
+                        prefix: true,
+                        combineWith: 'AND',
+                    },
+                    tokenize: (string, _fieldName) => string.split(' ')
+                })
+                this.output = totaloutput.filter((item) => {return item.trangthai == 'Có lỗi - chờ nhận'})
+                this.miniSearch.removeAll();
+                this.miniSearch.addAll(this.output);
+            },
+            getSearchResults() {
+                if (search === '') {
+                    this.output = totaloutput.filter((item) => {return item.trangthai == 'Có lỗi - chờ nhận'})
+                } else {
+                    this.output = this.miniSearch.search(search).map(({ id }) => totaldataframe[id])
+                }
+            },
+            get checkoutput() {
+                return (this.output) ? true : false;
+            }
+        }"
+        @tab1.window="show = false"
+        @tab2.window="show = false"
+        @tab3.window="show = false"
+        @tab4.window="show = false"
+        @tab5.window="show = false"
+        @tab6.window="show = true"
+        @getdata.window="getData()"
+        @searching.window="getSearchResults()"
+        x-show="show"
+        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+            <!-- {# start row #} -->
+            <template x-if="checkoutput">
+            <template x-for="(item, index) in output" :key="index">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                    <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
+                        <input type="checkbox" :checked="checkbox[item.id]" 
+                        @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
+                        class="checkbox">
+                    </div>
+                    <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
+                        <template x-if="item.bienban">
+                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        </template>
+                    </div>
+                    <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
+                        <div class="w-full flex flex-row justify-between items-center">
+                            <div class="flex flex-row justify-start items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-orange text-white font-[500]" x-text="item.so + '/' + item.nam + '/' + 'HĐMG-XHNV-TCCB'"></div>
+                                <div x-text="item.he"></div>
+                                <div x-text="item.namhoc + ' ' + item.hocky"></div>
+                            </div>
+                            <div class="flex flex-row justify-end items-center gap-5">
+                                <div class="px-[10px] py-[1px] rounded-xl bg-red-100 text-red-900 font-[500]" 
+                                x-text="item.trangthai+' - '+item.ngaycapnhat">
+                                </div>
+                                <div class="cursor-pointer">
+                                    Chi tiết <i class="text-[11px] fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col justify-center items-start gap-3">
+                            <div class="font-[500] text-[20px] text-blue" x-text="item.giangvien.hovaten+' - ['+item.giangvien.maso+']'"></div>
+                            <div class="w-full flex flex-row justify-between items-center">
+                                <div class="font-[500] text-[14px] text-gray-600" x-text="item.donvimoi.ten"></div>
+                                <div class="font-[400] text-[14px] text-gray-500" x-text="'Người phụ trách: '+item.nguoiphutrach.hovaten"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            </template>
+            <!-- {# End row#} -->
+
+        </div>
+        <!-- end tab 6 -->  
 
 
         <!-- start selected -->
@@ -441,46 +732,98 @@
                 <!-- end item in selected -->
 
                 <!-- start button selected next -->
-                <div class="basis-[60px] shrink-0 w-full bg-darkblue flex flex-row justify-center items-center">
+                <div x-data="{
+                    sendData(loai) {
+                        var data = [];
+                        selected.forEach((item, index) => {
+                            data.push(item.id)
+                        })
+                        if (loai == 'binhthuong') {
+                            if (trangthaiselected == 'Có sẳn') {
+                                url='/api/hopdong/upgrade/nhanhopdong'
+                            } else if (trangthaiselected == 'P.TCCB đã nhận') {
+                                url='/api/hopdong/upgrade/trinhky'
+                            } else if (trangthaiselected == 'Đang trình ký') {
+                                url='/api/hopdong/upgrade/daky'
+                            } else if (trangthaiselected == 'Đã ký - chờ nhận') {
+                                url='/api/hopdong/upgrade/hoanthanh'
+                            } else if (trangthaiselected == 'Có lỗi - chờ nhận') {
+                                url='/api/hopdong/upgrade/tralai'
+                            }
+                        } else if (loai == 'baoloi') {
+                            url = '/api/hopdong/upgrade/baoloi'
+                        }
+                        fetch(url, {
+                            method:'POST',
+                            headers:{'Content-Type': 'application/json',},
+                            body: JSON.stringify(data)
+                        })
+                        .then((response) => response.json())
+                        .then((result) => {
+                            if (result.message == 'success') {
+                                totaloutput = result.data
+                                totaldataframe = this.totaloutput.reduce((byId, song) => {
+                                    byId[song.id] = song;
+                                    return byId;
+                                }, {});
+                                $dispatch('getdata')
+                                selected = [];
+                                checkbox={};
+                                open=false;
+                            }
+                        });
+                    }
+                }"
+                class="basis-[60px] shrink-0 w-full bg-darkblue flex flex-row justify-center items-center">
                     <div class="h-full basis-[25%] shrink"></div>
-                    <div class="cursor-pointer h-full basis-[50%] shrink flex justify-center items-center">
-                        <div x-data="{getid() {
-                            var data = [];
-                            selected.forEach((item, index) => {
-                                data.push(item.id)
-                            })
-                            console.log(data)
-                            url='/api/hopdong/upgrade/nhanhopdong'
-                            fetch(url, {
-                                method:'POST',
-                                headers:{'Content-Type': 'application/json',},
-                                body: JSON.stringify(data)
-                            })
-                            .then((response) => response.json())
-                            .then((result) => {
-                                if (result.message == 'success') {
-                                    totaloutput = result.data
-                                    totaldataframe = this.totaloutput.reduce((byId, song) => {
-                                        byId[song.id] = song;
-                                        return byId;
-                                    }, {});
-                                    $dispatch('getdata')
-                                    selected = [];
-                                    checkbox={};
-                                    open=false;
-                                }
-                            });
-                        }}"
-                        @click="getid()"
-                        class="rounded-2xl h-[40px] w-full bg-yellow-400 flex flex-row justify-evenly items-center">
-                            <div class="text-darkblue font-[500] text-[16px]">Nhận hợp đồng</div>
-                            <div>
-                                <i class="fa-solid fa-circle-arrow-right text-darkblue text-[16px]"></i>
-                            </div>
+                    <div class="h-full basis-[50%] shrink flex justify-center items-center">
+                        <div
+                        @click="sendData('binhthuong')"
+                        class="w-full ">
+                            <template x-if="trangthaiselected == 'Có sẳn'">
+                                <div class="cursor-pointer rounded-2xl w-full h-[40px] flex flex-row justify-evenly items-center bg-yellow-400">
+                                    <div class="text-darkblue font-[500] text-[16px]">Nhận hợp đồng</div>
+                                    <div>
+                                        <i class="fa-solid fa-circle-arrow-right text-darkblue text-[16px]"></i>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="trangthaiselected == 'P.TCCB đã nhận'">
+                                <div class="cursor-pointer rounded-2xl w-full h-[40px] flex flex-row justify-evenly items-center bg-[#fda772]">
+                                    <div class="text-black font-[500] text-[16px]">Trình ký hợp đồng</div>
+                                    <div>
+                                        <i class="fa-solid fa-circle-arrow-right text-black text-[16px]"></i>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="trangthaiselected == 'Đang trình ký'">
+                                <div class="cursor-pointer rounded-2xl w-full h-[40px] flex flex-row justify-evenly items-center bg-[#99feff]">
+                                    <div class="text-darkblue font-[500] text-[16px]">Hợp đồng đã ký</div>
+                                    <div>
+                                        <i class="fa-solid fa-circle-arrow-right text-darkblue text-[16px]"></i>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="trangthaiselected == 'Đã ký - chờ nhận'">
+                                <div class="cursor-pointer rounded-2xl w-full h-[40px] flex flex-row justify-evenly items-center bg-[#c9ff99]">
+                                    <div class="text-darkblue font-[500] text-[16px]">Hoàn thành trả HĐ</div>
+                                    <div>
+                                        <i class="fa-solid fa-circle-arrow-right text-darkblue text-[16px]"></i>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="trangthaiselected == 'Có lỗi - chờ nhận'">
+                                <div class="cursor-pointer rounded-2xl w-full h-[40px] flex flex-row justify-evenly items-center bg-gray-300">
+                                    <div class="text-black font-[500] text-[16px]">Trả HĐ về sửa</div>
+                                    <div>
+                                        <i class="fa-solid fa-circle-arrow-right text-black text-[16px]"></i>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
                     <div class="h-full basis-[25%] shrink flex justify-center items-center">
-                        <div @mouseover="tetttt = true" @mouseover.away="tetttt = false" x-data="{tetttt: false}" class="rounded-full bg-white w-[18px] h-[18px] flex justify-center items-center">
+                        <div @click="sendData('baoloi')" @mouseover="tetttt = true" @mouseover.away="tetttt = false" x-data="{tetttt: false}" class="rounded-full bg-white w-[18px] h-[18px] flex justify-center items-center">
                             <i x-ref="baoloibtn" class="cursor-pointer fa-solid fa-circle-exclamation text-[20px] text-red-500"></i>
                             <div x-show="tetttt" x-anchor.offset.5="$refs.baoloibtn" class="transition-none w-[60px] p-[5px] text-[12px] rounded boder bg-yellow-100">Báo lỗi!</div>
                         </div>

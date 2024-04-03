@@ -73,11 +73,18 @@ async def api_hopdong_create(*, request: Request, session: db_dependency, hopdon
         new_hopdong.so = 1
 
     if donvimoi:
-        new_hopdong.donvimoi = (session.exec(select(Donvi).where(Donvi.ten == donvimoi)).first())
+        donvimoi_data = session.exec(select(Donvi).where(Donvi.ten == donvimoi)).first()
+        new_hopdong.donvimoi = donvimoi_data
     if giangvien:
-        new_hopdong.giangvien = (session.exec(select(Nhansu).where(Nhansu.maso == giangvien)).first())
+        giangvien_data = session.exec(select(Nhansu).where(Nhansu.maso == giangvien)).first()
+        new_hopdong.giangvien = giangvien_data
     if nguoiphutrach:
         new_hopdong.nguoiphutrach = (session.exec(select(Nhansu).where(Nhansu.maso == nguoiphutrach)).first())
+
+    # add đơn vị mời to giảng viên
+    if donvimoi_data and giangvien_data:
+        if donvimoi_data not in giangvien_data.donvi:
+            giangvien_data.donvi.append(donvimoi_data)
 
     # Trang thai
     trangthai = TrangthaiCreate(trangthai=new_hopdong.trangthai, ngaycapnhat=str(new_hopdong.ngaycapnhat))
@@ -119,44 +126,77 @@ async def api_hopdong_search(*, request: Request, session: db_dependency):
 @router.post("/api/hopdong/upgrade/{next}")
 @requires('auth', redirect='login')
 async def api_hopdong_upgrade(*, request: Request, session: db_dependency, next: str, id_hopdongs: List[int]):
+    trangthai_query = None
+    trangthai_next = None
+    
     if next == 'nhanhopdong':
+        bienban_loai = 'nhan'
+        trangthai_query = ['Đã tạo', 'Có sẳn', 'Hoàn thành']
+        trangthai_next= 'P.TCCB đã nhận'
+    elif next == 'trinhky':
+        bienban_loai = None
+        trangthai_query = ['P.TCCB đã nhận']
+        trangthai_next= 'Đang trình ký'
+    elif next == 'daky':
+        bienban_loai = None
+        trangthai_query = ['Đang trình ký']
+        trangthai_next= 'Đã ký - chờ nhận'    
+    elif next == 'hoanthanh':
+        bienban_loai = 'tra'
+        trangthai_query = ['Đã ký - chờ nhận']
+        trangthai_next= 'Hoàn thành'
+    elif next == 'baoloi':
+        bienban_loai = None
+        trangthai_query = ['P.TCCB đã nhận', 'Đang trình ký']
+        trangthai_next= 'Có lỗi - chờ nhận'
+    elif next == 'tralai':
+        bienban_loai = 'tra'
+        trangthai_query = ['Có lỗi - chờ nhận']
+        trangthai_next= 'Có sẳn'
+        
+    if trangthai_query and trangthai_next:
         # Tao bien ban moi
-        bienban = BienbanCreate(ngaytao=await now2stamp(), loai='nhan')
-        bienban = bienban.model_dump(exclude_unset=True)  
-        new_bienban = Bienban.model_validate_json(json.dumps(bienban))
-        session.add(new_bienban)
-        session.commit()
-        session.refresh(new_bienban)
-        # lay so bien ban
-        bienban_pre = session.get(Hopdong, (int(new_bienban.id) - 1))
-        if (bienban_pre) and (bienban_pre.nam == new_bienban.nam):
-            new_bienban.so = bienban_pre.so + 1
-        else:
-            new_bienban.so = 1
-        session.add(new_bienban)
-        session.commit()
-        session.refresh(new_bienban)
+        if bienban_loai:
+            bienban = BienbanCreate(ngaytao=await now2stamp(), loai=bienban_loai)
+            bienban = bienban.model_dump(exclude_unset=True)  
+            new_bienban = Bienban.model_validate_json(json.dumps(bienban))
+            session.add(new_bienban)
+            session.commit()
+            session.refresh(new_bienban)
+            # lay so bien ban
+            bienban_pre = session.get(Bienban, (int(new_bienban.id) - 1))
+            if (bienban_pre) and (bienban_pre.nam == new_bienban.nam):
+                new_bienban.so = bienban_pre.so + 1
+            else:
+                new_bienban.so = 1
+            session.add(new_bienban)
+            session.commit()
+            session.refresh(new_bienban)
         # start upgrade hopdong
         for i in id_hopdongs:
             hopdong = session.get(Hopdong, i)
-            if hopdong and ((hopdong.trangthai == 'Đã tạo') or (hopdong.trangthai == 'Có sẳn')):
-                hopdong.trangthai = 'P.TCCB đã nhận'
+            if hopdong and (hopdong.trangthai in trangthai_query):
+                hopdong.trangthai = trangthai_next
                 hopdong.ngaycapnhat = await now2stamp()
-                hopdong.bienban = f'{new_bienban.so}/{new_bienban.nam}/TNHS-TCCB'
+                if bienban_loai:
+                    hopdong.bienban = f'{new_bienban.so}/{new_bienban.nam}'
                 # Trang thai
                 trangthai = TrangthaiCreate(trangthai=hopdong.trangthai, ngaycapnhat=str(hopdong.ngaycapnhat))
                 new_trangthai = Trangthai.model_validate(trangthai)
                 hopdong.trangthais.append(new_trangthai)
-                new_bienban.trangthais.append(new_trangthai)
+                if bienban_loai:
+                    new_bienban.trangthais.append(new_trangthai)
+                    session.add(new_bienban)
                 session.add(hopdong)
-                session.add(new_bienban)
-
-    session.commit()
+                
+        session.commit()
         
-    hopdongs = session.exec(select(Hopdong).order_by(desc(Hopdong.ngaycapnhat))).all()
-    data = (ListHopdongRead.model_validate({'data':hopdongs})).model_dump(exclude_unset=True)
-    for i in range(len(data['data'])):
-        data['data'][i]['ngayky'] = await stamp2date(data['data'][i]['ngayky'])
-        data['data'][i]['ngaycapnhat'] = await stamp2datetime(data['data'][i]['ngaycapnhat'])
-    data['message'] = 'success'
-    return await sendjson(request, data)
+        hopdongs = session.exec(select(Hopdong).order_by(desc(Hopdong.ngaycapnhat))).all()
+        data = (ListHopdongRead.model_validate({'data':hopdongs})).model_dump(exclude_unset=True)
+        for i in range(len(data['data'])):
+            data['data'][i]['ngayky'] = await stamp2date(data['data'][i]['ngayky'])
+            data['data'][i]['ngaycapnhat'] = await stamp2datetime(data['data'][i]['ngaycapnhat'])
+        data['message'] = 'success'
+        return await sendjson(request, data)
+    else:
+        return await sendjson(request, {'message': 'error'})
