@@ -47,8 +47,8 @@
     if (selected.length == 0) {
         trangthaiselected = ''
     }
-    if($event.detail.data.trangthai == 'Đã tạo' || $event.detail.data.trangthai == 'Có sẳn' || $event.detail.data.trangthai == 'Hoàn thành') {
-        var trangthai = 'Có sẳn'
+    if($event.detail.data.trangthai == 'Đã tạo' || $event.detail.data.trangthai == 'Có sẵn' || $event.detail.data.trangthai == 'Hoàn thành') {
+        var trangthai = 'Có sẵn'
     } else {
         var trangthai = $event.detail.data.trangthai
     }
@@ -87,30 +87,79 @@
             <div id="tabs-hopdong" 
             x-data="{tab1Active: true, tab2Active: false, tab3Active: false, tab4Active: false, tab5Active: false, tab6Active: false}"
             class="transition-none z-[1] relative rounded-md w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start border-2">
+                
                 <div id="tab1-hopdong" 
                 :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
                 @click="$dispatch('tab1'); tab1Active = true; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
-                class="transition-none py-[10px] px-[20px] cursor-pointer">Đã tạo / Có sẵn</div>
-                <div id="tab2-hopdong"
+                class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
+                    <i class="fa-solid fa-cart-shopping text-[16px] pr-[2px] text-darkblue"></i>
+                    <div>Đã tạo / Có sẵn</div>
+                    <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẵn'}).length > 0">
+                        <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẵn'}).length"
+                        class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
+                    </template>
+                    
+                </div>
+
+                <div id="tab2-hopdong" 
                 :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
                 @click="$dispatch('tab2'); tab1Active = false; tab2Active = true; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
-                class="transition-none py-[10px] px-[20px] cursor-pointer">P.TCCB đã nhận</div>
+                class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
+                    <i class="fa-brands fa-stack-overflow text-[16px] pr-[2px] text-darkblue"></i>
+                    <div>P.TCCB đã nhận</div>
+                    <template x-if="totaloutput.filter((item) => {return item.trangthai == 'P.TCCB đã nhận'}).length > 0">
+                        <div x-text="totaloutput.filter((item) => {return item.trangthai == 'P.TCCB đã nhận'}).length"
+                        class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
+                    </template>
+                </div>
+
                 <div id="tab3-hopdong"
                 :class="tab3Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
                 @click="$dispatch('tab3'); tab1Active = false; tab2Active = false; tab3Active = true; tab4Active = false; tab5Active = false; tab6Active = false"
-                class="transition-none py-[10px] px-[20px] cursor-pointer">Đang trình ký</div>
+                class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
+                    <i class="fa-solid fa-file-pen text-[16px] pr-[2px] text-darkblue"></i>
+                    <div>Đang trình ký</div>
+                    <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Đang trình ký'}).length > 0">
+                        <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Đang trình ký'}).length"
+                        class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
+                    </template>
+                </div>
+
                 <div id="tab4-hopdong"
                 :class="tab4Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
                 @click="$dispatch('tab4'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = true; tab5Active = false; tab6Active = false"
-                class="transition-none py-[10px] px-[20px] cursor-pointer">Đã ký - chờ nhận</div>
+                class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-[16px] pr-[2px] text-darkblue"></i>
+                    <div>Đã ký - chờ nhận</div>
+                    <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Đã ký - chờ nhận'}).length > 0">
+                        <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Đã ký - chờ nhận'}).length"
+                        class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
+                    </template>
+                </div>
+
                 <div id="tab5-hopdong"
                 :class="tab5Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
                 @click="$dispatch('tab5'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = true; tab6Active = false"
-                class="transition-none py-[10px] px-[20px] cursor-pointer">Hoàn thành</div>
+                class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
+                    <i class="fa-solid fa-check text-[16px] pr-[2px] text-darkblue"></i>
+                    <div>Hoàn thành</div>
+                    <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Hoàn thành'}).length > 0">
+                        <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Hoàn thành'}).length"
+                        class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
+                    </template>
+                </div>
+
                 <div id="tab6-hopdong"
                 :class="tab6Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
                 @click="$dispatch('tab6'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = true"
-                class="transition-none py-[10px] px-[20px] cursor-pointer">Có lỗi - chờ nhận</div>
+                class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation text-[16px] pr-[2px] text-darkblue"></i>
+                    <div>Có lỗi - chờ nhận</div>
+                    <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Có lỗi - chờ nhận'}).length > 0">
+                        <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Có lỗi - chờ nhận'}).length"
+                        class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
+                    </template>
+                </div>
             </div>
         </div>
         <!-- end tabs row -->
@@ -139,7 +188,7 @@
                     },
                     tokenize: (string, _fieldName) => string.split(' ')
                 })
-                this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẳn'})
+                this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẵn'})
                 this.miniSearch.removeAll();
                 this.miniSearch.addAll(this.output);
             },
@@ -186,7 +235,7 @@
                                 <div x-text="item.namhoc + ' ' + item.hocky"></div>
                             </div>
                             <div class="flex flex-row justify-end items-center gap-5">
-                                <div class="px-[10px] py-[1px] rounded-xl bg-gray-200 text-black font-[500]" 
+                                <div class="px-[10px] py-[1px] rounded-xl bg-gray-100 text-black font-[500]" 
                                 x-text="item.trangthai+' - '+item.ngaycapnhat">
                                 </div>
                                 <div class="cursor-pointer">
@@ -739,7 +788,7 @@
                             data.push(item.id)
                         })
                         if (loai == 'binhthuong') {
-                            if (trangthaiselected == 'Có sẳn') {
+                            if (trangthaiselected == 'Có sẵn') {
                                 url='/api/hopdong/upgrade/nhanhopdong'
                             } else if (trangthaiselected == 'P.TCCB đã nhận') {
                                 url='/api/hopdong/upgrade/trinhky'
@@ -780,7 +829,7 @@
                         <div
                         @click="sendData('binhthuong')"
                         class="w-full ">
-                            <template x-if="trangthaiselected == 'Có sẳn'">
+                            <template x-if="trangthaiselected == 'Có sẵn'">
                                 <div class="cursor-pointer rounded-2xl w-full h-[40px] flex flex-row justify-evenly items-center bg-yellow-400">
                                     <div class="text-darkblue font-[500] text-[16px]">Nhận hợp đồng</div>
                                     <div>

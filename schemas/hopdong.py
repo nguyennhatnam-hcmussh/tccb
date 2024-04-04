@@ -48,4 +48,8 @@ class ListHopdongReadFull(Base):
     
 class ListHopdongRead(Base):
     data: List[HopdongRead]
-    
+
+class HopdongReadNhansu(Base):
+    so: int | None = Field(default=None)
+    nam: int | None = Field(default=int(datetime.datetime.today().year))
+    trangthai: str | None = Field(default=None)

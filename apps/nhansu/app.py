@@ -8,13 +8,13 @@ from sqlmodel import Session, select
 import pandas as pd
 import datetime
 
-from main.functions import Requests
+from main.functions import Requests, stamp2date, stamp2datetime, date2stamp, now2stamp
 from main.db_setup import get_session, engine
 from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import Donvi, Nhansu, Hopdong
-from main.schemas import NhansuCreate, NhansuRead, NhansuSearch, NhansuCreateWithDonvi, NhansuReadWithDonvi, NhansuSearchWithDonvi, ListNhansuSearch, ListNhansuSearchWithDonvi
+from main.schemas import NhansuCreate, NhansuRead, NhansuSearch, NhansuCreateWithDonvi, NhansuReadWithDonvi, NhansuSearchWithDonvi, ListNhansuSearch, ListNhansuSearchWithDonvi, NhansuReadFull
 from main.schemas import HopdongCreate, HopdongReadFull
 
 settings = config.get_settings()
@@ -124,7 +124,12 @@ async def api_nhansu_thinhgiang_read(*, request: Request, session: db_dependency
     thinhgiang = session.exec(select(Nhansu).where(maso == Nhansu.maso)).first()
     if not thinhgiang:
         raise HTTPException(status_code=404, detail="Hero not found")
-    data = (NhansuReadWithDonvi.model_validate(thinhgiang)).model_dump(exclude_unset=True)
+    data = (NhansuReadFull.model_validate(thinhgiang)).model_dump(exclude_unset=True)
+    data['hopdong'] = sorted(data['hopdong'], key=lambda d: d['ngaycapnhat'], reverse=True)
+    if data['CCCD_ngay']:
+        data['CCCD_ngay'] = await stamp2date(data['CCCD_ngay'])
+    for i in range(len(data['hopdong'])):
+            data['hopdong'][i]['ngaycapnhat'] = await stamp2datetime(data['hopdong'][i]['ngaycapnhat'])
     return await sendjson(request, data)
 
 

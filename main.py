@@ -95,6 +95,12 @@ async def homepage(request: Request):
     context = {}
     return await redirect(request, "/hopdong")
 
+@app.get('/logout', response_class=HTMLResponse)
+@requires('guest')
+async def logout(request: Request):
+    context = {}
+    return await redirect(request, "/login", clear_cookie=True)
+
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):

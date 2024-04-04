@@ -348,9 +348,10 @@
         <!-- end tab 2 -->
         
         <!-- hoso -->
-        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật', old_hocvi: ''}" x-show="open" 
+        <div x-data="{open: false, target: '', type: '', thinhgiang: {}, button_text: 'Cập nhật', old_hocvi: '', expanded_hopdong: false}" x-show="open" 
         @portfolio.window="target = $event.detail.target; type = $event.detail.type;
         console.log(type)
+        expanded_hopdong = false;
         button_text = 'Cập nhật'
         fetch(`/api/nhansu/read/${target}`)
         .then((response) => response.json())
@@ -363,6 +364,7 @@
         type = $event.detail.type;
         console.log(type)
         open = true,
+        expanded_hopdong = false;
         button_text = 'Thêm mới'
         target='NEW';
         thinhgiang = (type === 'cohuu') ? {co_llkh: true, co_bang: true, co_nvsp: true} : {co_llkh: false, co_bang: false, co_nvsp: false}"
@@ -1513,183 +1515,6 @@
                         Thông tin Công tác
                     </div>
 
-
-                    <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <!-- {# Đơn vị mời giảng #} -->
-                        <div id="donvi" class="w-full h-auto flex flex-row justify-center items-start">
-                            <div x-data="{
-                                showoptions: false,
-                                dataframe: [],
-                                output: [],
-                                search: '',
-                                research: '',
-                                backspace: true,
-                                choose: 0,
-                                miniSearch: '',
-                                getData() {
-                                    this.miniSearch = new MiniSearch({
-                                        fields: ['ten'],
-                                        searchOptions: {
-                                            prefix: true,
-                                            combineWith: 'AND',
-                                        }
-                                    })
-                                    fetch('/api/donvi/danhmuc')            
-                                    .then((response) => response.json())
-                                    .then((result) => {
-                                        result = result.data
-                                        this.dataframe = result.reduce((byId, song) => {
-                                            byId[song.id] = song;
-                                            return byId;
-                                        }, {});
-                                        this.output = Object.values(this.dataframe);
-                                        this.miniSearch.addAll(result);
-                                    });
-                                },
-                                filteredItems() {
-                                    this.showoptions = true;
-                                    if (this.search) {
-                                        this.output = this.miniSearch.search(this.search).map(({ id }) => this.dataframe[id])
-                                    } else {
-                                        this.output = Object.values(this.dataframe);
-                                    }
-                                },
-                                get checkresults() {
-                                    return thinhgiang.donvi.length === 0
-                                },
-                                addItem(value) {
-                                    if (! thinhgiang.donvi) {
-                                        thinhgiang.donvi = [];
-                                    }
-                                    this.miniSearch.remove(value);
-                                    delete this.dataframe[value.id]
-                                    thinhgiang.donvi.push(value);
-                                    this.search = '';
-                                    this.filteredItems();
-                                    this.showoptions = false;
-                                    
-                                },
-                                removeItem(value) {
-                                    console.log(value);
-                                    thinhgiang.donvi = thinhgiang.donvi.filter(i => i !== value);
-                                    this.miniSearch.add(value);
-                                    this.dataframe[value.id] = value;
-                                    this.filteredItems();
-                                    this.showoptions = false;
-                                },
-                                checkItem() {
-                                    this.search = ''  
-                                },
-                                enterEvent() {
-                                    if (this.output[this.choose] && this.showoptions) {
-                                        this.addItem(this.output[this.choose])
-                                    } else {
-                                        this.search = ''
-                                        this.choose = 0;
-                                        this.filteredItems();
-                                    }
-                                },
-                                eventBackspace() {
-                                    this.backspace = true;
-                                },
-                                checkdown() {
-                                    if (this.backspace === true) {
-                                        this.research = this.search;
-                                        this.backspace = false;
-                                        if (this.research === '' && thinhgiang.donvi.length > 0) {
-                                            value = thinhgiang.donvi.at(-1);
-                                            this.removeItem(value)
-                                        }
-                                    }
-                                },
-                                showoptionscheck(e) {
-                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
-                                        this.choose = 0;
-                                    }
-                                },
-                                focusinputcheck() {
-                                    this.filteredItems();
-                                    this.showoptions = true;
-                                },
-                                checkchoose(index) {
-                                    return index === this.choose
-                                },
-                                selectoption(type) {
-                                    if (type === 'up' && this.choose > 0) {
-                                        this.choose = this.choose - 1
-                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
-                                        frame = $refs.donvi.getBoundingClientRect()
-                                        if ((item.bottom - frame.top) < item.height) {
-                                            $refs.donvi.scrollBy(0,-(item.height - (item.bottom - frame.top)))
-                                        }
-                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
-                                        this.choose = this.choose + 1
-                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
-                                        frame = $refs.donvi.getBoundingClientRect()
-                                        if ((frame.bottom - item.top) < item.height) {
-                                            $refs.donvi.scrollBy(0,(item.height + (item.top - frame.bottom)))
-                                        }
-                                    }
-                                }
-                            }" x-init="getData()"
-                            class="w-full flex flex-col justify-start items-start gap-2">
-                                <div>
-                                    Đơn vị mời giảng
-                                </div>
-                                <div x-ref="divinput"
-                                @focusout.debounce.100ms="showoptions = false;"
-                                @click.self="$refs.input.focus()"
-                                class="cursor-text basis-[100%] w-full shrink relative rounded-lg flex flex-row justify-start items-start flex-wrap py-[12px] gap-2 bg-gray-100 p-[15px]">
-                                    <template x-for="result in thinhgiang.donvi" :key="result.id">
-                                        <div class="text-[15px] bg-[#ff4b4b] rounded-md text-white px-[15px] py-[3px] cursor-default flex flex-row items-center relative">
-                                            <div x-text="result.ten"></div>
-                                            <i @click="removeItem(result)"
-                                            class="fa-solid fa-xmark cursor-pointer pl-[10px]"></i>
-                                        </div>
-                                    </template>
-                                    <div class="rounded-lg overflow-hidden relative w-auto max-w-[100%] h-[25px] flex flex-row justify-start">
-                                        <span x-text="search + 'a'" 
-                                        x-ref="span" 
-                                        class="invisible text-[15px] p-0"></span>
-                                        <input type="text"
-                                        @focusout.debounce.100ms="checkItem()"
-                                        @keyup.enter="enterEvent()"
-                                        @keydown.up.prevent.throttle.100ms="selectoption('up')"
-                                        @keydown.down.prevent.throttle.100ms="selectoption('down')"
-                                        @keyup.up.prevent
-                                        @keyup.down.prevent
-                                        class="bg-gray-100 p-0 w-[100%] absolute left-0 text-[15px] py-[5px] border-transparent focus:border-transparent focus:ring-0 top-[50%] translate-y-[-50%]"
-                                        x-ref="input"
-                                        x-model="search"
-                                        @input="filteredItems()"
-                                        @focus="focusinputcheck()"
-                                        @keydown.backspace="checkdown()"
-                                        @keyup = 'showoptionscheck'
-                                        @keyup.backspace="eventBackspace"/>
-                                    </div>
-                                </div>
-
-                                <div x-show="showoptions" x-anchor.bottom="$refs.divinput" class="z-[1] transition-none">
-                                    <ul x-ref="donvi" class="shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[770px] h-auto max-h-[200px] flex flex-col overflow-auto">
-                                        <template x-if="output.length === 0">
-                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
-                                        </template>
-                                        <template x-for="(item, index) in output" :key="item.id">
-                                            <li x-text="item.ten"
-                                            :id="'donvi'+index"
-                                            @click="addItem(item)"
-                                            @mouseover="choose = index"
-                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
-                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
-                                        </template>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Đơn vị mời giảng -->
-                    </div>
-
-
                     <div class="w-full flex flex-row justify-start items-start gap-6">
 
 
@@ -1999,6 +1824,257 @@
                             <input type="checkbox" x-model="thinhgiang.co_nvsp">
                         </div>
                     </div>
+
+
+                    <div class="text-[16px] text-black font-[500] mt-[10px]">
+                        Thông tin hợp đồng
+                    </div>                    
+
+                    <!-- {# Đơn vị mời giảng #} -->
+                    <div class="w-full flex flex-row justify-start items-start gap-6">
+                        <div id="donvi" class="w-full h-auto flex flex-row justify-center items-start">
+                            <div x-data="{
+                                showoptions: false,
+                                dataframe: [],
+                                output: [],
+                                search: '',
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                miniSearch: '',
+                                getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['ten'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
+                                    fetch('/api/donvi/danhmuc')            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result.data
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.addAll(result);
+                                    });
+                                },
+                                filteredItems() {
+                                    this.showoptions = true;
+                                    if (this.search) {
+                                        this.output = this.miniSearch.search(this.search).map(({ id }) => this.dataframe[id])
+                                    } else {
+                                        this.output = Object.values(this.dataframe);
+                                    }
+                                },
+                                get checkresults() {
+                                    return thinhgiang.donvi.length === 0
+                                },
+                                addItem(value) {
+                                    if (! thinhgiang.donvi) {
+                                        thinhgiang.donvi = [];
+                                    }
+                                    this.miniSearch.remove(value);
+                                    delete this.dataframe[value.id]
+                                    thinhgiang.donvi.push(value);
+                                    this.search = '';
+                                    this.filteredItems();
+                                    this.showoptions = false;
+                                    
+                                },
+                                removeItem(value) {
+                                    console.log(value);
+                                    thinhgiang.donvi = thinhgiang.donvi.filter(i => i !== value);
+                                    this.miniSearch.add(value);
+                                    this.dataframe[value.id] = value;
+                                    this.filteredItems();
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.search = ''  
+                                },
+                                enterEvent() {
+                                    if (this.output[this.choose] && this.showoptions) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        this.search = ''
+                                        this.choose = 0;
+                                        this.filteredItems();
+                                    }
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                checkdown() {
+                                    if (this.backspace === true) {
+                                        this.research = this.search;
+                                        this.backspace = false;
+                                        if (this.research === '' && thinhgiang.donvi.length > 0) {
+                                            value = thinhgiang.donvi.at(-1);
+                                            this.removeItem(value)
+                                        }
+                                    }
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvi.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvi.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvi.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvi.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
+                                    }
+                                }
+                            }" x-init="getData()"
+                            class="w-full flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Đơn vị mời giảng
+                                </div>
+                                <div x-ref="divinput"
+                                @focusout.debounce.100ms="showoptions = false;"
+                                @click.self="$refs.input.focus()"
+                                class="cursor-text basis-[100%] w-full shrink relative rounded-lg flex flex-row justify-start items-start flex-wrap py-[12px] gap-2 bg-gray-100 p-[15px]">
+                                    <template x-for="result in thinhgiang.donvi" :key="result.id">
+                                        <div class="text-[15px] bg-[#ff4b4b] rounded-md text-white px-[15px] py-[3px] cursor-default flex flex-row items-center relative">
+                                            <div x-text="result.ten"></div>
+                                            <i @click="removeItem(result)"
+                                            class="fa-solid fa-xmark cursor-pointer pl-[10px]"></i>
+                                        </div>
+                                    </template>
+                                    <div class="rounded-lg overflow-hidden relative w-auto max-w-[100%] h-[25px] flex flex-row justify-start">
+                                        <span x-text="search + 'a'" 
+                                        x-ref="span" 
+                                        class="invisible text-[15px] p-0"></span>
+                                        <input type="text"
+                                        @focusout.debounce.100ms="checkItem()"
+                                        @keyup.enter="enterEvent()"
+                                        @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                        @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                        @keyup.up.prevent
+                                        @keyup.down.prevent
+                                        class="bg-gray-100 p-0 w-[100%] absolute left-0 text-[15px] py-[5px] border-transparent focus:border-transparent focus:ring-0 top-[50%] translate-y-[-50%]"
+                                        x-ref="input"
+                                        x-model="search"
+                                        @input="filteredItems()"
+                                        @focus="focusinputcheck()"
+                                        @keydown.backspace="checkdown()"
+                                        @keyup = 'showoptionscheck'
+                                        @keyup.backspace="eventBackspace"/>
+                                    </div>
+                                </div>
+
+                                <div x-show="showoptions" x-anchor.bottom="$refs.divinput" class="z-[1] transition-none">
+                                    <ul x-ref="donvi" class="shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[770px] h-auto max-h-[200px] flex flex-col overflow-auto">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.ten"
+                                            :id="'donvi'+index"
+                                            @click="addItem(item)"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!-- End Đơn vị mời giảng -->
+
+                    <!-- start hopdong -->
+                    <div class="w-full flex flex-col justify-start items-start">
+                        <div @click="expanded_hopdong = ! expanded_hopdong" class="w-full flex flex-row justify-between items-center p-[5px] border">
+                            <div class="flex flex-row gap-2 justify-start items-center">
+                                <i class="fa-solid fa-folder-open"></i>
+                                <div x-text="'Danh sách hợp đồng (' + thinhgiang.hopdong.length + ')'"></div>
+                            </div>
+                            <div class="">
+                                <div x-show="! expanded_hopdong" class="flex flex-row justify-end items-center gap-2">
+                                    <div class="text-[12px]">Mở rộng</div>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                                <div x-show="expanded_hopdong" class="flex flex-row justify-end items-center gap-2">
+                                    <div class="text-[12px]">Thu nhỏ</div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div x-show="expanded_hopdong" x-collapse.duration.400ms class="w-full">
+                            <div class="w-full bg-gray-100 p-[20px] flex flex-col justify-start items-start gap-5">
+                                <template x-for="(item_con, index_con) in thinhgiang.hopdong" :key="index_con">
+                                    <div class="bg-white border rounded-xl shadow p-[10px] w-full h-[70px] flex flex-row justify-start items-center gap-2">
+                                        <div class="h-full basis-[50px] shrink-0 flex flex-col justify-start items-center">
+                                            <div class="font-[500]" x-text="'#' + (index_con + 1)"></div>
+                                        </div>
+                                        <div class="basis-full shrink flex flex-col justify-start items-start gap-2">
+                                            <div class="w-full flex flex-row justify-between items-center">
+                                                <div class="flex flex-row justify-start items-center gap-5">
+                                                    <div class="font-[500] text-[16px]" x-text="item_con.so + '/' + item_con.nam + '/HĐMG-XHNV-TCCB'"></div>
+                                                    <div class="font-[500] text-[16px] text-gray-600" x-text="item_con.donvimoi.ten"></div>
+                                                </div>
+                                                <div class="flex flex-row justify-end items-center gap-5">
+                                                    <template x-if="item_con.trangthai == 'Đã tạo' || item_con.trangthai == 'Có sẳn'">
+                                                        <div class="px-[10px] py-[1px] rounded-xl bg-gray-100 text-black font-[500]"
+                                                        x-text="item_con.trangthai + ' ' + item_con.ngaycapnhat"></div>
+                                                    </template>
+                                                    <template x-if="item_con.trangthai == 'P.TCCB đã nhận'">
+                                                        <div class="px-[10px] py-[1px] rounded-xl bg-yellow-100 text-yellow-800 font-[500]"
+                                                        x-text="item_con.trangthai + ' ' + item_con.ngaycapnhat"></div>
+                                                    </template>
+                                                    <template x-if="item_con.trangthai == 'Đang trình ký'">
+                                                        <div class="px-[10px] py-[1px] rounded-xl bg-[#fee7c3] text-yellow-950 font-[500]"
+                                                        x-text="item_con.trangthai + ' ' + item_con.ngaycapnhat"></div>
+                                                    </template>
+                                                    <template x-if="item_con.trangthai == 'Đã ký - chờ nhận'">
+                                                        <div class="px-[10px] py-[1px] rounded-xl bg-[#c3fdfe] text-[#0c4359] font-[500]"
+                                                        x-text="item_con.trangthai + ' ' + item_con.ngaycapnhat"></div>
+                                                    </template>
+                                                    <template x-if="item_con.trangthai == 'Hoàn thành'">
+                                                        <div class="px-[10px] py-[1px] rounded-xl bg-[#dffec3] text-[#17590c] font-[500]"
+                                                        x-text="item_con.trangthai + ' ' + item_con.ngaycapnhat"></div>
+                                                    </template>
+                                                    <template x-if="item_con.trangthai == 'Có lỗi - chờ nhận'">
+                                                        <div class="px-[10px] py-[1px] rounded-xl bg-red-100 text-red-900 font-[500]" 
+                                                        x-text="item_con.trangthai + ' ' + item_con.ngaycapnhat"></div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="w-full flex flex-row justify-start items-center gap-4">
+                                                <div x-text="item_con.he"></div>
+                                                <div x-text="item_con.namhoc + ' ' + item_con.hocky"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>  
+                    <!-- end hopdong -->
 
                     <div class="w-full border my-[15px]"></div>
                 </div>

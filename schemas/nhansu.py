@@ -7,6 +7,7 @@ from main.functions import CheckEnum
 
 from .base import Base
 from .donvi import DonviSearch
+from .hopdong_phu import HopdongReadNhansu
 
 class NhansuBase(Base):
     id: int | None = Field(default=None)
@@ -144,3 +145,19 @@ class NhansuSearchWithDonvi(NhansuSearch):
     
 class ListNhansuSearchWithDonvi(Base):
     data: List[NhansuSearchWithDonvi]
+    
+
+class NhansuReadFull(NhansuBase):
+    donvi: List["DonviSearch"]
+    hopdong: List["HopdongReadNhansu"]
+    
+    @field_validator('ngaysinh')
+    @classmethod
+    def modify_ngaysinh(cls, v: str | None) -> str | None:
+        if v:
+            date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
+            return date
+        return v
+    
+class ListNhansuReadFull(Base):
+    data: List[NhansuReadFull]

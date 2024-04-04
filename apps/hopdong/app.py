@@ -131,7 +131,7 @@ async def api_hopdong_upgrade(*, request: Request, session: db_dependency, next:
     
     if next == 'nhanhopdong':
         bienban_loai = 'nhan'
-        trangthai_query = ['Đã tạo', 'Có sẳn', 'Hoàn thành']
+        trangthai_query = ['Đã tạo', 'Có sẵn', 'Hoàn thành']
         trangthai_next= 'P.TCCB đã nhận'
     elif next == 'trinhky':
         bienban_loai = None
@@ -152,7 +152,7 @@ async def api_hopdong_upgrade(*, request: Request, session: db_dependency, next:
     elif next == 'tralai':
         bienban_loai = 'tra'
         trangthai_query = ['Có lỗi - chờ nhận']
-        trangthai_next= 'Có sẳn'
+        trangthai_next= 'Có sẵn'
         
     if trangthai_query and trangthai_next:
         # Tao bien ban moi
