@@ -123,6 +123,45 @@ async def api_hopdong_search(*, request: Request, session: db_dependency):
 
 
 ####################################################################
+
+@router.get("/api/hopdong/count")
+@requires('auth', redirect='login')
+async def api_hopdong_count(*, request: Request, session: db_dependency):
+    role = request.user.data.get('role')
+    if role in ['admin']:
+        cosan = session.query(Hopdong).filter(Hopdong.trangthai == 'Đã tạo' or Hopdong.trangthai == 'Có sẵn').count()
+        danhan = session.query(Hopdong).filter(Hopdong.trangthai == 'P.TCCB đã nhận').count()
+        trinhky = session.query(Hopdong).filter(Hopdong.trangthai == 'Đang trình ký').count()
+        daky = session.query(Hopdong).filter(Hopdong.trangthai == 'Đã ký - chờ nhận').count()
+        hoanthanh = session.query(Hopdong).filter(Hopdong.trangthai == 'Hoàn thành').count()
+        coloi = session.query(Hopdong).filter(Hopdong.trangthai == 'Có lỗi - chờ nhận').count()
+        
+        if cosan >= 0 and danhan >= 0 and trinhky >= 0 and hoanthanh >= 0 and coloi >= 0:
+            data = {
+                'message': 'success',
+                'data': {
+                    'cosan': cosan,
+                    'danhan': danhan,
+                    'trinhky': trinhky,
+                    'daky': daky,
+                    'hoanthanh': hoanthanh,
+                    'coloi': coloi
+                }
+            }
+        else:
+            data = {'message': 'error'}
+        
+    elif role in ['user','root']:
+        uuid = request.user.data.get('uuid')
+        user = session.get(Nhansu, uuid)
+        
+        data = {'uuid': uuid}
+    else:
+        data = {'message': 'error'}
+        
+    return await sendjson(request, data)
+
+####################################################################
 @router.post("/api/hopdong/upgrade/{next}")
 @requires('auth', redirect='login')
 async def api_hopdong_upgrade(*, request: Request, session: db_dependency, next: str, id_hopdongs: List[int]):

@@ -127,8 +127,9 @@ class BaseUser:
 
 
 class SimpleUser(BaseUser):
-    def __init__(self, uuid: str, newcrypto: str) -> None:
+    def __init__(self, uuid: str, role: str, newcrypto: str) -> None:
         self.uuid = uuid
+        self.role = role
         self.newcrypto = newcrypto
 
     @property
@@ -137,7 +138,7 @@ class SimpleUser(BaseUser):
 
     @property
     def data(self) -> dict:
-        return {'uuid':self.uuid, 'newcrypto':self.newcrypto}
+        return {'uuid':self.uuid, 'role': self.role, 'newcrypto':self.newcrypto}
 
 
 class UnauthenticatedUser(BaseUser):

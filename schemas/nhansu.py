@@ -161,3 +161,7 @@ class NhansuReadFull(NhansuBase):
     
 class ListNhansuReadFull(Base):
     data: List[NhansuReadFull]
+
+
+class NhansuReadWithHopdongphutrach(Base):
+    hopdongphutrach: List["HopdongReadNhansu"]

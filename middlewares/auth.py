@@ -40,6 +40,6 @@ class AuthMiddleware(AuthenticationBackend):
                     session.refresh(auth)
                     crypto = await encode(auth)
                 
-                return AuthCredentials([data.get('role'), 'auth', 'guest']), SimpleUser(uuid=auth.user_id, newcrypto=crypto)
+                return AuthCredentials([data.get('role'), 'auth', 'guest']), SimpleUser(uuid=auth.user_id, role=auth.role, newcrypto=crypto)
                 # except Exception as e:
                 #     return AuthCredentials(['guest']), UnauthenticatedUser()
