@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Request, Depends, UploadFile
 from typing import Annotated, List
 from starlette.authentication import requires
 from fastapi.responses import HTMLResponse
-from sqlmodel import Session, select, desc
+from sqlmodel import Session, select, desc, or_
 import pandas as pd
 import datetime
 import json
@@ -15,7 +15,7 @@ from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import Donvi, Nhansu, Hopdong, Trangthai, Bienban
-from main.schemas import HopdongCreate, HopdongReadFull, ListHopdongRead, ListHopdongReadFull, TrangthaiCreate, HopdongRead, BienbanCreate
+from main.schemas import HopdongCreate, HopdongReadFull, ListHopdongRead, ListHopdongReadFull, TrangthaiCreate, HopdongRead, BienbanCreate, NhansuReadWithHopdongphutrach
 
 settings = config.get_settings()
 
@@ -128,8 +128,16 @@ async def api_hopdong_search(*, request: Request, session: db_dependency):
 @requires('auth', redirect='login')
 async def api_hopdong_count(*, request: Request, session: db_dependency):
     role = request.user.data.get('role')
-    if role in ['admin']:
-        cosan = session.query(Hopdong).filter(Hopdong.trangthai == 'Đã tạo' or Hopdong.trangthai == 'Có sẵn').count()
+    data = {'data': {
+        'cosan': 0,
+        'danhan': 0,
+        'trinhky': 0,
+        'daky': 0,
+        'hoanthanh': 0,
+        'coloi': 0
+    }}
+    if role in ['admin','root']:
+        cosan = session.query(Hopdong).filter(or_(Hopdong.trangthai == 'Đã tạo',Hopdong.trangthai == 'Có sẵn')).count()
         danhan = session.query(Hopdong).filter(Hopdong.trangthai == 'P.TCCB đã nhận').count()
         trinhky = session.query(Hopdong).filter(Hopdong.trangthai == 'Đang trình ký').count()
         daky = session.query(Hopdong).filter(Hopdong.trangthai == 'Đã ký - chờ nhận').count()
@@ -151,11 +159,24 @@ async def api_hopdong_count(*, request: Request, session: db_dependency):
         else:
             data = {'message': 'error'}
         
-    elif role in ['user','root']:
+    elif role in ['user']:
         uuid = request.user.data.get('uuid')
         user = session.get(Nhansu, uuid)
-        
-        data = {'uuid': uuid}
+        hopdongs = (NhansuReadWithHopdongphutrach.model_validate(user)).model_dump(exclude_unset=True)
+        for hopdong in hopdongs['hopdongphutrach']:
+            if hopdong['trangthai'] in ['Có sẵn', 'Đã tạo']:
+                data['data']['cosan'] += 1
+            elif hopdong['trangthai'] in ['P.TCCB đã nhận']:
+                data['data']['danhan'] += 1
+            elif hopdong['trangthai'] in ['Đang trình ký']:
+                data['data']['trinhky'] += 1
+            elif hopdong['trangthai'] in ['Đã ký - chờ nhận']:
+                data['data']['daky'] += 1
+            elif hopdong['trangthai'] in ['Hoàn thành']:
+                data['data']['hoanthanh'] += 1
+            elif hopdong['trangthai'] in ['Có lỗi - chờ nhận']:
+                data['data']['coloi'] += 1
+        data['message'] = 'success'
     else:
         data = {'message': 'error'}
         

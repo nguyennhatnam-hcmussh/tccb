@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, Form
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.authentication import requires
@@ -8,10 +8,11 @@ from sqlmodel import Session, select
 from typing import Annotated
 from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from random import randint
 
 from main.config import get_settings
 from main.db_setup import get_session
-from main.shortcuts import file, redirect, render
+from main.shortcuts import file, redirect, render, sendjson
 from main.functions import Requests
 from main.models import Nhansu
 from main.middlewares.process_time import CustomHeaderMiddleware
@@ -33,7 +34,7 @@ async def on_shutdown() -> None:
 app = FastAPI(on_startup=[on_start_up], on_shutdown=[on_shutdown])
 
 
-origins = []
+origins = ['https://dc.vnuhcm.edu.vn']
 
 app.add_middleware(
     CORSMiddleware,
@@ -102,10 +103,49 @@ async def logout(request: Request):
     return await redirect(request, "/login", clear_cookie=True)
 
 
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc):
-    context = {
-        'template': 'hide',
-        'url': '/template/404'
-    }
-    return await render(request, "error", "404.html", context)
+# @app.exception_handler(StarletteHTTPException)
+# async def http_exception_handler(request, exc):
+#     context = {
+#         'template': 'hide',
+#         'url': '/template/404'
+#     }
+#     return await render(request, "error", "404.html", context)
+
+nhucau = 1
+list_code = []
+list_token = []
+
+@app.post("/dhqg")
+@requires('guest')
+async def dhqg(request: Request, czt: Annotated[str, Form()]):
+    global nhucau, list_code, list_token
+    list_token.append(czt)
+    nhucau -= 1
+    if nhucau < 0:
+        nhucau = 0
+    return await sendjson(request, {'message': str(randint(0,999999999)).zfill(9)})
+
+@app.get("/gettoken/{code}")
+@requires('guest')
+async def gettoken(request: Request, code: str):
+    global nhucau, list_code, list_token
+    if code == "NEW":
+        new_code = str(randint(0,999999999)).zfill(9)
+        list_code.append(new_code)
+        nhucau += 1
+        return await sendjson(request, {'message': 'wait', 'code': new_code})
+    if len(list_token):
+        token = list_token[0]
+        list_token.pop(0)
+        list_code.remove(code)
+        return await sendjson(request, {'message': 'success', 'token': token})
+    else:
+        return await sendjson(request, {'message': 'wait', 'code': code})
+
+@app.get("/checknhucau")
+@requires('guest')
+async def checknhucau(request: Request):
+    if nhucau > 0:
+        return await sendjson(request, {'message': 'have'})
+    else:
+        return await sendjson(request, {'message': 'no'})

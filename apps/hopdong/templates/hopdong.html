@@ -41,6 +41,30 @@
                 this.isLoading = false;
                 $dispatch('getdata')
             });
+        },
+        clickall(trangthai, bienban) {
+            console.log(trangthai);
+            console.log(bienban);
+            havefalse=false;
+            var arr = this.totaloutput.filter((item) => {return item.trangthai == trangthai})
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].bienban == bienban) {
+                    console.log(this.checkbox[arr[i].id])
+                    if (! this.checkbox[arr[i].id]) {
+                        havefalse=true;
+                    }
+                    console.log(havefalse)
+                    this.checkbox[arr[i].id] = true
+                    console.log(this.checkbox[arr[i].id])
+                }
+            }
+            if (! havefalse) {
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i].bienban == bienban) {
+                        this.checkbox[arr[i].id] = false
+                    }
+                }
+            }
         }
     }" x-init="getData()"
     @hdchecked="
@@ -93,7 +117,7 @@
                 @click="$dispatch('tab1'); tab1Active = true; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-cart-shopping text-[16px] pr-[2px] text-darkblue"></i>
-                    <div>Đã tạo / Có sẵn</div>
+                    <div class="transition-none">Đã tạo / Có sẵn</div>
                     <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẵn'}).length > 0">
                         <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẵn'}).length"
                         class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
@@ -106,7 +130,7 @@
                 @click="$dispatch('tab2'); tab1Active = false; tab2Active = true; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-brands fa-stack-overflow text-[16px] pr-[2px] text-darkblue"></i>
-                    <div>P.TCCB đã nhận</div>
+                    <div class="transition-none">P.TCCB đã nhận</div>
                     <template x-if="totaloutput.filter((item) => {return item.trangthai == 'P.TCCB đã nhận'}).length > 0">
                         <div x-text="totaloutput.filter((item) => {return item.trangthai == 'P.TCCB đã nhận'}).length"
                         class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
@@ -118,7 +142,7 @@
                 @click="$dispatch('tab3'); tab1Active = false; tab2Active = false; tab3Active = true; tab4Active = false; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-file-pen text-[16px] pr-[2px] text-darkblue"></i>
-                    <div>Đang trình ký</div>
+                    <div class="transition-none">Đang trình ký</div>
                     <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Đang trình ký'}).length > 0">
                         <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Đang trình ký'}).length"
                         class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
@@ -130,7 +154,7 @@
                 @click="$dispatch('tab4'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = true; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-circle-check text-[16px] pr-[2px] text-darkblue"></i>
-                    <div>Đã ký - chờ nhận</div>
+                    <div class="transition-none">Đã ký - chờ nhận</div>
                     <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Đã ký - chờ nhận'}).length > 0">
                         <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Đã ký - chờ nhận'}).length"
                         class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
@@ -142,7 +166,7 @@
                 @click="$dispatch('tab5'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = true; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-check text-[16px] pr-[2px] text-darkblue"></i>
-                    <div>Hoàn thành</div>
+                    <div class="transition-none">Hoàn thành</div>
                     <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Hoàn thành'}).length > 0">
                         <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Hoàn thành'}).length"
                         class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
@@ -154,7 +178,7 @@
                 @click="$dispatch('tab6'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = true"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-circle-exclamation text-[16px] pr-[2px] text-darkblue"></i>
-                    <div>Có lỗi - chờ nhận</div>
+                    <div class="transition-none">Có lỗi - chờ nhận</div>
                     <template x-if="totaloutput.filter((item) => {return item.trangthai == 'Có lỗi - chờ nhận'}).length > 0">
                         <div x-text="totaloutput.filter((item) => {return item.trangthai == 'Có lỗi - chờ nhận'}).length"
                         class="transition-none px-[7px] leading-1 bg-red-500 text-white rounded-full font-[500] text-[13px]"></div>
@@ -194,7 +218,7 @@
             },
             getSearchResults() {
                 if (search === '') {
-                    this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo'})
+                    this.output = totaloutput.filter((item) => {return item.trangthai == 'Đã tạo' || item.trangthai == 'Có sẵn'})
                 } else {
                     this.output = this.miniSearch.search(search).map(({ id }) => totaldataframe[id])
                 }
@@ -224,7 +248,9 @@
                     </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <template x-if="item.bienban">
-                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        <div x-text="item.bienban" 
+                        @click="clickall(item.trangthai, item.bienban)"
+                        class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
                         </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
@@ -320,7 +346,9 @@
                     </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <template x-if="item.bienban">
-                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        <div x-text="item.bienban" 
+                        @click="clickall(item.trangthai, item.bienban)"
+                        class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
                         </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
@@ -416,7 +444,9 @@
                     </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <template x-if="item.bienban">
-                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        <div x-text="item.bienban" 
+                        @click="clickall(item.trangthai, item.bienban)"
+                        class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
                         </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
@@ -512,7 +542,9 @@
                     </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <template x-if="item.bienban">
-                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        <div x-text="item.bienban" 
+                        @click="clickall(item.trangthai, item.bienban)"
+                        class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
                         </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
@@ -608,7 +640,9 @@
                     </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <template x-if="item.bienban">
-                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        <div x-text="item.bienban" 
+                        @click="clickall(item.trangthai, item.bienban)"
+                        class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
                         </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">
@@ -704,7 +738,9 @@
                     </div>
                     <div class="basis-[50px] shrink-0 h-full flex flex-col justify-start items-start">
                         <template x-if="item.bienban">
-                        <div x-text="item.bienban" class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
+                        <div x-text="item.bienban" 
+                        @click="clickall(item.trangthai, item.bienban)"
+                        class="cursor-pointer text-[12px] px-[5px] rounded border border-black bg-white text-black font-[500]"></div>
                         </template>
                     </div>
                     <div class="basis-full shrink flex flex-col justify-start items-start gap-4">

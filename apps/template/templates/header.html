@@ -2,41 +2,71 @@
     open_menu: false
 }" 
 id="header" class="bg-white w-full h-[45px] shadow-md flex flex-row justify-end items-center fixed top-0 left-0 z-[999]">
-    <div class="flex flex-row justify-end items-center gap-10">
+    <div x-data="{count: {
+        cosan: 0,
+        danhan: 0,
+        trinhky: 0,
+        daky: 0,
+        hoanthanh: 0,
+        coloi: 0
+    },
+        getData() {
+            fetch(`/api/hopdong/count`)
+            .then((response) => response.json())
+            .then((result) => {
+                this.count = result.data;
+            })
+        },
+        timeout() {
+            this.getData()
+            setInterval(() => {this.getData()}, 5000);
+        }
+    }" x-init="timeout()"
+    class="flex flex-row justify-end items-center gap-10">
 
         <div class="relative h-full flex flex-row justify-center items-center text-gray-500 basis-auto shrink-0 cursor-pointer">
             <i class="fa-solid fa-cart-shopping text-[20px] text-darkblue"></i>
-            <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
-                <p>1</p>
-            </div>
+            <template x-if="count.cosan > 0">
+                <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
+                    <p x-text="count.cosan"></p>
+                </div>
+            </template>
         </div>
 
         <div class="relative h-full flex flex-row justify-center items-center text-gray-500 basis-auto shrink-0 cursor-pointer">
             <i class="fa-brands fa-stack-overflow text-[20px] text-darkblue"></i>
-            <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
-                <p>1</p>
-            </div>
+            <template x-if="count.danhan > 0">
+                <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
+                    <p x-text="count.danhan"></p>
+                </div>
+            </template>
         </div>
 
         <div class="relative h-full flex flex-row justify-center items-center text-gray-500 basis-auto shrink-0 cursor-pointer">
             <i class="fa-solid fa-file-pen text-[20px] text-darkblue"></i>
-            <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
-                <p>1</p>
-            </div>
+            <template x-if="count.trinhky > 0">
+                <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
+                    <p x-text="count.trinhky"></p>
+                </div>
+            </template>
         </div>
         
         <div class="relative h-full flex flex-row justify-center items-center text-gray-500 basis-auto shrink-0 cursor-pointer">
             <i class="fa-solid fa-circle-check text-[20px] text-darkblue"></i>
-            <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
-                <p>1</p>
-            </div>
+            <template x-if="count.daky > 0">
+                <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
+                    <p x-text="count.daky"></p>
+                </div>
+            </template>
         </div>
 
         <div class="relative h-full flex flex-row justify-center items-center text-gray-500 basis-auto shrink-0 cursor-pointer">
             <i class="fa-solid fa-circle-exclamation text-[20px] text-darkblue"></i>
-            <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
-                <p>1</p>
-            </div>
+            <template x-if="count.coloi > 0">
+                <div class="w-[15px] h-[15px] rounded-full text-[10px] text-white bg-red-500 font-[600] flex flex-row justify-center items-center absolute top-[-5px] right-[-12px]">
+                    <p x-text="count.coloi"></p>
+                </div>
+            </template>
         </div>
 
         <div x-ref="avatar" @click="open_menu = ! open_menu" @click.outside="open_menu = false"
