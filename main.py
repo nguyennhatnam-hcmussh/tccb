@@ -111,7 +111,7 @@ async def logout(request: Request):
 #     }
 #     return await render(request, "error", "404.html", context)
 
-nhucau = 1
+nhucau = 0
 list_code = []
 list_token = []
 
@@ -149,3 +149,10 @@ async def checknhucau(request: Request):
         return await sendjson(request, {'message': 'have'})
     else:
         return await sendjson(request, {'message': 'no'})
+    
+
+@app.get('/qrcode')
+@requires('guest')
+async def qrcode(request: Request, code:str):
+    print(code)
+    return 'ok'
