@@ -9,6 +9,9 @@ from typing import Annotated
 from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from random import randint
+import requests
+import codecs
+import json
 
 from main.config import get_settings
 from main.db_setup import get_session
@@ -154,5 +157,86 @@ async def checknhucau(request: Request):
 @app.get('/qrcode')
 @requires('guest')
 async def qrcode(request: Request, code:str):
-    print(code)
+    key = code.split('/')[-1]
+    url = f'https://dc.vnuhcm.edu.vn/campaign/bio?key={key}'
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    with codecs.open(str(settings.STATIC_MAIN_DIR / f"jsondata/{key}.json"), 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False)
+    with codecs.open(str(settings.STATIC_MAIN_DIR / f"files/tonghop.txt"),'a', encoding='utf-8') as f:
+        f.write(f"{data['result']['bio']['tab_canhan']['ca_nhan']['hovaten']},{data['result']['bio']['tab_canhan']['ca_nhan']['ngaysinh']},{data['result']['bio']['tab_canhan']['cong_tac']['macb']},{key}\n")
     return 'ok'
+
+@app.get('/getcode/{id}')
+@requires('guest')
+async def getcode(request: Request, id:int):
+    with codecs.open(str(settings.STATIC_MAIN_DIR / f"files/tonghop.txt"),'r', encoding='utf-8') as f:
+        raw = str(f.read()).split('\n')
+    code = raw[id - 1].split(',')[-1]
+    return await sendjson(request, {'message': 'ok', 'code': code})
+
+@app.get('/checktrung')
+@requires('guest')
+async def checktrung(request: Request, code:str):
+    trung = [
+        'wcDQ9kRhRJ9sZme5u9eP89I8Abs',
+        'S7oAzYx55TfyUmpAzhAMsfoTjG53s',
+        'tssASmM8bYAbwP2LfiMkN5o2bbo',
+        'E2yrgaUbOv3KPnRlKTPLfgpUhD4',
+        'DzJ7KMf8zXYpRXs6qb7YfUhzMx4',
+        'pyl6Y0FpQph381MqKfBx5p23KfE',
+        'paUZP1loCoiPFzAEuSQxFmQzMybo',
+        'azAFpOk5HC6OMl5PecOSUai1LzAqI',
+        'nlbjs1YZWD7uAme4U22Q5FzVjGo',
+        '5vDi0gpd4jvjfwfQPUv6ZXTExTQ',
+        '0j8rr3fGmsIcuQAoUcLd2zAd910Q',
+        'pnbzAOAziE7rFgNb3Nsh4EVadiC4A'
+    ]
+    key = code.split('/')[-1]
+    if key in trung:
+        print('trung')
+        return 'trung'
+    else:
+        print('no')
+        return 'no'
+    
+@app.get('/final')
+@requires('guest')
+async def final(request: Request, code:str):
+    key = code.split('/')[-1]
+    
+    khongtrung = True
+    with codecs.open(str(settings.STATIC_MAIN_DIR / f"files/final.txt"),'r', encoding='utf-8') as f:
+        raw = str(f.read()).split('\n')
+        
+    for ii in raw:
+        code = ii.split(',')[-1]
+        if code == key:
+            khongtrung = False
+            maso = ii.split(',')[2]
+    if khongtrung:    
+        url = f'https://dc.vnuhcm.edu.vn/campaign/bio?key={key}'
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        
+
+        with codecs.open(str(settings.STATIC_MAIN_DIR / f"final/{key}.json"), 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+        with codecs.open(str(settings.STATIC_MAIN_DIR / f"files/final.txt"),'a', encoding='utf-8') as f:
+            f.write(f"{data['result']['bio']['tab_canhan']['ca_nhan']['hovaten']},{data['result']['bio']['tab_canhan']['ca_nhan']['ngaysinh']},{data['result']['bio']['tab_canhan']['cong_tac']['macb']},{key}\n")
+        maso = data['result']['bio']['tab_canhan']['cong_tac']['macb']
+        
+    with codecs.open(str(settings.STATIC_MAIN_DIR / f"files/danhsach.txt"),'r', encoding='utf-8') as f:
+        raw = str(f.read()).split('\n')
+    
+    for stt in raw:
+        stt = stt.split(',')
+        if stt[0] == maso:
+            sothutu = stt[1]
+    
+    if maso:
+        return sothutu
+    else:
+        return 'error'
