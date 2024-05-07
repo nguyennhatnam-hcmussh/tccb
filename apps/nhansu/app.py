@@ -14,7 +14,7 @@ from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import Donvi, Nhansu, Hopdong
-from main.schemas import NhansuCreate, NhansuRead, NhansuSearch, NhansuCreateWithDonvi, NhansuReadWithDonvi, NhansuSearchWithDonvi, ListNhansuSearch, ListNhansuSearchWithDonvi, NhansuReadFull
+from main.schemas import NhansuCreate, NhansuRead, NhansuSearchCohuu, NhansuCreateWithDonvimoi, NhansuReadWithDonvimoi, NhansuSearchWithDonvimoi, ListNhansuSearchThinhgiang, ListNhansuSearchCohuu, ListNhansuSearchWithDonvimoi, NhansuReadFull
 from main.schemas import HopdongCreate, HopdongReadFull
 
 settings = config.get_settings()
@@ -135,9 +135,21 @@ async def api_nhansu_thinhgiang_read(*, request: Request, session: db_dependency
 
 @router.post("/api/nhansu/update")
 @requires('auth', redirect='login')
-async def api_nhansu_update(*, request: Request, session: db_dependency, id: int, thinhgiang: NhansuCreateWithDonvi):
-    donvi = thinhgiang.donvi
-    thinhgiang.donvi = []
+async def api_nhansu_update(*, request: Request, session: db_dependency, id: int, thinhgiang: NhansuCreateWithDonvimoi):
+    donvimoi = thinhgiang.donvimoi
+    thinhgiang.donvimoi = []
+    
+    if thinhgiang.type == 'cohuu' and thinhgiang.donvi:
+        donvi = session.get(Donvi, thinhgiang.donvi.id)
+        thinhgiang.donvi = None
+        thinhgiang.donvingoai = None
+    elif thinhgiang.type == 'thinhgiang' and thinhgiang.donvingoai:
+        thinhgiang.donvi = None
+        donvi = None
+    else:
+        thinhgiang.donvingoai = None
+        thinhgiang.donvi = None
+        donvi = None
 
     db_thinhgiang = session.get(Nhansu, id)
     if not db_thinhgiang:
@@ -147,34 +159,62 @@ async def api_nhansu_update(*, request: Request, session: db_dependency, id: int
     for key, value in thinhgiang_data.items():
         setattr(db_thinhgiang, key, value)
 
-    for i in range(len(donvi)):
-        db_thinhgiang.donvi.append(session.get(Donvi, donvi[i].id))
+    for i in range(len(donvimoi)):
+        db_thinhgiang.donvimoi.append(session.get(Donvi, donvimoi[i].id))
 
+    # cập nhật đơn vị (cơ hữu)
+    db_thinhgiang.donvi = None
+    session.add(db_thinhgiang)
+    session.commit()
+    db_thinhgiang.donvi = donvi
+    
+    
     session.add(db_thinhgiang)
     session.commit()
     session.refresh(db_thinhgiang)
-    data = (NhansuSearchWithDonvi.model_validate(db_thinhgiang)).model_dump(exclude_unset=True)
+    data = (NhansuSearchWithDonvimoi.model_validate(db_thinhgiang)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 ################################################################
 
-@router.post("/api/nhansu/thinhgiang/create")
+@router.post("/api/nhansu/create")
 @requires('auth', redirect='login')
-async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependency, thinhgiang: NhansuCreateWithDonvi):
-    donvi = thinhgiang.donvi
-    thinhgiang.donvi = []
-    thinhgiang.type = 'thinhgiang'
+async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependency, thinhgiang: NhansuCreateWithDonvimoi):
+    
+    donvimoi = thinhgiang.donvimoi
+    thinhgiang.donvimoi = []
+    
+    if thinhgiang.type == 'cohuu' and thinhgiang.donvi:
+        donvi = session.get(Donvi, thinhgiang.donvi.id)
+        thinhgiang.donvi = None
+        thinhgiang.donvingoai = None
+    elif thinhgiang.type == 'thinhgiang' and thinhgiang.donvingoai:
+        thinhgiang.donvi = None
+        donvi = None
+    else:
+        thinhgiang.donvingoai = None
+        thinhgiang.donvi = None
+        donvi = None
+    
     new_person = Nhansu.model_validate(thinhgiang)
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
-    if donvi:
-        for i in range(len(donvi)):
-            new_person.donvi.append(session.get(Donvi, donvi[i].id))
+    
+    if donvimoi:
+        for i in range(len(donvimoi)):
+            new_person.donvimoi.append(session.get(Donvi, donvimoi[i].id))
+            
+    # cập nhật đơn vị (cơ hữu)
+    new_person.donvi = None
+    session.add(new_person)
+    session.commit()
+    new_person.donvi = donvi
+            
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
-    data = (NhansuSearchWithDonvi.model_validate(new_person)).model_dump(exclude_unset=True)
+    data = (NhansuSearchWithDonvimoi.model_validate(new_person)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 
@@ -182,29 +222,7 @@ async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependen
 @requires('auth', redirect='login')
 async def api_nhansu_thinhgiang_search(*, request: Request, session: db_dependency):
     thinhgiangs = session.exec(select(Nhansu).where(Nhansu.type == 'thinhgiang')).all()
-    data = (ListNhansuSearch.model_validate({'data':thinhgiangs})).model_dump(exclude_unset=True)
-    return await sendjson(request, data)
-
-
-############################################################
-
-@router.post("/api/nhansu/cohuu/create")
-@requires('auth', redirect='login')
-async def api_nhansu_cohuu_create(*, request: Request, session: db_dependency, cohuu: NhansuCreateWithDonvi):
-    donvi = cohuu.donvi
-    cohuu.donvi = []
-    cohuu.type = 'cohuu'
-    new_person = Nhansu.model_validate(cohuu)
-    session.add(new_person)
-    session.commit()
-    session.refresh(new_person)
-    if donvi:
-        for i in range(len(donvi)):
-            new_person.donvi.append(session.get(Donvi, donvi[i].id))
-    session.add(new_person)
-    session.commit()
-    session.refresh(new_person)
-    data = (NhansuSearchWithDonvi.model_validate(new_person)).model_dump(exclude_unset=True)
+    data = (ListNhansuSearchThinhgiang.model_validate({'data':thinhgiangs})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 
@@ -212,7 +230,7 @@ async def api_nhansu_cohuu_create(*, request: Request, session: db_dependency, c
 @requires('auth', redirect='login')
 async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
     cohuus = session.exec(select(Nhansu).where(Nhansu.type == 'cohuu')).all()
-    data = (ListNhansuSearch.model_validate({'data':cohuus})).model_dump(exclude_unset=True)
+    data = (ListNhansuSearchCohuu.model_validate({'data':cohuus})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 ###################################################
@@ -222,7 +240,7 @@ async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
 async def api_nhansu_me_search(*, request: Request, session: db_dependency):
     uuid = request.user.data.get('uuid')
     nhansu = session.get(Nhansu, uuid)
-    data = (NhansuSearch.model_validate(nhansu)).model_dump(exclude_unset=True)
+    data = (NhansuSearchCohuu.model_validate(nhansu)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 

@@ -6,14 +6,18 @@
         search: '',
         isLoading: false
     }"
-    class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-1">
+    class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px]">
+
         <!-- {# Search #} -->
-        <div class="w-full flex flex-row justify-center items-center shrink-0">
-            <div class="w-[500px] h-[50px] rounded-3xl bg-white border border-gray-300 flex flex-row justify-start items-center mb-[20px]">
+        <div x-data="{focused: false}" class="w-full flex flex-row justify-center items-center shrink-0">
+            <div :class="focused ? 'border-orange' : 'border-gray-100'"
+            class="transition-none w-[500px] h-[50px] rounded-3xl bg-white border flex flex-row justify-start items-center mb-[20px]">
                 <div class="basis-[50px] shrink-0 rounded-full">
                     <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-500"></i>
                 </div>
                 <input x-model="search"
+                @focus="focused = true; console.log('tetete')"
+                @focusout="focused = false"
                 @input="$dispatch('searching')"
                 class="transition-none bg-white p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
                 type="search">
@@ -23,7 +27,7 @@
 
 
         <!-- tabs row-->
-        <div class="bg-white w-full max-w-[1000px] rounded-t-3xl overflow-hidden border-b-2">
+        <div class="bg-white w-full max-w-[1000px] rounded-t-3xl overflow-hidden">
             <div id="tabs-nhansu" 
             x-data="{tab1Active: true, tab2Active: false}"
             class="transition-none z-[1] relative w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start">
@@ -47,7 +51,7 @@
             async getData() {
                 console.log('namprooooo')
                 this.miniSearch = new MiniSearch({
-                    fields: ['maso','hovaten','ngaysinh'],
+                    fields: ['maso','hovaten','ngaysinh','donvi'],
                     searchOptions: {
                         prefix: true,
                         combineWith: 'AND',
@@ -58,6 +62,9 @@
                             if (nguyen) {
                                 return nguyen && nguyen + ' ' + nguyen.slice(6) + ' ' + nguyen.slice(3)
                             }
+                        }
+                        if (fieldName === 'donvi') {
+                            return document['donvi']['ten']
                         }
                         return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
                     },
@@ -162,7 +169,7 @@
 
                             {# donvi #}
                             <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
-                                <div x-text="item.donvicongtac" class="py-[10px]"></div>
+                                <div x-text="item.donvi.ten" class="py-[10px]"></div>
                             </div>
                             {# end donvi #}
 
@@ -201,7 +208,7 @@
             async getData() {
                 console.log('namprooooo')
                 this.miniSearch = new MiniSearch({
-                    fields: ['maso','hovaten','ngaysinh'],
+                    fields: ['maso','hovaten','ngaysinh','donvingoai'],
                     searchOptions: {
                         prefix: true,
                         combineWith: 'AND',
@@ -316,7 +323,7 @@
 
                             {# donvi #}
                             <div class="w-[35%] min-w-[220px] flex flex-row justify-start items-center font-[400]">
-                                <div x-text="item.donvicongtac" class="py-[10px]"></div>
+                                <div x-text="item.donvingoai" class="py-[10px]"></div>
                             </div>
                             {# end donvi #}
 
@@ -361,12 +368,12 @@
         });"
         @newportfolio.window="
         type = $event.detail.type;
-        console.log(type)
+        console.log(type);
         open = true,
         expanded_hopdong = false;
         button_text = 'Thêm mới'
         target='NEW';
-        thinhgiang = (type === 'cohuu') ? {co_llkh: true, co_bang: true, co_nvsp: true} : {co_llkh: false, co_bang: false, co_nvsp: false}"
+        thinhgiang = (type === 'cohuu') ? {type: type, co_llkh: true, co_bang: true, co_nvsp: true, donvi: null, donvingoai: null} : {type: type, co_llkh: false, co_bang: false, co_nvsp: false, donvi: null, donvingoai: null}"
         class="flex justify-center items-start fixed left-0 top-0 h-screen w-screen z-[3001] py-[20px] overflow-auto">
             <div x-show="open" 
             @click="open = false; $dispatch('closepopup');" 
@@ -545,7 +552,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.gioitinh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -681,7 +687,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.quoctich = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -782,7 +787,7 @@
                                 Ngày cấp
                             </div>
                             <input :disabled="checkcccd"
-                            :class="checkcccd ? 'cursor-not-allowed' : ''"
+                            :class="checkcccd ? 'cursor-not-allowed bg-gray-100 border-gray-200' : 'border-gray-400'"
                             x-data="{
                                 checkStrDate(str) {
                                     if (str) {
@@ -845,7 +850,7 @@
                             @focusout="converDay()"
                             @keyup.enter="converDay()"
                             x-model="thinhgiang.CCCD_ngay"
-                            class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
+                            class="w-full h-[45px] rounded-lg focus:border-orange focus:ring-0">
                         </div>
 
                         <div x-data="{
@@ -865,6 +870,7 @@
                             </div>
                             <input type="search"
                             :disabled="checkcccd"
+                            :class="checkcccd ? 'cursor-not-allowed bg-gray-100 border-gray-200' : 'border-gray-400'"
                             x-model="cccd_noi"
                             class="cursor-not-allowed w-full h-[45px] text-[15px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
                         </div>
@@ -980,7 +986,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.hocvi = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1144,7 +1149,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.hocvi_nganh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1183,7 +1187,7 @@
                             </div>
                             <input type="search"
                             :disabled="checkhocvi"
-                            :class="checkhocvi ? 'cursor-not-allowed' : ''"
+                            :class="checkhocvi ? 'cursor-not-allowed bg-gray-100 border-gray-200' : 'border-gray-400'"
                             @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
@@ -1196,7 +1200,7 @@
                             @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.hocvi_nganh"
                             @input="filteredItems()"
-                            class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
+                            class="w-full h-[45px] rounded-lg focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
                                 <ul @mouseover="mouse=true" @mouseleave="mouse=false"
@@ -1293,7 +1297,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.hocham = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1332,7 +1335,7 @@
                             </div>
                             <input type="search"
                             :disabled="checkhocvi"
-                            :class="checkhocvi ? 'cursor-not-allowed' : ''"
+                            :class="checkhocvi ? 'cursor-not-allowed bg-gray-100 border-gray-200' : 'border-gray-400'"
                             @focusout.debounce.100ms="checkItem()"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
@@ -1345,7 +1348,7 @@
                             @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.hocham"
                             @input="filteredItems()"
-                            class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
+                            class="w-full h-[45px] rounded-lg focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
                                 <ul @mouseover="mouse=true" @mouseleave="mouse=false"
@@ -1438,7 +1441,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.hocham_nganh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1477,7 +1479,7 @@
                             </div>
                             <input type="search"
                             :disabled="checkhocham"
-                            :class="checkhocham ? 'cursor-not-allowed' : ''"
+                            :class="checkhocham ? 'cursor-not-allowed bg-gray-100 border-gray-200' : 'border-gray-400'"
                             @focusout.debounce.100ms="checkItem();showoptions = false;"
                             @keyup.enter="enterEvent()"
                             @keydown.up.prevent.throttle.100ms="selectoption('up')"
@@ -1490,7 +1492,7 @@
                             @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.hocham_nganh"
                             @input="filteredItems()"
-                            class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
+                            class="w-full h-[45px] rounded-lg focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
                                 <ul @mouseover="mouse=true" @mouseleave="mouse=false"
@@ -1518,147 +1520,282 @@
 
 
                         <!-- start đơn vị công tác -->
-                        <div x-data="{
-                            showoptions: false,
-                            output: [],
-                            dataframe: [],
-                            research: '',
-                            backspace: true,
-                            choose: 0,
-                            mouse: false,
-                            miniSearch: '',
-                            async getData() {
-                                this.miniSearch = new MiniSearch({
-                                    fields: ['ten'],
-                                    searchOptions: {
-                                        prefix: true,
-                                        combineWith: 'AND',
-                                    }
-                                })
-                                console.log(type)
-                                if (type == 'cohuu') {
+                        <template x-if="type == 'cohuu'">
+                            <div x-data="{
+                                search: '',
+                                showoptions: false,
+                                output: [],
+                                dataframe: [],
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                mouse: false,
+                                miniSearch: '',
+                                async getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['ten'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
                                     url = '/api/donvi/danhmuc'
-                                } else {
-                                    url = '/api/danhmuc/donvi'
-                                }
-                                fetch(url)            
-                                .then((response) => response.json())
-                                .then((result) => {
-                                    result = (type == 'cohuu') ? result.data : result
-                                    this.dataframe = result.reduce((byId, song) => {
-                                        byId[song.id] = song;
-                                        return byId;
-                                    }, {});
-                                    this.output = Object.values(this.dataframe);
-                                    this.miniSearch.removeAll();
-                                    this.miniSearch.addAll(result);
-                                });
-                            },
-                            filteredItems() {
-                                this.showoptions = true;
-                                if (thinhgiang.donvicongtac) {
-                                    this.output = this.miniSearch.search(thinhgiang.donvicongtac).map(({ id }) => this.dataframe[id])
-                                } else {
-                                    this.output = Object.values(this.dataframe);
-                                }
-                            },
-                            addItem(item) {
-                                thinhgiang.donvicongtac = item.ten;
-                                this.showoptions = false;
-                            },
-                            checkItem() {
-                                this.filteredItems()
-                                if (this.output.length < 1) {
-                                    thinhgiang.donvicongtac = ''
-                                } else {
-                                    if (thinhgiang.donvicongtac) {
-                                        this.enterEvent()
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result.data
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                        this.search = thinhgiang.donvi.ten
+                                    });
+                                },
+                                filteredItems() {
+                                    this.showoptions = true;
+                                    if (this.search) {
+                                        this.output = this.miniSearch.search(this.search).map(({ id }) => this.dataframe[id])
                                     } else {
+                                        this.output = Object.values(this.dataframe);
+                                        thinhgiang.donvi = null;
+                                    }
+                                },
+                                addItem(item) {
+                                    thinhgiang.donvi = item;
+                                    this.search = item.ten;
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.filteredItems()
+                                    if (this.output.length < 1) {
+                                        this.search = ''
+                                        thinhgiang.donvi = null;
+                                    } else {
+                                        if (this.search) {
+                                            this.enterEvent()
+                                        } else {
+                                            if (this.mouse) {
+                                                this.enterEvent()
+                                            }
+                                        }
+                                    }
+                                    this.showoptions = false;
+                                },
+                                enterEvent() {
+                                    if (this.output) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        this.search = ''
+                                        thinhgiang.donvi = null;
+                                    }
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvi.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvi.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvi.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvi.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
+                                    }
+                                }
+                            }" x-init="getData()"
+                            class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Đơn vị công tác chính
+                                </div>
+                                <input type="search"
+                                @focusout.debounce.100ms="checkItem();showoptions = false;"
+                                @keyup.enter="enterEvent()"
+                                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                @keyup.up.prevent
+                                @keyup.down.prevent
+                                x-ref="input"
+                                @focus="focusinputcheck()"
+                                @keyup = 'showoptionscheck'
+                                @keyup.backspace="eventBackspace"
+                                @portfolio.window="getData($event.detail.type)"
+                                @newportfolio.window="getData($event.detail.type)"
+                                x-model="search"
+                                @input="filteredItems()"
+                                class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
+
+                                <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                    <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                    x-ref="donvi" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[375px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.ten"
+                                            :id="'donvi'+index"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="type == 'thinhgiang'">
+                            <div x-data="{
+                                showoptions: false,
+                                output: [],
+                                dataframe: [],
+                                research: '',
+                                backspace: true,
+                                choose: 0,
+                                mouse: false,
+                                miniSearch: '',
+                                async getData() {
+                                    this.miniSearch = new MiniSearch({
+                                        fields: ['ten'],
+                                        searchOptions: {
+                                            prefix: true,
+                                            combineWith: 'AND',
+                                        }
+                                    })
+                                    url = '/api/donvi/danhmuc'
+                                    fetch(url)            
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        result = result.data
+                                        this.dataframe = result.reduce((byId, song) => {
+                                            byId[song.id] = song;
+                                            return byId;
+                                        }, {});
+                                        this.output = Object.values(this.dataframe);
+                                        this.miniSearch.removeAll();
+                                        this.miniSearch.addAll(result);
+                                    });
+                                },
+                                filteredItems() {
+                                    this.showoptions = true;
+                                    if (thinhgiang.donvingoai) {
+                                        this.output = this.miniSearch.search(thinhgiang.donvingoai).map(({ id }) => this.dataframe[id])
+                                    } else {
+                                        this.output = Object.values(this.dataframe);
+                                    }
+                                },
+                                addItem(item) {
+                                    thinhgiang.donvingoai = item.ten;
+                                    this.showoptions = false;
+                                },
+                                checkItem() {
+                                    this.filteredItems()
+                                    if (this.output.length >= 1) {
+                                        console.log(this.mouse)
                                         if (this.mouse) {
                                             this.enterEvent()
                                         }
                                     }
-                                }
-                                this.showoptions = false;
-                            },
-                            enterEvent() {
-                                if (this.output) {
-                                    this.addItem(this.output[this.choose])
-                                } else {
-                                    thinhgiang.donvicongtac = ''
-                                }
-                            },
-                            eventBackspace() {
-                                this.backspace = true;
-                            },
-                            showoptionscheck(e) {
-                                if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
-                                    this.choose = 0;
-                                }
-                            },
-                            focusinputcheck() {
-                                thinhgiang.donvicongtac = ''
-                                this.filteredItems();
-                                this.showoptions = true;
-                            },
-                            checkchoose(index) {
-                                return index === this.choose
-                            },
-                            selectoption(type) {
-                                if (type === 'up' && this.choose > 0) {
-                                    this.choose = this.choose - 1
-                                    item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
-                                    frame = $refs.donvicongtac.getBoundingClientRect()
-                                    if ((item.bottom - frame.top) < item.height) {
-                                        $refs.donvicongtac.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                    this.showoptions = false;
+                                },
+                                enterEvent() {
+                                    if (this.output) {
+                                        this.addItem(this.output[this.choose])
+                                    } else {
+                                        thinhgiang.donvingoai = ''
                                     }
-                                } else if (type === 'down' && this.choose < (this.output.length - 1)) {
-                                    this.choose = this.choose + 1
-                                    item = document.getElementById('donvicongtac'+this.choose).getBoundingClientRect()
-                                    frame = $refs.donvicongtac.getBoundingClientRect()
-                                    if ((frame.bottom - item.top) < item.height) {
-                                        $refs.donvicongtac.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                },
+                                eventBackspace() {
+                                    this.backspace = true;
+                                },
+                                showoptionscheck(e) {
+                                    if (e.keyCode == 32 || e.keyCode == 189 || (e.keyCode >= 48 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                                        this.choose = 0;
+                                    }
+                                },
+                                focusinputcheck() {
+                                    this.filteredItems();
+                                    this.showoptions = true;
+                                },
+                                checkchoose(index) {
+                                    return index === this.choose
+                                },
+                                selectoption(type) {
+                                    if (type === 'up' && this.choose > 0) {
+                                        this.choose = this.choose - 1
+                                        item = document.getElementById('donvingoai'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvingoai.getBoundingClientRect()
+                                        if ((item.bottom - frame.top) < item.height) {
+                                            $refs.donvingoai.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                        }
+                                    } else if (type === 'down' && this.choose < (this.output.length - 1)) {
+                                        this.choose = this.choose + 1
+                                        item = document.getElementById('donvingoai'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvingoai.getBoundingClientRect()
+                                        if ((frame.bottom - item.top) < item.height) {
+                                            $refs.donvingoai.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                        }
                                     }
                                 }
-                            }
-                        }" x-init="getData()"
-                        class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
-                            <div>
-                                Đơn vị công tác chính
-                            </div>
-                            <input type="search"
-                            @focusout.debounce.100ms="checkItem();showoptions = false;"
-                            @keyup.enter="enterEvent()"
-                            @keydown.up.prevent.throttle.100ms="selectoption('up')"
-                            @keydown.down.prevent.throttle.100ms="selectoption('down')"
-                            @keyup.up.prevent
-                            @keyup.down.prevent
-                            x-ref="input"
-                            @focus="focusinputcheck()"
-                            @keyup = 'showoptionscheck'
-                            @keyup.backspace="eventBackspace"
-                            @portfolio.window="getData($event.detail.type)"
-                            @newportfolio.window="getData($event.detail.type)"
-                            x-model="thinhgiang.donvicongtac"
-                            @input="filteredItems()"
-                            class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
+                            }" x-init="getData()"
+                            class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
+                                <div>
+                                    Đơn vị công tác chính (ngoài)
+                                </div>
+                                <input type="search"
+                                @focusout.debounce.100ms="checkItem();showoptions = false;"
+                                @keyup.enter="enterEvent()"
+                                @keydown.up.prevent.throttle.100ms="selectoption('up')"
+                                @keydown.down.prevent.throttle.100ms="selectoption('down')"
+                                @keyup.up.prevent
+                                @keyup.down.prevent
+                                x-ref="input"
+                                @focus="focusinputcheck()"
+                                @keyup = 'showoptionscheck'
+                                @keyup.backspace="eventBackspace"
+                                @portfolio.window="getData($event.detail.type)"
+                                @newportfolio.window="getData($event.detail.type)"
+                                x-model="thinhgiang.donvingoai"
+                                @input="filteredItems()"
+                                class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
 
-                            <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
-                                <ul @mouseover="mouse=true" @mouseleave="mouse=false"
-                                x-ref="donvicongtac" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[385px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
-                                    <template x-if="output.length === 0">
-                                        <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
-                                    </template>
-                                    <template x-for="(item, index) in output" :key="item.id">
-                                        <li x-text="item.ten"
-                                        :id="'donvicongtac'+index"
-                                        @mouseover="choose = index"
-                                        :class="checkchoose(index) ? 'bg-gray-100' : ''"
-                                        class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
-                                    </template>
-                                </ul>
+                                <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
+                                    <ul @mouseover="mouse=true" @mouseleave="mouse=false"
+                                    x-ref="donvingoai" class="border-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[375px] h-auto max-h-[200px] overflow-auto flex flex-col z-[1]">
+                                        <template x-if="output.length === 0">
+                                            <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
+                                        </template>
+                                        <template x-for="(item, index) in output" :key="item.id">
+                                            <li x-text="item.ten"
+                                            :id="'donvingoai'+index"
+                                            @mouseover="choose = index"
+                                            :class="checkchoose(index) ? 'bg-gray-100' : ''"
+                                            class="transition-none text-left w-full cursor-pointer py-[10px] px-[20px]"></li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                        </template>
                         <!-- end đơn vị công tác -->
 
                         <!-- chức danh nghề nghiệp chính -->
@@ -1734,7 +1871,6 @@
                                 }
                             },
                             focusinputcheck() {
-                                thinhgiang.chucdanh = ''
                                 this.filteredItems();
                                 this.showoptions = true;
                             },
@@ -1761,7 +1897,7 @@
                         }" x-init="getData()"
                         class="basis-[50%] shrink flex flex-col justify-start items-start gap-2">
                             <div>
-                                Chức danh nghề nghiệp chính
+                                Chức danh nghề nghiệp
                             </div>
                             <input type="search"
                             @focusout.debounce.100ms="checkItem();showoptions = false;"
@@ -1776,7 +1912,7 @@
                             @keyup.backspace="eventBackspace"
                             x-model="thinhgiang.chucdanh"
                             @input="filteredItems()"
-                            class="w-full h-[45px] rounded-lg border-gray-500 focus:border-orange focus:ring-0">
+                            class="w-full h-[45px] rounded-lg border-gray-400 focus:border-orange focus:ring-0">
 
                             <div x-show="showoptions" x-anchor.bottom="$refs.input" class="transition-none">
                                 <ul @mouseover="mouse=true" @mouseleave="mouse=false"
@@ -1831,8 +1967,9 @@
 
                     <!-- {# Đơn vị mời giảng #} -->
                     <div class="w-full flex flex-row justify-start items-start gap-6">
-                        <div id="donvi" class="w-full h-auto flex flex-row justify-center items-start">
+                        <div id="donvimoi" class="w-full h-auto flex flex-row justify-center items-start">
                             <div x-data="{
+                                focused: false,
                                 showoptions: false,
                                 dataframe: [],
                                 output: [],
@@ -1870,15 +2007,15 @@
                                     }
                                 },
                                 get checkresults() {
-                                    return thinhgiang.donvi.length === 0
+                                    return thinhgiang.donvimoi.length === 0
                                 },
                                 addItem(value) {
-                                    if (! thinhgiang.donvi) {
-                                        thinhgiang.donvi = [];
+                                    if (! thinhgiang.donvimoi) {
+                                        thinhgiang.donvimoi = [];
                                     }
                                     this.miniSearch.remove(value);
                                     delete this.dataframe[value.id]
-                                    thinhgiang.donvi.push(value);
+                                    thinhgiang.donvimoi.push(value);
                                     this.search = '';
                                     this.filteredItems();
                                     this.showoptions = false;
@@ -1886,7 +2023,7 @@
                                 },
                                 removeItem(value) {
                                     console.log(value);
-                                    thinhgiang.donvi = thinhgiang.donvi.filter(i => i !== value);
+                                    thinhgiang.donvimoi = thinhgiang.donvimoi.filter(i => i !== value);
                                     this.miniSearch.add(value);
                                     this.dataframe[value.id] = value;
                                     this.filteredItems();
@@ -1911,8 +2048,8 @@
                                     if (this.backspace === true) {
                                         this.research = this.search;
                                         this.backspace = false;
-                                        if (this.research === '' && thinhgiang.donvi.length > 0) {
-                                            value = thinhgiang.donvi.at(-1);
+                                        if (this.research === '' && thinhgiang.donvimoi.length > 0) {
+                                            value = thinhgiang.donvimoi.at(-1);
                                             this.removeItem(value)
                                         }
                                     }
@@ -1932,17 +2069,17 @@
                                 selectoption(type) {
                                     if (type === 'up' && this.choose > 0) {
                                         this.choose = this.choose - 1
-                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
-                                        frame = $refs.donvi.getBoundingClientRect()
+                                        item = document.getElementById('donvimoi'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvimoi.getBoundingClientRect()
                                         if ((item.bottom - frame.top) < item.height) {
-                                            $refs.donvi.scrollBy(0,-(item.height - (item.bottom - frame.top)))
+                                            $refs.donvimoi.scrollBy(0,-(item.height - (item.bottom - frame.top)))
                                         }
                                     } else if (type === 'down' && this.choose < (this.output.length - 1)) {
                                         this.choose = this.choose + 1
-                                        item = document.getElementById('donvi'+this.choose).getBoundingClientRect()
-                                        frame = $refs.donvi.getBoundingClientRect()
+                                        item = document.getElementById('donvimoi'+this.choose).getBoundingClientRect()
+                                        frame = $refs.donvimoi.getBoundingClientRect()
                                         if ((frame.bottom - item.top) < item.height) {
-                                            $refs.donvi.scrollBy(0,(item.height + (item.top - frame.bottom)))
+                                            $refs.donvimoi.scrollBy(0,(item.height + (item.top - frame.bottom)))
                                         }
                                     }
                                 }
@@ -1952,10 +2089,11 @@
                                     Đơn vị mời giảng
                                 </div>
                                 <div x-ref="divinput"
-                                @focusout.debounce.100ms="showoptions = false;"
+                                @focusout.debounce.100ms="showoptions = false; focused = false"
                                 @click.self="$refs.input.focus()"
-                                class="cursor-text basis-[100%] w-full shrink relative rounded-lg flex flex-row justify-start items-start flex-wrap py-[12px] gap-2 border-gray-500 p-[15px]">
-                                    <template x-for="result in thinhgiang.donvi" :key="result.id">
+                                :class="focused ? 'border-orange' : 'border-gray-400'"
+                                class="cursor-text basis-[100%] w-full shrink relative rounded-lg flex flex-row justify-start items-start flex-wrap py-[10px] gap-2 border p-[15px]">
+                                    <template x-for="result in thinhgiang.donvimoi" :key="result.id">
                                         <div class="text-[15px] bg-[#ff4b4b] rounded-md text-white px-[15px] py-[3px] cursor-default flex flex-row items-center relative">
                                             <div x-text="result.ten"></div>
                                             <i @click="removeItem(result)"
@@ -1967,17 +2105,17 @@
                                         x-ref="span" 
                                         class="invisible text-[15px] p-0"></span>
                                         <input type="text"
-                                        @focusout.debounce.100ms="checkItem()"
+                                        @focusout.debounce.100ms="checkItem(); focused = false"
                                         @keyup.enter="enterEvent()"
                                         @keydown.up.prevent.throttle.100ms="selectoption('up')"
                                         @keydown.down.prevent.throttle.100ms="selectoption('down')"
                                         @keyup.up.prevent
                                         @keyup.down.prevent
-                                        class="bg-gray-100 p-0 w-[100%] absolute left-0 text-[15px] py-[5px] border-transparent focus:border-transparent focus:ring-0 top-[50%] translate-y-[-50%]"
+                                        class="p-0 w-[100%] absolute left-0 text-[15px] py-[5px] border-transparent focus:border-transparent focus:ring-0 top-[50%] translate-y-[-50%]"
                                         x-ref="input"
                                         x-model="search"
                                         @input="filteredItems()"
-                                        @focus="focusinputcheck()"
+                                        @focus="focusinputcheck(); focused = true"
                                         @keydown.backspace="checkdown()"
                                         @keyup = 'showoptionscheck'
                                         @keyup.backspace="eventBackspace"/>
@@ -1985,13 +2123,13 @@
                                 </div>
 
                                 <div x-show="showoptions" x-anchor.bottom="$refs.divinput" class="z-[1] transition-none">
-                                    <ul x-ref="donvi" class="shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[770px] h-auto max-h-[200px] flex flex-col overflow-auto">
+                                    <ul x-ref="donvimoi" class="shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] bg-white rounded-lg w-[770px] h-auto max-h-[200px] flex flex-col overflow-auto">
                                         <template x-if="output.length === 0">
                                             <li class="w-full text-gray-400 cursor-default py-[10px] px-[20px]">Không tìm thấy kết quả nào</li>
                                         </template>
                                         <template x-for="(item, index) in output" :key="item.id">
                                             <li x-text="item.ten"
-                                            :id="'donvi'+index"
+                                            :id="'donvimoi'+index"
                                             @click="addItem(item)"
                                             @mouseover="choose = index"
                                             :class="checkchoose(index) ? 'bg-gray-100' : ''"
@@ -2087,7 +2225,7 @@
                         x-model="button_text"
                         @click="{id, ...thinhgiangg} = thinhgiang;
                         if (target == 'NEW') {
-                            url = `/api/nhansu/${type}/create`
+                            url = `/api/nhansu/create`
                         } else {
                             url = `/api/nhansu/update?id=${thinhgiang.id}`
                         }
@@ -2202,7 +2340,7 @@
             hopdong.ngayky = dd + '/' + mm + '/' + yyyy
             hopdong.nguoidaidien = 'TS. Phạm Tấn Hạ'
             hopdong.giangvien = giangvien.maso
-            hopdong.donvimoi = nguoilayso.donvicongtac
+            hopdong.donvimoi = nguoilayso.donvi.ten
             hopdong.nguoiphutrach = nguoilayso.maso
             hopdong.he = 'Chính quy (Chuẩn)'
             hopdong.namhoc = '2023-2024'
@@ -2253,8 +2391,8 @@
                         </div>
                     </div>
                 </div>
-                {# end tieu de form #}
-    
+                <!-- {# end tieu de form #}
+     -->
                 <!-- {# body form #} -->
                 <div class="w-full flex flex-col justify-start items-start gap-6 mb-[10px] z-[2]">
                     <!-- {# thông tin hợp đồng #} -->

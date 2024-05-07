@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import field_validator
 from sqlmodel import Field, DateTime
 import datetime
@@ -25,7 +25,7 @@ class NhansuBase(Base):
     CCCD_so: str | None = Field(default=None)
     CCCD_ngay: str | None = Field(default=None)
     chucdanh: str | None = Field(default=None)
-    donvicongtac: str | None = Field(default="Lao động tự do")
+    donvingoai: str | None = Field(default=None)
     co_bang: bool = Field(default=True)
     co_llkh: bool = Field(default=True)
     co_nvsp: bool = Field(default=True)
@@ -61,8 +61,9 @@ class NhansuCreate(NhansuBase):
         return v
 
 
-class NhansuCreateWithDonvi(NhansuBase):
-    donvi: List["DonviSearch"] | None = Field(default=None)
+class NhansuCreateWithDonvimoi(NhansuBase):
+    donvimoi: List["DonviSearch"] | None = Field(default=None)
+    donvi: Optional["DonviSearch"] = Field(default=None)
 
     @field_validator('gioitinh')
     @classmethod
@@ -100,8 +101,9 @@ class NhansuRead(NhansuBase):
         return v
 
 
-class NhansuReadWithDonvi(NhansuBase):
-    donvi: List["DonviSearch"]
+class NhansuReadWithDonvimoi(NhansuBase):
+    donvimoi: List["DonviSearch"]
+    donvi: Optional["DonviSearch"]
 
     @field_validator('ngaysinh','CCCD_ngay')
     @classmethod
@@ -110,14 +112,28 @@ class NhansuReadWithDonvi(NhansuBase):
             date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
             return date
         return v
+
+
+class NhansuSearchCohuu(Base):
+    id: int
+    maso: str | None = Field(default=None)
+    hovaten: str | None = Field(default=None)
+    ngaysinh: str | None = Field(default=None)
+    donvi: Optional["DonviSearch"] = Field(default=None)
     
-    
+    @field_validator('ngaysinh')
+    @classmethod
+    def modify_ngaysinh(cls, v: str | None) -> str | None:
+        if v:
+            date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
+            return date
+        return v
+
 class NhansuSearch(Base):
     id: int
     maso: str | None = Field(default=None)
     hovaten: str | None = Field(default=None)
     ngaysinh: str | None = Field(default=None)
-    donvicongtac: str | None = Field(default=None)
     
     @field_validator('ngaysinh')
     @classmethod
@@ -128,12 +144,33 @@ class NhansuSearch(Base):
         return v
 
 
-class ListNhansuSearch(Base):
-    data: List[NhansuSearch]
+class ListNhansuSearchCohuu(Base):
+    data: List[NhansuSearchCohuu]
+    
+
+class NhansuSearchThinhgiang(Base):
+    id: int
+    maso: str | None = Field(default=None)
+    hovaten: str | None = Field(default=None)
+    ngaysinh: str | None = Field(default=None)
+    donvingoai: str | None = Field(default=None)
+    
+    @field_validator('ngaysinh')
+    @classmethod
+    def modify_ngaysinh(cls, v: str | None) -> str | None:
+        if v:
+            date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
+            return date
+        return v
 
 
-class NhansuSearchWithDonvi(NhansuSearch):
-    donvi: List["DonviSearch"]
+class ListNhansuSearchThinhgiang(Base):
+    data: List[NhansuSearchThinhgiang]
+
+
+class NhansuSearchWithDonvimoi(NhansuSearch):
+    donvimoi: List["DonviSearch"]
+    donvi: Optional["DonviSearch"]
     
     @field_validator('ngaysinh')
     @classmethod
@@ -143,12 +180,13 @@ class NhansuSearchWithDonvi(NhansuSearch):
             return date
         return v
     
-class ListNhansuSearchWithDonvi(Base):
-    data: List[NhansuSearchWithDonvi]
+class ListNhansuSearchWithDonvimoi(Base):
+    data: List[NhansuSearchWithDonvimoi]
     
 
 class NhansuReadFull(NhansuBase):
-    donvi: List["DonviSearch"]
+    donvimoi: List["DonviSearch"]
+    donvi: Optional["DonviSearch"]
     hopdong: List["HopdongReadNhansu"]
     
     @field_validator('ngaysinh')

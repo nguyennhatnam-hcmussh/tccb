@@ -16,8 +16,11 @@ from main.schemas import (
 settings = get_settings()
 
 ################# LINK ##################
-
 class NhansuOfDonvi(Base, table=True):
+    nhansu_id: int | None = Field(default=None, foreign_key="nhansu.id", primary_key=True)
+    donvi_id: int | None = Field(default=None, foreign_key="donvi.id", primary_key=True)
+
+class GvtgOfDonvi(Base, table=True):
     nhansu_id: int | None = Field(default=None, foreign_key="nhansu.id", primary_key=True)
     donvi_id: int | None = Field(default=None, foreign_key="donvi.id", primary_key=True)
 
@@ -56,6 +59,7 @@ class Bienban(BienbanBase, table=True):
 class Donvi(DonviBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
+    gvtg: List["Nhansu"] = Relationship(back_populates="donvimoi", link_model=GvtgOfDonvi)
     nhansu: List["Nhansu"] = Relationship(back_populates="donvi", link_model=NhansuOfDonvi)
     hopdong: List["Hopdong"] = Relationship(back_populates="donvimoi", link_model=HopdongOfDonvi)
     
@@ -77,10 +81,10 @@ class Hopdong(HopdongBase, table=True):
 class Nhansu(NhansuBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
-    donvi: List["Donvi"] = Relationship(back_populates="nhansu", link_model=NhansuOfDonvi)
+    donvimoi: List["Donvi"] = Relationship(back_populates="gvtg", link_model=GvtgOfDonvi)
+    donvi: Optional["Donvi"] = Relationship(back_populates="nhansu", link_model=NhansuOfDonvi, sa_relationship_kwargs={'uselist': False})
     hopdong: List["Hopdong"] = Relationship(back_populates="giangvien", link_model=HopdongOfGiangvien)
     hopdongphutrach: List["Hopdong"] = Relationship(back_populates="nguoiphutrach", link_model=HopdongOfNguoiphutrach)
-    
 
 
 ################# AUTH ##################
