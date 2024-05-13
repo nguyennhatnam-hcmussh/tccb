@@ -34,5 +34,9 @@
     {
         "id": 9,
         "value": "Chuyên viên cao cấp"
+    },
+    {
+        "id": 10,
+        "value": "Khác"
     }
 ]

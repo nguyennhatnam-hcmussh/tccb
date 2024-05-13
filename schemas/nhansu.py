@@ -113,46 +113,12 @@ class NhansuReadWithDonvimoi(NhansuBase):
             return date
         return v
 
-
-class NhansuSearchCohuu(Base):
-    id: int
-    maso: str | None = Field(default=None)
-    hovaten: str | None = Field(default=None)
-    ngaysinh: str | None = Field(default=None)
-    donvi: Optional["DonviSearch"] = Field(default=None)
-    
-    @field_validator('ngaysinh')
-    @classmethod
-    def modify_ngaysinh(cls, v: str | None) -> str | None:
-        if v:
-            date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
-            return date
-        return v
-
 class NhansuSearch(Base):
     id: int
     maso: str | None = Field(default=None)
     hovaten: str | None = Field(default=None)
     ngaysinh: str | None = Field(default=None)
-    
-    @field_validator('ngaysinh')
-    @classmethod
-    def modify_ngaysinh(cls, v: str | None) -> str | None:
-        if v:
-            date = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(v))).strftime("%d/%m/%Y")
-            return date
-        return v
-
-
-class ListNhansuSearchCohuu(Base):
-    data: List[NhansuSearchCohuu]
-    
-
-class NhansuSearchThinhgiang(Base):
-    id: int
-    maso: str | None = Field(default=None)
-    hovaten: str | None = Field(default=None)
-    ngaysinh: str | None = Field(default=None)
+    donvi: Optional["DonviSearch"] = Field(default=None)
     donvingoai: str | None = Field(default=None)
     
     @field_validator('ngaysinh')
@@ -164,9 +130,9 @@ class NhansuSearchThinhgiang(Base):
         return v
 
 
-class ListNhansuSearchThinhgiang(Base):
-    data: List[NhansuSearchThinhgiang]
-
+class ListNhansuSearch(Base):
+    data: List[NhansuSearch]
+    
 
 class NhansuSearchWithDonvimoi(NhansuSearch):
     donvimoi: List["DonviSearch"]

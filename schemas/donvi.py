@@ -10,7 +10,6 @@ class DonviBase(Base):
     loai: str # phòng, khoa, trung tâm, ban, bảo tàng, thư viện, công ty, bộ môn, văn phòng
     cap: str # trường, đơn vị
     is_phapnhan: bool = Field(default=False) # đơn vị có pháp nhân?
-    is_nghiencuu: bool = Field(default=False) # là đơn vị nghiên cứu?
 
     @field_validator('loai')
     @classmethod
@@ -47,4 +46,3 @@ class DonviUpdate(DonviBase):
     loai: str  | None = Field(default=None)
     cap: str  | None = Field(default=None)
     is_phapnhan: bool | None = Field(default=None)
-    is_nghiencuu: bool | None = Field(default=None)

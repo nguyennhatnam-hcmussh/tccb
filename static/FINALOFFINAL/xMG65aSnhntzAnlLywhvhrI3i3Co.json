@@ -1,0 +1,660 @@
+{
+    "status": "ok",
+    "message": "done",
+    "result": {
+        "bio": {
+            "tab_canhan": {
+                "ca_nhan": {
+                    "hovaten": "TRẦN NAM TIẾN",
+                    "gioitinh": "1",
+                    "ngaysinh": "05/01/1976",
+                    "id_noisinh": "79",
+                    "noisinh": "TP. Hồ Chí Minh",
+                    "id_tinh": "82",
+                    "tinh": "Tiền Giang",
+                    "huyen": "822",
+                    "xa": "28627",
+                    "id_tinh1": "79",
+                    "tinh1": "TP. Hồ Chí Minh",
+                    "huyen1": "770",
+                    "xa1": "27145",
+                    "duong": "280/19 Cách mạng tháng Tám",
+                    "cccd": "079076035471",
+                    "ngay_cccd": "11/08/2021",
+                    "id_dantoc": "01",
+                    "dantoc": "Kinh (Việt)",
+                    "tongiao": "99",
+                    "avata": "",
+                    "avata_data_type": "",
+                    "filename": "",
+                    "type": "vc",
+                    "unitCode": "XHNV"
+                },
+                "cong_tac": {
+                    "ngay": "14/05/2001",
+                    "dt": "0903855509",
+                    "email": "trannamtienfir@hcmussh.edu.vn",
+                    "ngay_dang": "",
+                    "ngay_ct": "",
+                    "id_trinhdo": "22",
+                    "chuyenmon": "02",
+                    "id_danhhieu": "",
+                    "danhhieu": "",
+                    "hocham": "02",
+                    "macb": "QSX7610748"
+                },
+                "chuc_vu": {
+                    "id_chucvu": "",
+                    "chucvu": "",
+                    "congviec": "Giảng viên cao cấp",
+                    "id_dang": "",
+                    "cv_dang": "",
+                    "id_ngach": "V.07.01.01",
+                    "ngach": "Giáo sư/Phó giáo sư - giảng viên cao cấp",
+                    "maso": "",
+                    "ngay_bonhiem": "",
+                    "bacluong": "04",
+                    "heso": "7.28",
+                    "ngay_huong": "01/09/2023",
+                    "pt_huong": "không",
+                    "phu_cap": "không",
+                    "ngay_phucap": ""
+                },
+                "viec_lam": {
+                    "vitri": "",
+                    "maso": "",
+                    "bacluong": "",
+                    "luong": "",
+                    "ngay_huong": "",
+                    "pt_huong": "",
+                    "phu_cap": "",
+                    "ngay_phucap": ""
+                }
+            },
+            "tab_hocvan": {
+                "hv_chuyenmon": [
+                    {
+                        "id": "",
+                        "begin": "09/1994",
+                        "end": "09/1998",
+                        "id_place": "ĐH.VI.97.3",
+                        "place": "ĐHQG.HCM - Trường Đại Học Khoa Học Xã Hội Nhân Văn",
+                        "id_chuyennganh": "9229011",
+                        "chuyennganh": "Lịch sử thế giới",
+                        "id_hinhthuc": "00",
+                        "id_vanbang": "04",
+                        "vanbang": ""
+                    },
+                    {
+                        "id": 2,
+                        "begin": "05/2000",
+                        "end": "06/2004",
+                        "id_place": "ĐH.VI.97.3",
+                        "place": "ĐHQG.HCM - Trường Đại Học Khoa Học Xã Hội Nhân Văn",
+                        "id_chuyennganh": "9229013",
+                        "chuyennganh": "Lịch sử Việt Nam",
+                        "id_hinhthuc": "00",
+                        "id_vanbang": "03",
+                        "vanbang": ""
+                    },
+                    {
+                        "id": 4,
+                        "begin": "09/2004",
+                        "end": "06/2009",
+                        "id_place": "HVHLKHXH",
+                        "place": "Học viện Hàn lâm khoa học xã hội",
+                        "id_chuyennganh": "",
+                        "chuyennganh": "Lịch sử",
+                        "id_hinhthuc": "00",
+                        "id_vanbang": "02",
+                        "vanbang": ""
+                    }
+                ],
+                "hv_llct": [],
+                "hv_ngoaingu": [],
+                "hv_tinhoc": []
+            },
+            "tab_congtac": {
+                "ct_donvi": [
+                    {
+                        "id": "",
+                        "begin": "09/1998",
+                        "end": "12/2000",
+                        "place": "Viện Khoa học Xã hội tại Thành phố Hồ Chí Minh",
+                        "chucvu": "Nghiên cứu viên"
+                    },
+                    {
+                        "id": 2,
+                        "begin": "01/2001",
+                        "end": "04/2001",
+                        "place": "Tạp chí Xưa và Nay",
+                        "chucvu": "nghiên cứu viên"
+                    },
+                    {
+                        "id": 2,
+                        "begin": "05/2001",
+                        "end": "04/2024",
+                        "place": "ĐHQG.HCM - Trường Đại Học Khoa Học Xã Hội Nhân Văn",
+                        "chucvu": "Giảng viên"
+                    }
+                ]
+            },
+            "tab_tieusu": {
+                "ts_cdc": [],
+                "ts_nuocngoai": []
+            },
+            "tab_khenthuong": {
+                "kt_khen": [
+                    {
+                        "id": "1",
+                        "year": "2005",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "2",
+                        "year": "2005",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "3",
+                        "year": "2007",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "4",
+                        "year": "2007",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "5",
+                        "year": "2008",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "6",
+                        "year": "2009",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "7",
+                        "year": "2009",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "8",
+                        "year": "2010",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "9",
+                        "year": "2010",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "10",
+                        "year": "2011",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "11",
+                        "year": "2011",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "12",
+                        "year": "2011",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "13",
+                        "year": "2012",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "14",
+                        "year": "2012",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "15",
+                        "year": "2012",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Giấy khen của Hiệu trưởng",
+                        "id_hinhthuc": "06"
+                    },
+                    {
+                        "id": "16",
+                        "year": "2013",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "17",
+                        "year": "2013",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "18",
+                        "year": "2014",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "19",
+                        "year": "2014",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "20",
+                        "year": "2014",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Giấy khen của Hiệu trưởng",
+                        "id_hinhthuc": "06"
+                    },
+                    {
+                        "id": "21",
+                        "year": "2015",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "22",
+                        "year": "2015",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "23",
+                        "year": "2015",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "24",
+                        "year": "2016",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Bằng khen của Giám đốc ĐHQG-HCM",
+                        "id_hinhthuc": "05"
+                    },
+                    {
+                        "id": "25",
+                        "year": "2016",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "26",
+                        "year": "2016",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "27",
+                        "year": "2016",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "28",
+                        "year": "2017",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "29",
+                        "year": "2017",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "30",
+                        "year": "2018",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "31",
+                        "year": "2018",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "32",
+                        "year": "2018",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "33",
+                        "year": "2019",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Bằng khen của Giám đốc ĐHQG-HCM",
+                        "id_hinhthuc": "05"
+                    },
+                    {
+                        "id": "34",
+                        "year": "2019",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "35",
+                        "year": "2019",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "36",
+                        "year": "2019",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "37",
+                        "year": "2019",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Giấy khen của Hiệu trưởng",
+                        "id_hinhthuc": "06"
+                    },
+                    {
+                        "id": "38",
+                        "year": "2020",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Bằng khen của Bộ trưởng Bộ Giáo dục và Đào tạo",
+                        "id_hinhthuc": "05"
+                    },
+                    {
+                        "id": "39",
+                        "year": "2020",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp ĐHQG-HCM",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "40",
+                        "year": "2020",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "41",
+                        "year": "2020",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Giảng viên giỏi",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "42",
+                        "year": "2020",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "43",
+                        "year": "2021",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "44",
+                        "year": "2021",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "45",
+                        "year": "2021",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Giấy khen của Hiệu trưởng",
+                        "id_hinhthuc": "06"
+                    },
+                    {
+                        "id": "46",
+                        "year": "2022",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Bằng khen của Bộ trưởng Bộ Giáo dục và Đào tạo",
+                        "id_hinhthuc": "05"
+                    },
+                    {
+                        "id": "47",
+                        "year": "2022",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Bộ Giáo dục và Đào tạo",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "48",
+                        "year": "2022",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cấp Trường",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "49",
+                        "year": "2022",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "50",
+                        "year": "2022",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Giấy khen của Hiệu trưởng",
+                        "id_hinhthuc": "06"
+                    },
+                    {
+                        "id": "51",
+                        "year": "2023",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Chiến sĩ thi đua cơ sở",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "52",
+                        "year": "2023",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Danh hiệu Lao động tiên tiến",
+                        "id_hinhthuc": "07"
+                    },
+                    {
+                        "id": "53",
+                        "year": "2023",
+                        "id_chuyenmon": "01",
+                        "loai_td": "Giấy khen của Hiệu trưởng",
+                        "id_hinhthuc": "06"
+                    }
+                ],
+                "kt_kyluat": []
+            },
+            "tab_giacanh": {
+                "gc_banthan": [
+                    {
+                        "id": "",
+                        "id_qh": "03",
+                        "name": "Trẫn Văn Tiễng",
+                        "year": "1933",
+                        "detail": "Tiền Giang (Đã mất)"
+                    },
+                    {
+                        "id": 2,
+                        "id_qh": "04",
+                        "name": "Nguyễn Thị Hạnh",
+                        "year": "1937",
+                        "detail": "Bến Tre (Đã mất)"
+                    },
+                    {
+                        "id": 5,
+                        "id_qh": "07",
+                        "name": "Trần Lê Khả Minh",
+                        "year": "2003",
+                        "detail": "Tiền Giang, sinh viên, Trường Đại học Luật TP. Hồ Chí Minh"
+                    }
+                ],
+                "gc_giadinh": [],
+                "gc_luong": [
+                    {
+                        "id": "1",
+                        "begin": "09/2002",
+                        "end": "09/2004",
+                        "maso": "15.111",
+                        "bacluong": "01",
+                        "heso": "1.92",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "2",
+                        "begin": "10/2004",
+                        "end": "04/2005",
+                        "maso": "15.111",
+                        "bacluong": "01",
+                        "heso": "2.34",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "3",
+                        "begin": "05/2005",
+                        "end": "04/2008",
+                        "maso": "15.111",
+                        "bacluong": "02",
+                        "heso": "2.67",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "4",
+                        "begin": "05/2008",
+                        "end": "04/2011",
+                        "maso": "15.111",
+                        "bacluong": "03",
+                        "heso": "3",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "5",
+                        "begin": "05/2011",
+                        "end": "04/2014",
+                        "maso": "15.111",
+                        "bacluong": "04",
+                        "heso": "3.33",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "6",
+                        "begin": "05/2014",
+                        "end": "03/2015",
+                        "maso": "15.111",
+                        "bacluong": "05",
+                        "heso": "3.66",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "7",
+                        "begin": "04/2015",
+                        "end": "08/2016",
+                        "maso": "15.110",
+                        "bacluong": "01",
+                        "heso": "4.4",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "8",
+                        "begin": "09/2016",
+                        "end": "08/2018",
+                        "maso": "V.07.01.01",
+                        "bacluong": "01",
+                        "heso": "6.2",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "9",
+                        "begin": "09/2018",
+                        "end": "08/2021",
+                        "maso": "V.07.01.01",
+                        "bacluong": "02",
+                        "heso": "6.56",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "10",
+                        "begin": "09/2021",
+                        "end": "08/2023",
+                        "maso": "V.07.01.01",
+                        "bacluong": "03",
+                        "heso": "6.92",
+                        "tienluong": "Chưa xác định"
+                    },
+                    {
+                        "id": "11",
+                        "begin": "09/2023",
+                        "end": "04/2024",
+                        "maso": "V.07.01.01",
+                        "bacluong": "04",
+                        "heso": "7.28",
+                        "tienluong": "Chưa xác định"
+                    }
+                ],
+                "gc_phucap": [],
+                "gc_taisan": [
+                    {
+                        "id": 4,
+                        "loai": "9",
+                        "dientich": "62,8",
+                        "giay": "797702714504638"
+                    }
+                ]
+            }
+        }
+    }
+}

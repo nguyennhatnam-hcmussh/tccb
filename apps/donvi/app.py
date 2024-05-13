@@ -80,8 +80,7 @@ async def api_donvi_upload(*, request: Request, session: db_dependency, file: Up
             ten = donvi.loc[i].ten,
             loai = donvi.loc[i].loai,
             cap = donvi.loc[i].cap,
-            is_phapnhan = bool(donvi.loc[i].is_phapnhan),
-            is_nghiencuu = bool(donvi.loc[i].is_nghiencuu),
+            is_phapnhan = bool(donvi.loc[i].is_phapnhan)
         )
         if item: # da ton tai tren he thong => update
             item_data = create.model_dump(exclude_unset=True)
@@ -118,7 +117,33 @@ async def api_donvi_update(*, request: Request, session: db_dependency, donvi_id
         setattr(db_donvi, key, value)
         session.add(db_donvi)
     session.commit()
-    return await sendjson(request, {'message': 'success'})
+    session.refresh(db_donvi)
+    data = (DonviRead.model_validate(db_donvi)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
+
+@router.get("/api/donvi/remove/{donvi_id}")
+@requires('root', redirect='login')
+async def api_donvi_remove(*, request: Request, session: db_dependency, donvi_id: int):
+    donvi = session.get(Donvi, donvi_id)
+    if not donvi:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    session.delete(donvi)
+    session.commit()
+    return await sendjson(request, {'message': "delete successful"})
+
+
+@router.post("/api/donvi/create")
+@requires('auth', redirect='login')
+async def api_donvi_create(*, request: Request, session: db_dependency, donvi: DonviUpdate):
+    
+    new_donvi = Donvi.model_validate(donvi)
+    session.add(new_donvi)
+    session.commit()
+    session.refresh(new_donvi)
+    data = data = (DonviRead.model_validate(new_donvi)).model_dump(exclude_unset=True)
+    return await sendjson(request, data)
+
 
 @router.get("/api/donvi/search")
 @requires('auth', redirect='login')

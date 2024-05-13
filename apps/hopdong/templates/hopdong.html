@@ -91,15 +91,19 @@
     removeselected($event.detail.data);
     "
     class="overflow-auto w-full h-full flex flex-col justify-start items-center px-[30px] py-[15px] gap-2">
+
         <!-- {# Search #} -->
-        <div class="w-full flex flex-row justify-center items-center shrink-0">
-            <div class="w-[500px] h-[50px] rounded-3xl bg-gray-100 flex flex-row justify-start items-center mb-[20px]">
+        <div x-data="{focused: false}" class="w-full flex flex-row justify-center items-center shrink-0">
+            <div :class="focused ? 'border-orange' : 'border-gray-100'"
+            class="transition-none w-[500px] h-[50px] rounded-3xl bg-white border flex flex-row justify-start items-center mb-[20px]">
                 <div class="basis-[50px] shrink-0 rounded-full">
-                    <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-400"></i>
+                    <i class="fa-solid fa-magnifying-glass text-[14px] text-gray-500"></i>
                 </div>
                 <input x-model="search"
+                @focus="focused = true"
+                @focusout="focused = false"
                 @input="$dispatch('searching')"
-                class="transition-none bg-gray-100 p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
+                class="transition-none bg-white p-0 rounded-r-3xl basis-[87%] shrink text-[16px] border-transparent focus:border-transparent focus:ring-0" 
                 type="search">
             </div>
         </div>
@@ -107,13 +111,13 @@
 
 
         <!-- tabs row-->
-        <div class="w-full max-w-[1000px]">
+        <div class="w-full max-w-[1000px] rounded-t-3xl overflow-hidden border">
             <div id="tabs-hopdong" 
             x-data="{tab1Active: true, tab2Active: false, tab3Active: false, tab4Active: false, tab5Active: false, tab6Active: false}"
-            class="transition-none z-[1] relative rounded-md w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start border-2">
+            class="transition-none z-[1] relative w-full min-w-[750px] max-w-[1000px] flex flex-row justify-start items-start">
                 
                 <div id="tab1-hopdong" 
-                :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                :class="tab1Active ? 'border-b-2 border-b-orange font-[500] shadow-md bg-white' : 'hover:bg-gray-50'"
                 @click="$dispatch('tab1'); tab1Active = true; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-cart-shopping text-[16px] pr-[2px] text-darkblue"></i>
@@ -126,7 +130,7 @@
                 </div>
 
                 <div id="tab2-hopdong" 
-                :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                :class="tab2Active ? 'border-b-2 border-b-orange font-[500] shadow-md bg-white' : 'hover:bg-gray-50'"
                 @click="$dispatch('tab2'); tab1Active = false; tab2Active = true; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-brands fa-stack-overflow text-[16px] pr-[2px] text-darkblue"></i>
@@ -138,7 +142,7 @@
                 </div>
 
                 <div id="tab3-hopdong"
-                :class="tab3Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                :class="tab3Active ? 'border-b-2 border-b-orange font-[500] shadow-md bg-white' : 'hover:bg-gray-50'"
                 @click="$dispatch('tab3'); tab1Active = false; tab2Active = false; tab3Active = true; tab4Active = false; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-file-pen text-[16px] pr-[2px] text-darkblue"></i>
@@ -150,7 +154,7 @@
                 </div>
 
                 <div id="tab4-hopdong"
-                :class="tab4Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                :class="tab4Active ? 'border-b-2 border-b-orange font-[500] shadow-md bg-white' : 'hover:bg-gray-50'"
                 @click="$dispatch('tab4'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = true; tab5Active = false; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-circle-check text-[16px] pr-[2px] text-darkblue"></i>
@@ -162,7 +166,7 @@
                 </div>
 
                 <div id="tab5-hopdong"
-                :class="tab5Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                :class="tab5Active ? 'border-b-2 border-b-orange font-[500] shadow-md bg-white' : 'hover:bg-gray-50'"
                 @click="$dispatch('tab5'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = true; tab6Active = false"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-check text-[16px] pr-[2px] text-darkblue"></i>
@@ -174,7 +178,7 @@
                 </div>
 
                 <div id="tab6-hopdong"
-                :class="tab6Active ? 'border-b-2 border-b-orange font-[500] shadow-md' : 'hover:bg-gray-100'"
+                :class="tab6Active ? 'border-b-2 border-b-orange font-[500] shadow-md bg-white' : 'hover:bg-gray-50'"
                 @click="$dispatch('tab6'); tab1Active = false; tab2Active = false; tab3Active = false; tab4Active = false; tab5Active = false; tab6Active = true"
                 class="transition-none py-[10px] px-[20px] cursor-pointer flex flex-row justify-start items-center gap-1">
                     <i class="fa-solid fa-circle-exclamation text-[16px] pr-[2px] text-darkblue"></i>
@@ -236,11 +240,11 @@
         @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
-        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+        class="w-full max-w-[1000px] flex flex-col gap-3">
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="bg-white gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-xl border w-full max-w-[1000px] flex flex-row justify-start items-start text-left">
                     <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
                         <input type="checkbox" :checked="checkbox[item.id]" 
                         @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
@@ -334,11 +338,11 @@
         @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
-        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+        class="w-full max-w-[1000px] flex flex-col gap-5">
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
                     <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
                         <input type="checkbox" :checked="checkbox[item.id]" 
                         @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
@@ -432,11 +436,11 @@
         @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
-        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+        class="w-full max-w-[1000px] flex flex-col gap-5">
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
                     <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
                         <input type="checkbox" :checked="checkbox[item.id]" 
                         @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
@@ -530,11 +534,11 @@
         @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
-        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+        class="w-full max-w-[1000px] flex flex-col gap-5">
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
                     <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
                         <input type="checkbox" :checked="checkbox[item.id]" 
                         @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
@@ -628,11 +632,11 @@
         @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
-        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+        class="w-full max-w-[1000px] flex flex-col gap-5">
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
                     <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
                         <input type="checkbox" :checked="checkbox[item.id]" 
                         @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"
@@ -726,11 +730,11 @@
         @getdata.window="getData()"
         @searching.window="getSearchResults()"
         x-show="show"
-        class="w-full max-w-[1000px] flex flex-col gap-5 mt-[15px]">
+        class="w-full max-w-[1000px] flex flex-col gap-5">
             <!-- {# start row #} -->
             <template x-if="checkoutput">
             <template x-for="(item, index) in output" :key="index">
-                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-3xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
+                <div class="h-125px gap-4 p-[16px] transition-none z-[1] min-w-[750px] relative rounded-xl border-2 w-full max-w-[1000px] flex flex-row justify-start items-start text-left shadow">
                     <div class="absolute left-[16px] top-[50%] translate-y-[-50%] flex flex-row justify-start items-center z-[1]">
                         <input type="checkbox" :checked="checkbox[item.id]" 
                         @click="if($el.checked){$dispatch('hdchecked',{data: item})} else {$dispatch('hdunchecked', {data: item})}"

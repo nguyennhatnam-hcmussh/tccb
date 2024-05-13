@@ -14,7 +14,7 @@ from main import config
 from main.shortcuts import redirect, render, file, sendjson
 from main.services import AuthGoogle, encode
 from main.models import Donvi, Nhansu, Hopdong
-from main.schemas import NhansuCreate, NhansuRead, NhansuSearchCohuu, NhansuCreateWithDonvimoi, NhansuReadWithDonvimoi, NhansuSearchWithDonvimoi, ListNhansuSearchThinhgiang, ListNhansuSearchCohuu, ListNhansuSearchWithDonvimoi, NhansuReadFull
+from main.schemas import NhansuCreate, NhansuRead, NhansuCreateWithDonvimoi, NhansuReadWithDonvimoi, NhansuSearchWithDonvimoi, ListNhansuSearchWithDonvimoi, NhansuReadFull, NhansuSearch, ListNhansuSearch
 from main.schemas import HopdongCreate, HopdongReadFull
 
 settings = config.get_settings()
@@ -48,21 +48,56 @@ async def template_nhansu_form_upload(request: Request):
     context = {}
     return await render(request, "nhansu", "form_upload.html", context)
 
+################################################################
 
-@router.get("/api/nhansu/download")
+@router.get("/api/data/download")
 @requires('auth', redirect='login')
 async def api_nhansu_download(request: Request):
-    thinhgiang = pd.read_sql_table(table_name='thinhgiang', con=engine)
+    bienban = pd.read_sql_table(table_name='bienban', con=engine)
+    for i in bienban.index:
+        if bienban.iloc[i].ngaytao:
+            bienban.at[i,'ngaytao'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(bienban.iloc[i].ngaytao)))
 
-    for i in thinhgiang.index:
-        if thinhgiang.iloc[i].ngaysinh:
-            thinhgiang.at[i,'ngaysinh'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(thinhgiang.iloc[i].ngaysinh)))
-        if thinhgiang.iloc[i].CCCD_ngay:
-            thinhgiang.at[i,'CCCD_ngay'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(thinhgiang.iloc[i].CCCD_ngay)))
+    donvi = pd.read_sql_table(table_name='donvi', con=engine)
+    gvtgofdonvi = pd.read_sql_table(table_name='gvtgofdonvi', con=engine)
+    
+    hopdong = pd.read_sql_table(table_name='hopdong', con=engine)
+    for i in hopdong.index:
+        if hopdong.iloc[i].ngayky:
+            hopdong.at[i,'ngayky'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(hopdong.iloc[i].ngayky)))
+        if hopdong.iloc[i].ngaycapnhat:
+            hopdong.at[i,'ngaycapnhat'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(hopdong.iloc[i].ngaycapnhat)))
 
-    with pd.ExcelWriter(settings.STATIC_MAIN_DIR / 'files' / 'nhansu_down.xlsx') as writer:
-        thinhgiang.to_excel(writer, sheet_name="nhansu", index=False)
-    return await file(request, "files/nhansu_down.xlsx", filename="nhansu.xlsx")
+    hopdongofdonvi = pd.read_sql_table(table_name='hopdongofdonvi', con=engine)
+    hopdongofgiangvien = pd.read_sql_table(table_name='hopdongofgiangvien', con=engine)
+    hopdongofnguoiphutrach = pd.read_sql_table(table_name='hopdongofnguoiphutrach', con=engine)
+
+    nhansu = pd.read_sql_table(table_name='nhansu', con=engine)
+    for i in nhansu.index:
+        if nhansu.iloc[i].ngaysinh:
+            nhansu.at[i,'ngaysinh'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(nhansu.iloc[i].ngaysinh)))
+        if nhansu.iloc[i].CCCD_ngay:
+            nhansu.at[i,'CCCD_ngay'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(nhansu.iloc[i].CCCD_ngay)))
+            
+    nhansuofdonvi = pd.read_sql_table(table_name='nhansuofdonvi', con=engine)
+
+    trangthai = pd.read_sql_table(table_name='trangthai', con=engine)
+    for i in trangthai.index:
+        if trangthai.iloc[i].ngaycapnhat:
+            trangthai.at[i,'ngaycapnhat'] = (datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=int(trangthai.iloc[i].ngaycapnhat)))
+
+    with pd.ExcelWriter(settings.STATIC_MAIN_DIR / 'files' / 'data_down.xlsx') as writer:
+        bienban.to_excel(writer, sheet_name="bienban", index=False)
+        donvi.to_excel(writer, sheet_name="donvi", index=False)
+        gvtgofdonvi.to_excel(writer, sheet_name="gvtgofdonvi", index=False)
+        hopdong.to_excel(writer, sheet_name="hopdong", index=False)
+        hopdongofdonvi.to_excel(writer, sheet_name="hopdongofdonvi", index=False)
+        hopdongofgiangvien.to_excel(writer, sheet_name="hopdongofgiangvien", index=False)
+        hopdongofnguoiphutrach.to_excel(writer, sheet_name="hopdongofnguoiphutrach", index=False)
+        nhansu.to_excel(writer, sheet_name="nhansu", index=False)
+        nhansuofdonvi.to_excel(writer, sheet_name="nhansuofdonvi", index=False)
+        trangthai.to_excel(writer, sheet_name="trangthai", index=False)
+    return await file(request, "files/data_down.xlsx", filename="data.xlsx")
 
 
 @router.post("/api/nhansu/upload")
@@ -117,10 +152,11 @@ async def api_nhansu_upload(*, request: Request, session: db_dependency, file: U
     context = {}
     return await render(request, "nhansu", "form_upload_success.html", context)
 
+################################################################
 
 @router.get("/api/nhansu/read/{maso}")
 @requires('auth', redirect='login')
-async def api_nhansu_thinhgiang_read(*, request: Request, session: db_dependency,maso: str):
+async def api_nhansu_thinhgiang_read(*, request: Request, session: db_dependency, maso: str):
     thinhgiang = session.exec(select(Nhansu).where(maso == Nhansu.maso)).first()
     if not thinhgiang:
         raise HTTPException(status_code=404, detail="Hero not found")
@@ -131,6 +167,17 @@ async def api_nhansu_thinhgiang_read(*, request: Request, session: db_dependency
     for i in range(len(data['hopdong'])):
             data['hopdong'][i]['ngaycapnhat'] = await stamp2datetime(data['hopdong'][i]['ngaycapnhat'])
     return await sendjson(request, data)
+
+
+@router.get("/api/nhansu/remove/{maso}")
+@requires('root', redirect='login')
+async def api_nhansu_thinhgiang_remove(*, request: Request, session: db_dependency, maso: str):
+    thinhgiang = session.exec(select(Nhansu).where(maso == Nhansu.maso)).first()
+    if not thinhgiang:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    session.delete(thinhgiang)
+    session.commit()
+    return await sendjson(request, {'message': "delete successful"})
 
 
 @router.post("/api/nhansu/update")
@@ -172,14 +219,13 @@ async def api_nhansu_update(*, request: Request, session: db_dependency, id: int
     session.add(db_thinhgiang)
     session.commit()
     session.refresh(db_thinhgiang)
-    data = (NhansuSearchWithDonvimoi.model_validate(db_thinhgiang)).model_dump(exclude_unset=True)
+    data = (NhansuSearch.model_validate(db_thinhgiang)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
-################################################################
 
 @router.post("/api/nhansu/create")
 @requires('auth', redirect='login')
-async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependency, thinhgiang: NhansuCreateWithDonvimoi):
+async def api_nhansu_create(*, request: Request, session: db_dependency, thinhgiang: NhansuCreateWithDonvimoi):
     
     donvimoi = thinhgiang.donvimoi
     thinhgiang.donvimoi = []
@@ -214,15 +260,16 @@ async def api_nhansu_thinhgiang_create(*, request: Request, session: db_dependen
     session.add(new_person)
     session.commit()
     session.refresh(new_person)
-    data = (NhansuSearchWithDonvimoi.model_validate(new_person)).model_dump(exclude_unset=True)
+    data = (NhansuSearch.model_validate(new_person)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
+################################################################
 
 @router.get("/api/nhansu/thinhgiang/search")
 @requires('auth', redirect='login')
 async def api_nhansu_thinhgiang_search(*, request: Request, session: db_dependency):
     thinhgiangs = session.exec(select(Nhansu).where(Nhansu.type == 'thinhgiang')).all()
-    data = (ListNhansuSearchThinhgiang.model_validate({'data':thinhgiangs})).model_dump(exclude_unset=True)
+    data = (ListNhansuSearch.model_validate({'data':thinhgiangs})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 
@@ -230,7 +277,7 @@ async def api_nhansu_thinhgiang_search(*, request: Request, session: db_dependen
 @requires('auth', redirect='login')
 async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
     cohuus = session.exec(select(Nhansu).where(Nhansu.type == 'cohuu')).all()
-    data = (ListNhansuSearchCohuu.model_validate({'data':cohuus})).model_dump(exclude_unset=True)
+    data = (ListNhansuSearch.model_validate({'data':cohuus})).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 ###################################################
@@ -240,9 +287,21 @@ async def api_nhansu_cohuu_search(*, request: Request, session: db_dependency):
 async def api_nhansu_me_search(*, request: Request, session: db_dependency):
     uuid = request.user.data.get('uuid')
     nhansu = session.get(Nhansu, uuid)
-    data = (NhansuSearchCohuu.model_validate(nhansu)).model_dump(exclude_unset=True)
+    data = (NhansuSearch.model_validate(nhansu)).model_dump(exclude_unset=True)
     return await sendjson(request, data)
 
 
 ############################################################
 
+@router.get("/api/nhansu/donvingoai/danhmuc")
+@requires('auth', redirect='login')
+async def api_nhansu_me_search(*, request: Request, session: db_dependency):
+    values = session.query(Nhansu.donvingoai).distinct().all()
+    i = 0
+    data = []
+    for value in values:
+        if value[0]:
+            i+=1
+            data.append({"id": i, "ten": value[0]})
+            
+    return await sendjson(request, data)

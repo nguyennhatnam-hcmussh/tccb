@@ -41,7 +41,7 @@ class="transition-all overflow-hidden h-screen bg-blue flex flex-col justify-sta
         {% for name, icon in value.items() %}
             <div :class="show ? 'justify-start px-[20px]' : 'justify-center'"
             class="transition-none w-full flex flex-row items-center py-[20px] h-[50px]">
-                <i class="fa-solid {{ icon }} mr-[20px] ml-[10px]"></i>
+                <i class="transition-none fa-solid {{ icon }} mr-[20px] ml-[10px]"></i>
                 <p x-show="show">{{ name }}</p>
             </div>
         {% endfor %} 

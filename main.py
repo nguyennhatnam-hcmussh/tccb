@@ -106,13 +106,13 @@ async def logout(request: Request):
     return await redirect(request, "/login", clear_cookie=True)
 
 
-# @app.exception_handler(StarletteHTTPException)
-# async def http_exception_handler(request, exc):
-#     context = {
-#         'template': 'hide',
-#         'url': '/template/404'
-#     }
-#     return await render(request, "error", "404.html", context)
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    context = {
+        'template': 'hide',
+        'url': '/template/404'
+    }
+    return await render(request, "error", "404.html", context)
 
 nhucau = 0
 list_code = []
